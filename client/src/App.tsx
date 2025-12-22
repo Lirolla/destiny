@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Sliders from "./pages/Sliders";
 import DailyCycle from "./pages/DailyCycle";
 import Insights from "./pages/Insights";
+import InnerCircle from "./pages/InnerCircle";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -19,7 +20,7 @@ function Router() {
       <Route path={"/sliders"} component={Sliders} />
       <Route path={"/daily-cycle"} component={DailyCycle} />
       <Route path={"/insights"} component={Insights} />
-      <Route path={"/inner-circle"} component={NotFound} />
+      <Route path={"/inner-circle"} component={InnerCircle} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

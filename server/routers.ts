@@ -427,6 +427,87 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
         return { success: true };
       }),
   }),
+
+  // Inner Circle
+  innerCircle: router({
+    // List connections
+    listConnections: protectedProcedure.query(async ({ ctx }) => {
+      return db.getConnections(ctx.user.id);
+    }),
+
+    // Send connection invite to another user
+    sendInvite: protectedProcedure
+      .input(z.object({ targetUserId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Check if connection already exists
+        const existing = await db.getConnections(ctx.user.id);
+        const alreadyConnected = existing.some(
+          c => c.connectedUserId === input.targetUserId
+        );
+
+        if (alreadyConnected) {
+          throw new Error("Connection already exists");
+        }
+
+        // Create connection invite
+        await db.createConnection({
+          userId: ctx.user.id,
+          connectedUserId: input.targetUserId,
+          status: "pending",
+          invitedBy: ctx.user.id,
+        });
+
+        return { success: true };
+      }),
+
+    // Accept connection invite
+    acceptInvite: protectedProcedure
+      .input(z.object({ connectionId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        // Update connection status
+        await db.updateConnectionStatus(input.connectionId, ctx.user.id, "accepted");
+
+        // Create reverse connection
+        const connections = await db.getConnections(ctx.user.id);
+        const connection = connections.find(c => c.id === input.connectionId);
+
+        if (connection) {
+          await db.createConnection({
+            userId: connection.connectedUserId,
+            connectedUserId: ctx.user.id,
+            status: "accepted",
+            invitedBy: connection.invitedBy,
+          });
+        }
+
+        return { success: true };
+      }),
+
+    // Get shared state summary (not content)
+    getSharedStates: protectedProcedure.query(async ({ ctx }) => {
+      const connections = await db.getConnections(ctx.user.id);
+      const sharedStates = [];
+
+      for (const conn of connections) {
+        if (conn.status === "accepted" && conn.shareSliderStates) {
+          const latestStates = await db.getLatestStatesPerAxis(conn.connectedUserId);
+          const todayCycle = await db.getTodayCycle(
+            conn.connectedUserId,
+            new Date().toISOString().split('T')[0]
+          );
+
+          sharedStates.push({
+            userId: conn.connectedUserId,
+            cycleCompleted: todayCycle?.isComplete || false,
+            axisCount: latestStates.length,
+            lastActive: latestStates[0]?.clientTimestamp || null,
+          });
+        }
+      }
+
+      return sharedStates;
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
