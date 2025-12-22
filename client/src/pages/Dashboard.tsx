@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Gauge, Calendar, Brain, Users, TrendingUp, CheckCircle2, Flame } from "lucide-react";
+import { Gauge, Calendar, Brain, Users, TrendingUp, CheckCircle2, Flame, Settings } from "lucide-react";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -272,7 +272,7 @@ export default function Dashboard() {
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <Link href="/sliders">
             <Card className="hover:border-primary transition-colors cursor-pointer">
               <CardHeader>
@@ -315,17 +315,33 @@ export default function Dashboard() {
             </Card>
           </Link>
 
-          <Card className="hover:border-primary transition-colors cursor-pointer opacity-50">
-            <CardHeader>
-              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center mb-2">
-                <Users className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <CardTitle className="text-base">Inner Circle</CardTitle>
-              <CardDescription className="text-xs">
-                Coming soon
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <Link href="/inner-circle">
+            <Card className="hover:border-primary transition-colors cursor-pointer">
+              <CardHeader>
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                  <Users className="h-5 w-5 text-primary" />
+                </div>
+                <CardTitle className="text-base">Inner Circle</CardTitle>
+                <CardDescription className="text-xs">
+                  Connections & accountability
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link href="/settings">
+            <Card className="hover:border-primary transition-colors cursor-pointer">
+              <CardHeader>
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                </div>
+                <CardTitle className="text-base">Settings</CardTitle>
+                <CardDescription className="text-xs">
+                  Notifications & preferences
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
         </div>
 
         {/* Recent Insights */}

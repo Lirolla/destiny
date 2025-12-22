@@ -508,6 +508,156 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
       return sharedStates;
     }),
   }),
+
+  // Notifications
+  notifications: router({
+    // Get notification settings
+    getSettings: protectedProcedure.query(async ({ ctx }) => {
+      return {
+        enabled: ctx.user.notificationsEnabled || false,
+        reminderTime: ctx.user.dailyReminderTime || "09:00",
+        timezone: ctx.user.timezone || "UTC",
+      };
+    }),
+
+    // Update notification settings
+    updateSettings: protectedProcedure
+      .input(z.object({
+        enabled: z.boolean(),
+        reminderTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/),
+        timezone: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.updateUserNotificationSettings(
+          ctx.user.id,
+          input.enabled,
+          input.reminderTime,
+          input.timezone
+        );
+
+        return { success: true };
+      }),
+
+    // Save push subscription
+    savePushSubscription: protectedProcedure
+      .input(z.object({
+        subscription: z.any(), // PushSubscription object
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.updateUserPushSubscription(ctx.user.id, input.subscription);
+        return { success: true };
+      }),
+
+    // Send test notification
+    sendTest: protectedProcedure.mutation(async ({ ctx }) => {
+      // Use the owner notification system for testing
+      const { notifyOwner } = await import("./_core/notification");
+      
+      await notifyOwner({
+        title: "Test Notification from Destiny Hacking",
+        content: `User ${ctx.user.name || ctx.user.id} requested a test notification`,
+      });
+
+      return { success: true };
+    }),
+  }),
+
+  // Group Challenges
+  challenges: router({
+    // List all challenges (user's own + joined)
+    list: protectedProcedure.query(async ({ ctx }) => {
+      const created = await db.getActiveSessions(ctx.user.id);
+      const joined = await db.getUserParticipations(ctx.user.id);
+      
+      return { created, joined };
+    }),
+
+    // Get challenge details
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const session = await db.getSessionById(input.id);
+        if (!session) {
+          throw new Error("Challenge not found");
+        }
+
+        const participants = await db.getSessionParticipants(input.id);
+        return { session, participants };
+      }),
+
+    // Create new challenge
+    create: protectedProcedure
+      .input(z.object({
+        name: z.string().min(1).max(200),
+        description: z.string().optional(),
+        challengeType: z.string(),
+        startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        isPrivate: z.boolean().default(true),
+        maxParticipants: z.number().optional(),
+        challengeParams: z.any().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const session = await db.createSession({
+          creatorId: ctx.user.id,
+          ...input,
+          status: "upcoming",
+        });
+
+        return session;
+      }),
+
+    // Join a challenge
+    join: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.joinSession(input.sessionId, ctx.user.id);
+        return { success: true };
+      }),
+
+    // Leave a challenge
+    leave: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.leaveSession(input.sessionId, ctx.user.id);
+        return { success: true };
+      }),
+
+    // Get challenge progress for current user
+    getProgress: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const participation = await db.getUserParticipation(input.sessionId, ctx.user.id);
+        
+        if (!participation) {
+          return null;
+        }
+
+        // Calculate progress based on challenge type
+        const session = await db.getSessionById(input.sessionId);
+        if (!session) return null;
+
+        // Get user's daily cycles within challenge period
+        const cycles = await db.getCyclesInDateRange(
+          ctx.user.id,
+          session.startDate,
+          session.endDate
+        );
+
+        const completedDays = cycles.filter(c => c.isComplete).length;
+        const totalDays = Math.ceil(
+          (new Date(session.endDate).getTime() - new Date(session.startDate).getTime()) /
+          (1000 * 60 * 60 * 24)
+        ) + 1;
+
+        return {
+          participation,
+          completedDays,
+          totalDays,
+          progress: totalDays > 0 ? (completedDays / totalDays) * 100 : 0,
+        };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

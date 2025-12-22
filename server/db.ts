@@ -430,6 +430,81 @@ export async function getSessionParticipants(sessionId: number): Promise<GroupPa
     .orderBy(groupParticipants.joinedAt);
 }
 
+/**
+ * Get a session by ID
+ */
+export async function getSessionById(sessionId: number): Promise<GroupSession | null> {
+  const results = await db
+    .select()
+    .from(groupSessions)
+    .where(eq(groupSessions.id, sessionId))
+    .limit(1);
+  
+  return results[0] || null;
+}
+
+/**
+ * Get user's participations in group sessions
+ */
+export async function getUserParticipations(userId: number): Promise<GroupParticipant[]> {
+  return db
+    .select()
+    .from(groupParticipants)
+    .where(eq(groupParticipants.userId, userId))
+    .orderBy(desc(groupParticipants.joinedAt));
+}
+
+/**
+ * Get user's participation in a specific session
+ */
+export async function getUserParticipation(
+  sessionId: number,
+  userId: number
+): Promise<GroupParticipant | null> {
+  const results = await db
+    .select()
+    .from(groupParticipants)
+    .where(and(
+      eq(groupParticipants.sessionId, sessionId),
+      eq(groupParticipants.userId, userId)
+    ))
+    .limit(1);
+  
+  return results[0] || null;
+}
+
+/**
+ * Leave a group session
+ */
+export async function leaveSession(sessionId: number, userId: number): Promise<void> {
+  await db
+    .update(groupParticipants)
+    .set({ status: "dropped" })
+    .where(and(
+      eq(groupParticipants.sessionId, sessionId),
+      eq(groupParticipants.userId, userId)
+    ));
+}
+
+/**
+ * Get daily cycles within a date range
+ */
+export async function getCyclesInDateRange(
+  userId: number,
+  startDate: string,
+  endDate: string
+): Promise<DailyCycle[]> {
+  return db
+    .select()
+    .from(dailyCycles)
+    .where(and(
+      eq(dailyCycles.userId, userId),
+      gte(dailyCycles.cycleDate, startDate),
+      sql`${dailyCycles.cycleDate} <= ${endDate}`
+    ))
+    .orderBy(dailyCycles.cycleDate);
+}
+
 // ============================================================================
 // USER MANAGEMENT (for auth system)
 // ============================================================================
@@ -468,4 +543,49 @@ export async function upsertUser(data: Partial<InsertUser> & { openId: string })
     // Insert new user
     await db.insert(users).values(data as InsertUser);
   }
+}
+
+// ============================================================================
+// NOTIFICATION SETTINGS
+// ============================================================================
+
+/**
+ * Update user notification settings
+ */
+export async function updateUserNotificationSettings(
+  userId: number,
+  enabled: boolean,
+  reminderTime: string,
+  timezone?: string
+): Promise<void> {
+  const updateData: any = {
+    notificationsEnabled: enabled,
+    dailyReminderTime: reminderTime,
+    updatedAt: new Date(),
+  };
+
+  if (timezone) {
+    updateData.timezone = timezone;
+  }
+
+  await db
+    .update(users)
+    .set(updateData)
+    .where(eq(users.id, userId));
+}
+
+/**
+ * Update user push subscription
+ */
+export async function updateUserPushSubscription(
+  userId: number,
+  subscription: any
+): Promise<void> {
+  await db
+    .update(users)
+    .set({
+      pushSubscription: subscription,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
 }

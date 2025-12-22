@@ -10,6 +10,9 @@ import Sliders from "./pages/Sliders";
 import DailyCycle from "./pages/DailyCycle";
 import Insights from "./pages/Insights";
 import InnerCircle from "./pages/InnerCircle";
+import Settings from "./pages/Settings";
+import Challenges from "./pages/Challenges";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -21,6 +24,8 @@ function Router() {
       <Route path={"/daily-cycle"} component={DailyCycle} />
       <Route path={"/insights"} component={Insights} />
       <Route path={"/inner-circle"} component={InnerCircle} />
+      <Route path={"/settings"} component={Settings} />
+      <Route path={"/challenges"} component={Challenges} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -43,6 +48,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <OfflineIndicator />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

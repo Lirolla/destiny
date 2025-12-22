@@ -15,6 +15,13 @@
       "when": 1766429997625,
       "tag": "0001_natural_hellion",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1766435717523,
+      "tag": "0002_omniscient_luckman",
+      "breakpoints": true
     }
   ]
 }

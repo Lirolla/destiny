@@ -86,3 +86,30 @@
 - [ ] Add offline state detection
 - [ ] Build sync queue for offline actions
 - [ ] Test offline functionality
+
+## Phase 11: Daily Reminder Notifications
+
+- [x] Add notification preferences to user settings
+- [ ] Create notification scheduling system
+- [x] Build notification tRPC procedures
+- [x] Implement browser push notification permission flow
+- [x] Add settings UI for notification preferences
+- [x] Test notification delivery
+
+## Phase 12: Group Challenges
+
+- [x] Create group challenge database procedures
+- [x] Build challenge creation UI
+- [x] Implement challenge join/leave functionality
+- [x] Add challenge progress tracking
+- [ ] Create challenge leaderboard/stats view
+- [ ] Test group challenge workflows
+
+## Phase 13: Offline Sync Queue
+
+- [x] Set up IndexedDB schema for offline queue
+- [x] Implement queue management functions
+- [x] Add offline detection and UI indicators
+- [x] Build auto-sync on reconnection
+- [ ] Handle conflict resolution
+- [ ] Test offline→online sync scenarios

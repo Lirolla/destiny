@@ -30,6 +30,8 @@ export const users = mysqlTable("users", {
   // User preferences and settings
   timezone: varchar("timezone", { length: 64 }).default("UTC"),
   dailyReminderTime: varchar("dailyReminderTime", { length: 5 }), // HH:MM format
+  notificationsEnabled: boolean("notificationsEnabled").default(false).notNull(),
+  pushSubscription: json("pushSubscription"), // Web Push API subscription object
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
