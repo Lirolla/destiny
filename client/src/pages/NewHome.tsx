@@ -268,16 +268,28 @@ export default function NewHome() {
         {/* Quick Links */}
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
           <Button asChild variant="ghost" size="sm">
-            <Link href="/modules">Learning Path</Link>
+            <Link href="/modules">📚 Learning Path</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/sowing-reaping">Sowing & Reaping</Link>
+            <Link href="/weekly-review">📊 Weekly Review</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/inner-circle">Inner Circle</Link>
+            <Link href="/prayer-journal">🙏 Prayer Journal</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">
-            <Link href="/insights">Insights</Link>
+            <Link href="/bias-clearing">🧠 Bias Clearing</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/sowing-reaping">🌱 Sowing & Reaping</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/inner-circle">👥 Inner Circle</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/insights">💡 Insights</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/settings">⚙️ Settings</Link>
           </Button>
         </div>
       </div>

@@ -212,3 +212,27 @@
 - [x] Add CSV export for slider history
 - [x] Add JSON export for complete data
 - [x] Test export functionality
+
+
+## Phase 22: Final Follow-ups
+
+### Navigation Links
+- [x] Update Command Center quick action buttons with proper routes
+- [x] Add Weekly Review link to home screen
+- [x] Add Prayer Journal link to home screen
+- [x] Test all navigation flows
+
+### Bias Clearing UI
+- [x] Create BiasClearing page component
+- [x] Build daily fog assessment interface
+- [x] Display AI-generated bias prompts
+- [x] Add fog level before/after tracking
+- [x] Create bias check history view
+
+### Module Detail Pages
+- [x] Create ModuleDetail page component
+- [x] Build module content display
+- [x] Add practice day completion interface
+- [x] Implement challenge tracking
+- [x] Create reflection entry form
+- [x] Add progress visualization

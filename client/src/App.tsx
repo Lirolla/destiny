@@ -18,6 +18,8 @@ import Profiles from "./pages/Profiles";
 import NewHome from "./pages/NewHome";
 import WeeklyReview from "./pages/WeeklyReview";
 import PrayerJournal from "./pages/PrayerJournal";
+import BiasClearing from "./pages/BiasClearing";
+import ModuleDetail from "./pages/ModuleDetail";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 
 function Router() {
@@ -34,10 +36,12 @@ function Router() {
       <Route path={"/settings"} component={Settings} />
       <Route path={"/challenges"} component={Challenges} />
       <Route path={"/modules"} component={Modules} />
+      <Route path={"/modules/:id"} component={ModuleDetail} />
       <Route path={"/sowing-reaping"} component={SowingReaping} />
       <Route path={"/profiles"} component={Profiles} />
       <Route path={" /weekly-review"} component={WeeklyReview} />
       <Route path={"/prayer-journal"} component={PrayerJournal} />
+      <Route path={"/bias-clearing"} component={BiasClearing} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
