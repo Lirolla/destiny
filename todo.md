@@ -323,3 +323,41 @@
 - [x] Ensure 6 unique bipolar axes are displayed
 - [x] Update UI to show distinct emotional dimensions
 - [x] Test axis display on Command Center and Sliders page
+
+
+## Phase 26: Six New Features
+### Initial Calibration Flow
+
+- [x] Create InitialCalibration component for first-time setup
+- [x] Add calibration wizard that walks through all 6 axes
+- [x] Store completion status in localStorage or user preferences
+- [x] Show after onboarding for new users
+- [x] Test calibration flow
+
+### Axis Customization UI
+- [x] Add "Manage Axes" section to Settings page
+- [x] Build axis edit form (rename left/right labels, description)
+- [ ] Implement axis reordering with drag-and-drop or up/down buttons
+- [x] Add "Create Custom Axis" button and form
+- [x] Test axis customization
+
+### Axis Deletion Protection
+- [x] Add confirmation dialog for axis deletion
+- [x] Check for existing calibration data before deletion
+- [x] Show cascade warning if historical data exists
+- [x] Implement cascade delete with warning
+- [x] Test deletion protection
+
+### Achievements Link & Backend Tracking
+- [x] Add Achievements quick action button to Command Center
+- [x] Create tRPC achievements router with list/unlock procedures
+- [x] Implement automatic badge detection logic
+- [x] Add database functions for achievement stats
+- [ ] Fix schema mismatches and complete testing
+
+### Social Share Preview Cards
+- [ ] Add Open Graph meta tags to index.html
+- [ ] Create dynamic OG image generation endpoint
+- [ ] Update ShareProgress component to use preview cards
+- [ ] Test social media preview rendering
+- [ ] Verify Twitter/LinkedIn card display

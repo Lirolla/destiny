@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { ChevronLeft, ChevronRight, Target, Sun, Sunset, Moon } from "lucide-react";
 import { Onboarding } from "@/components/Onboarding";
+import { InitialCalibration } from "@/components/InitialCalibration";
 
 /**
  * Home Screen (Command Center)
@@ -29,6 +30,7 @@ export default function NewHome() {
   const [currentSliderIndex, setCurrentSliderIndex] = useState(0);
   const [sliderValues, setSliderValues] = useState<Record<number, number>>({});
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showInitialCalibration, setShowInitialCalibration] = useState(false);
 
   // Check if user has completed onboarding
   useEffect(() => {
@@ -43,11 +45,26 @@ export default function NewHome() {
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboarding_completed', 'true');
     setShowOnboarding(false);
+    // Check if initial calibration is needed
+    const hasCalibrated = localStorage.getItem('initial_calibration_completed');
+    if (!hasCalibrated && axes && axes.length > 0) {
+      setShowInitialCalibration(true);
+    }
   };
 
   const handleOnboardingSkip = () => {
     localStorage.setItem('onboarding_completed', 'true');
     setShowOnboarding(false);
+    // Check if initial calibration is needed
+    const hasCalibrated = localStorage.getItem('initial_calibration_completed');
+    if (!hasCalibrated && axes && axes.length > 0) {
+      setShowInitialCalibration(true);
+    }
+  };
+
+  const handleCalibrationComplete = () => {
+    localStorage.setItem('initial_calibration_completed', 'true');
+    setShowInitialCalibration(false);
   };
 
   // Initialize slider values from latest states
@@ -109,6 +126,13 @@ export default function NewHome() {
         <Onboarding 
           onComplete={handleOnboardingComplete} 
           onSkip={handleOnboardingSkip} 
+        />
+      )}
+
+      {showInitialCalibration && (
+        <InitialCalibration
+          open={showInitialCalibration}
+          onComplete={handleCalibrationComplete}
         />
       )}
       
@@ -317,6 +341,9 @@ export default function NewHome() {
           </Button>
           <Button asChild variant="ghost" size="sm">
             <Link href="/insights">💡 Insights</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/achievements">🏆 Achievements</Link>
           </Button>
           <Button asChild variant="ghost" size="sm">
             <Link href="/settings">⚙️ Settings</Link>

@@ -14,6 +14,8 @@ import {
   connections,
   groupSessions,
   groupParticipants,
+  achievements,
+  moduleProgress,
   type EmotionalAxis,
   type InsertEmotionalAxis,
   type SliderState,
@@ -602,7 +604,6 @@ import {
   type SowingReapingEntry,
   type InsertSowingReapingEntry,
   bookModules,
-  moduleProgress,
   type BookModule,
   type ModuleProgress,
   type InsertModuleProgress,
@@ -1166,4 +1167,113 @@ export async function getAlignmentSessionById(
     .limit(1);
   
   return results[0] || null;
+}
+
+
+// ============================================================================
+// ACHIEVEMENTS
+// ============================================================================
+
+export async function getUserAchievements(userId: number) {
+  return db.select().from(achievements).where(eq(achievements.userId, userId));
+}
+
+export async function unlockBadge(userId: number, badgeType: string) {
+  // Check if already unlocked
+  const existing = await db
+    .select()
+    .from(achievements)
+    .where(and(
+      eq(achievements.userId, userId),
+      eq(achievements.badgeType, badgeType as any)
+    ))
+    .limit(1);
+
+  if (existing.length > 0) {
+    return false; // Already unlocked
+  }
+
+  // Unlock the badge
+  await db.insert(achievements).values({
+    userId,
+    badgeType: badgeType as any,
+    unlockedAt: new Date(),
+  });
+
+  return true; // Newly unlocked
+}
+
+export async function getCalibrationCount(userId: number) {
+  const result = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(sliderStates)
+    .where(eq(sliderStates.userId, userId));
+  
+  return result[0]?.count || 0;
+}
+
+export async function getCurrentStreak(userId: number) {
+  // Get all completed cycles ordered by date desc
+  const cycles = await db
+    .select({ cycleDate: dailyCycles.cycleDate })
+    .from(dailyCycles)
+    .where(and(
+      eq(dailyCycles.userId, userId),
+      eq(dailyCycles.isComplete, true)
+    ))
+    .orderBy(desc(dailyCycles.cycleDate));
+
+  if (cycles.length === 0) return 0;
+
+  // Count consecutive days from today
+  let streak = 0;
+  const today = new Date().toISOString().split('T')[0];
+  let currentDate = today;
+
+  for (const cycle of cycles) {
+    if (cycle.cycleDate === currentDate) {
+      streak++;
+      // Move to previous day
+      const date = new Date(currentDate);
+      date.setDate(date.getDate() - 1);
+      currentDate = date.toISOString().split('T')[0];
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+export async function getCompletedModuleCount(userId: number) {
+  const result = await db
+    .select({ count: sql<number>`COUNT(DISTINCT moduleId)` })
+    .from(moduleProgress)
+    .where(and(
+      eq(moduleProgress.userId, userId),
+      sql`${moduleProgress.completedAt} IS NOT NULL`
+    ));
+  
+  return result[0]?.count || 0;
+}
+
+export async function getConnectionCount(userId: number) {
+  const result = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(connections)
+    .where(or(
+      eq(connections.userId, userId),
+      eq(connections.connectedUserId, userId)
+    ));
+  
+  return result[0]?.count || 0;
+}
+
+export async function getInsightCount(userId: number) {
+  const result = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(insights)
+    .where(eq(insights.userId, userId));
+  
+  return result[0]?.count || 0;
 }

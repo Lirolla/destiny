@@ -1055,7 +1055,83 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
       .input(z.object({ sessionId: z.number() }))
       .query(async ({ ctx, input }) => {
         return db.getAlignmentSessionById(input.sessionId, ctx.user.id);
-      }),
+       }),
+  }),
+
+  // Achievements
+  achievements: router({
+    // List all badges with unlock status
+    list: protectedProcedure.query(async ({ ctx }) => {
+      // Return all possible badges with unlock status
+      const badges = [
+        { id: "first_calibration", name: "First Step", description: "Complete your first emotional calibration", category: "calibration", rarity: "common", icon: "🎯" },
+        { id: "calibration_10", name: "Getting Started", description: "Complete 10 calibrations", category: "calibration", rarity: "common", icon: "🎯" },
+        { id: "calibration_50", name: "Consistent Practice", description: "Complete 50 calibrations", category: "calibration", rarity: "uncommon", icon: "🎯" },
+        { id: "calibration_100", name: "Emotional Mastery", description: "Complete 100 calibrations", category: "calibration", rarity: "rare", icon: "🎯" },
+        { id: "streak_3", name: "Building Momentum", description: "Maintain a 3-day streak", category: "streak", rarity: "common", icon: "🔥" },
+        { id: "streak_7", name: "One Week Strong", description: "Maintain a 7-day streak", category: "streak", rarity: "uncommon", icon: "🔥" },
+        { id: "streak_30", name: "Monthly Dedication", description: "Maintain a 30-day streak", category: "streak", rarity: "rare", icon: "🔥" },
+        { id: "streak_100", name: "Unstoppable", description: "Maintain a 100-day streak", category: "streak", rarity: "legendary", icon: "🔥" },
+        { id: "first_module", name: "Knowledge Seeker", description: "Complete your first module", category: "learning", rarity: "common", icon: "📚" },
+        { id: "modules_5", name: "Dedicated Learner", description: "Complete 5 modules", category: "learning", rarity: "uncommon", icon: "📚" },
+        { id: "modules_all", name: "Master of Destiny", description: "Complete all 14 modules", category: "learning", rarity: "legendary", icon: "📚" },
+        { id: "first_connection", name: "Not Alone", description: "Connect with your first accountability partner", category: "social", rarity: "common", icon: "🤝" },
+        { id: "inner_circle_5", name: "Community Builder", description: "Build an Inner Circle of 5 members", category: "social", rarity: "uncommon", icon: "🤝" },
+        { id: "first_insight", name: "Pattern Recognition", description: "Receive your first AI insight", category: "insight", rarity: "common", icon: "💡" },
+        { id: "insights_10", name: "Self-Aware", description: "Collect 10 AI insights", category: "insight", rarity: "uncommon", icon: "💡" },
+        { id: "insight_rated_high", name: "Breakthrough", description: "Rate an insight as highly valuable", category: "insight", rarity: "rare", icon: "💡" },
+      ];
+
+      // Check which badges are unlocked
+      const unlockedBadges = await db.getUserAchievements(ctx.user.id);
+      const unlocked = unlockedBadges.map(b => b.badgeType);
+
+      return badges.map(badge => ({
+        ...badge,
+        unlocked: unlocked.includes(badge.id as any),
+        unlockedAt: unlockedBadges.find(b => b.badgeType === badge.id)?.unlockedAt,
+      }));
+    }),
+
+    // Check and unlock badges based on user activity
+    checkAndUnlock: protectedProcedure.mutation(async ({ ctx }) => {
+      const userId = ctx.user.id;
+      const newlyUnlocked: string[] = [];
+
+      // Get current stats
+      const calibrationCount = await db.getCalibrationCount(userId);
+      const streakDays = await db.getCurrentStreak(userId);
+      const moduleCount = await db.getCompletedModuleCount(userId);
+      const connectionCount = await db.getConnectionCount(userId);
+      const insightCount = await db.getInsightCount(userId);
+
+      // Check calibration badges
+      if (calibrationCount >= 1) await db.unlockBadge(userId, "first_calibration") && newlyUnlocked.push("first_calibration");
+      if (calibrationCount >= 10) await db.unlockBadge(userId, "calibration_10") && newlyUnlocked.push("calibration_10");
+      if (calibrationCount >= 50) await db.unlockBadge(userId, "calibration_50") && newlyUnlocked.push("calibration_50");
+      if (calibrationCount >= 100) await db.unlockBadge(userId, "calibration_100") && newlyUnlocked.push("calibration_100");
+
+      // Check streak badges
+      if (streakDays >= 3) await db.unlockBadge(userId, "streak_3") && newlyUnlocked.push("streak_3");
+      if (streakDays >= 7) await db.unlockBadge(userId, "streak_7") && newlyUnlocked.push("streak_7");
+      if (streakDays >= 30) await db.unlockBadge(userId, "streak_30") && newlyUnlocked.push("streak_30");
+      if (streakDays >= 100) await db.unlockBadge(userId, "streak_100") && newlyUnlocked.push("streak_100");
+
+      // Check module badges
+      if (moduleCount >= 1) await db.unlockBadge(userId, "first_module") && newlyUnlocked.push("first_module");
+      if (moduleCount >= 5) await db.unlockBadge(userId, "modules_5") && newlyUnlocked.push("modules_5");
+      if (moduleCount >= 14) await db.unlockBadge(userId, "modules_all") && newlyUnlocked.push("modules_all");
+
+      // Check social badges
+      if (connectionCount >= 1) await db.unlockBadge(userId, "first_connection") && newlyUnlocked.push("first_connection");
+      if (connectionCount >= 5) await db.unlockBadge(userId, "inner_circle_5") && newlyUnlocked.push("inner_circle_5");
+
+      // Check insight badges
+      if (insightCount >= 1) await db.unlockBadge(userId, "first_insight") && newlyUnlocked.push("first_insight");
+      if (insightCount >= 10) await db.unlockBadge(userId, "insights_10") && newlyUnlocked.push("insights_10");
+
+      return { newlyUnlocked };
+    }),
   }),
 });
 

@@ -11,6 +11,7 @@ import { ArrowLeft, Bell, Clock, Save, Download, FileJson, FileSpreadsheet } fro
 import { toast } from "sonner";
 import { downloadCSV, downloadJSON, convertToCSV, formatCompleteDataForExport, formatSliderHistoryForExport } from "@/lib/export";
 import { requestNotificationPermission, areNotificationsEnabled, scheduleDailyReminder, sendLocalNotification } from "@/lib/pushNotifications";
+import { AxisManagement } from "@/components/AxisManagement";
 
 export default function Settings() {
   const { user, isLoading: authLoading } = useAuth();
@@ -182,6 +183,9 @@ export default function Settings() {
 
       {/* Main Content */}
       <main className="container py-8 max-w-2xl space-y-6">
+        {/* Axis Management */}
+        <AxisManagement />
+
         {/* Notification Settings */}
         <Card>
           <CardHeader>
