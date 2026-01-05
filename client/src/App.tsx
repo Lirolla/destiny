@@ -20,6 +20,7 @@ import WeeklyReview from "./pages/WeeklyReview";
 import PrayerJournal from "./pages/PrayerJournal";
 import BiasClearing from "./pages/BiasClearing";
 import ModuleDetail from "./pages/ModuleDetail";
+import Achievements from "./pages/Achievements";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 
 function Router() {
@@ -42,6 +43,7 @@ function Router() {
       <Route path={" /weekly-review"} component={WeeklyReview} />
       <Route path={"/prayer-journal"} component={PrayerJournal} />
       <Route path={"/bias-clearing"} component={BiasClearing} />
+      <Route path={"/achievements"} component={Achievements} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

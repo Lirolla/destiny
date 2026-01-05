@@ -289,3 +289,27 @@
 - [x] Add badge notification system
 - [x] Build user profile with badge showcase
 - [x] Test badge unlock triggers
+
+
+## Phase 25: Feature Integration
+
+### ShareProgress in Dashboard
+- [x] Add ShareProgress component import to Dashboard
+- [x] Calculate progress summary from user stats
+- [x] Add Share Progress button to Dashboard stats section
+- [x] Test sharing flow from Dashboard
+
+### Achievements Page
+- [x] Create Achievements page component
+- [x] Fetch user's unlocked badges from backend
+- [x] Display BadgeShowcase with all badges
+- [x] Add progress indicators for locked badges
+- [x] Add route to App.tsx
+- [ ] Link from Command Center and Settings
+
+### Grace Period UI in Daily Cycle
+- [x] Add grace period check to Daily Cycle page
+- [x] Display banner when yesterday's cycle incomplete
+- [x] Show countdown timer for grace period expiry
+- [x] Add "Complete Yesterday" button
+- [x] Test grace period flow

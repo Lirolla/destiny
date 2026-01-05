@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Gauge, Calendar, Brain, Users, TrendingUp, CheckCircle2, Flame, Settings } from "lucide-react";
 import { SliderHistoryChart } from "@/components/SliderHistoryChart";
+import { ShareProgress } from "@/components/ShareProgress";
+import type { ProgressSummary } from "@/lib/socialShare";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -125,6 +127,19 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="container py-8 space-y-8">
         {/* Stats Overview */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Your Progress</h2>
+          <ShareProgress
+            summary={{
+              weekStreak: streak,
+              totalCalibrations: latestStates?.length || 0,
+              modulesCompleted: 0, // TODO: fetch from modules API
+              cyclesCompleted: recentCycles?.filter(c => c.isComplete).length || 0,
+              topAxis: axes && axes.length > 0 ? `${axes[0].leftLabel} ↔ ${axes[0].rightLabel}` : undefined,
+              improvement: streak >= 7 ? `${streak}-day streak maintained!` : undefined,
+            }}
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">

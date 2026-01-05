@@ -1,0 +1,196 @@
+import { useAuth } from "@/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BadgeShowcase } from "@/components/BadgeShowcase";
+import { BADGE_DEFINITIONS, type BadgeType } from "@/lib/badges";
+import { Progress } from "@/components/ui/progress";
+import { Trophy, Lock } from "lucide-react";
+
+export default function Achievements() {
+  const { user, isLoading: authLoading } = useAuth();
+
+  // TODO: Implement achievements backend
+  // For now, use mock data
+  const achievements: Array<{ badgeType: string }> = [];
+  const achievementsLoading = false;
+
+  if (authLoading || achievementsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+          <p className="text-muted-foreground">Loading achievements...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Sign In Required</CardTitle>
+            <CardDescription>Please sign in to view your achievements</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  const unlockedBadges = (achievements || []).map((a: any) => a.badgeType as BadgeType);
+  const allBadges = Object.keys(BADGE_DEFINITIONS) as BadgeType[];
+  const unlockedCount = unlockedBadges.length;
+  const totalCount = allBadges.length;
+  const completionPercentage = Math.round((unlockedCount / totalCount) * 100);
+
+  // Group badges by category
+  const categories = {
+    calibration: allBadges.filter(b => BADGE_DEFINITIONS[b].category === "calibration"),
+    streak: allBadges.filter(b => BADGE_DEFINITIONS[b].category === "streak"),
+    learning: allBadges.filter(b => BADGE_DEFINITIONS[b].category === "learning"),
+    social: allBadges.filter(b => BADGE_DEFINITIONS[b].category === "social"),
+    insight: allBadges.filter(b => BADGE_DEFINITIONS[b].category === "insight"),
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-card">
+        <div className="container py-6">
+          <div className="flex items-center gap-4">
+            <Trophy className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold">Achievements</h1>
+              <p className="text-muted-foreground">
+                Track your progress and unlock badges as you master Destiny Hacking
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container py-8 space-y-8">
+        {/* Overall Progress */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Overall Progress</CardTitle>
+            <CardDescription>
+              {unlockedCount} of {totalCount} badges unlocked
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Progress value={completionPercentage} className="flex-1" />
+              <span className="text-2xl font-bold">{completionPercentage}%</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-primary">{unlockedCount}</div>
+                <div className="text-xs text-muted-foreground">Unlocked</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-muted-foreground">{totalCount - unlockedCount}</div>
+                <div className="text-xs text-muted-foreground">Locked</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-orange-500">
+                  {unlockedBadges.filter((b: BadgeType) => BADGE_DEFINITIONS[b].rarity === "common").length}
+                </div>
+                <div className="text-xs text-muted-foreground">Common</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-blue-500">
+                  {unlockedBadges.filter((b: BadgeType) => BADGE_DEFINITIONS[b].rarity === "rare").length}
+                </div>
+                <div className="text-xs text-muted-foreground">Rare</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-500">
+                  {unlockedBadges.filter((b: BadgeType) => BADGE_DEFINITIONS[b].rarity === "epic").length}
+                </div>
+                <div className="text-xs text-muted-foreground">Epic</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Calibration Badges */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold">📊 Calibration Badges</h2>
+            <span className="text-sm text-muted-foreground">
+              ({categories.calibration.filter(b => unlockedBadges.includes(b)).length}/{categories.calibration.length})
+            </span>
+          </div>
+          <BadgeShowcase
+            unlockedBadges={unlockedBadges}
+            allBadges={categories.calibration}
+            showLocked={true}
+          />
+        </section>
+
+        {/* Streak Badges */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold">🔥 Streak Badges</h2>
+            <span className="text-sm text-muted-foreground">
+              ({categories.streak.filter(b => unlockedBadges.includes(b)).length}/{categories.streak.length})
+            </span>
+          </div>
+          <BadgeShowcase
+            unlockedBadges={unlockedBadges}
+            allBadges={categories.streak}
+            showLocked={true}
+          />
+        </section>
+
+        {/* Learning Badges */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold">📚 Learning Badges</h2>
+            <span className="text-sm text-muted-foreground">
+              ({categories.learning.filter(b => unlockedBadges.includes(b)).length}/{categories.learning.length})
+            </span>
+          </div>
+          <BadgeShowcase
+            unlockedBadges={unlockedBadges}
+            allBadges={categories.learning}
+            showLocked={true}
+          />
+        </section>
+
+        {/* Social Badges */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold">👥 Social Badges</h2>
+            <span className="text-sm text-muted-foreground">
+              ({categories.social.filter(b => unlockedBadges.includes(b)).length}/{categories.social.length})
+            </span>
+          </div>
+          <BadgeShowcase
+            unlockedBadges={unlockedBadges}
+            allBadges={categories.social}
+            showLocked={true}
+          />
+        </section>
+
+        {/* Insight Badges */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold">💡 Insight Badges</h2>
+            <span className="text-sm text-muted-foreground">
+              ({categories.insight.filter(b => unlockedBadges.includes(b)).length}/{categories.insight.length})
+            </span>
+          </div>
+          <BadgeShowcase
+            unlockedBadges={unlockedBadges}
+            allBadges={categories.insight}
+            showLocked={true}
+          />
+        </section>
+      </main>
+    </div>
+  );
+}

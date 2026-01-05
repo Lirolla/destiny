@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Sun, Clock, Moon, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowLeft, Sun, Clock, Moon, CheckCircle2, Sparkles, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { calculateGracePeriod, formatGracePeriodExpiry, getYesterdayDate } from "@/lib/streakRecovery";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function DailyCycle() {
   const { user, isLoading: authLoading } = useAuth();
@@ -17,6 +19,19 @@ export default function DailyCycle() {
   const { data: todayCycle, isLoading: cycleLoading, refetch: refetchCycle } = trpc.dailyCycle.getToday.useQuery(undefined, {
     enabled: !!user,
   });
+
+  // Fetch yesterday's cycle for grace period
+  const yesterdayDate = getYesterdayDate();
+  const { data: recentCycles } = trpc.dailyCycle.getHistory.useQuery(
+    { days: 2 },
+    { enabled: !!user }
+  );
+  const yesterdayCycle = recentCycles?.find(c => c.cycleDate === yesterdayDate);
+
+  // Calculate grace period status
+  const gracePeriod = yesterdayCycle && !yesterdayCycle.isComplete
+    ? calculateGracePeriod(yesterdayDate)
+    : { available: false };
 
   // Fetch axes for morning calibration
   const { data: axes } = trpc.sliders.listAxes.useQuery(undefined, {
@@ -193,6 +208,29 @@ export default function DailyCycle() {
       {/* Main Content */}
       <main className="container py-8">
         <div className="max-w-3xl mx-auto space-y-6">
+          {/* Grace Period Banner */}
+          {gracePeriod.available && gracePeriod.expiresAt && (
+            <Alert className="border-orange-500 bg-orange-50 dark:bg-orange-950/20">
+              <AlertCircle className="h-4 w-4 text-orange-600" />
+              <AlertTitle className="text-orange-900 dark:text-orange-100">
+                ⏰ Grace Period Active
+              </AlertTitle>
+              <AlertDescription className="text-orange-800 dark:text-orange-200">
+                You can still complete yesterday's cycle ({yesterdayDate}) within the next{" "}
+                <strong>{formatGracePeriodExpiry(gracePeriod.expiresAt)}</strong> to maintain your streak.
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 border-orange-600 text-orange-900 hover:bg-orange-100 dark:text-orange-100 dark:hover:bg-orange-900/50"
+                  onClick={() => {
+                    toast.info("Yesterday's cycle feature coming soon!");
+                  }}
+                >
+                  Complete Yesterday
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
           {/* Phase Indicator */}
           <div className="flex items-center justify-center gap-4">
             <div className={`flex items-center gap-2 ${phase === "morning" ? "text-primary" : "text-muted-foreground"}`}>
