@@ -6,15 +6,32 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, Headphones, FileText, Download } from "lucide-react";
 import { Link } from "wouter";
+import { PDFViewer } from "@/components/PDFViewer";
 
 export function Book() {
+  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  
   const { data: progress } = trpc.pdf.getProgress.useQuery();
   const { data: chapters } = trpc.pdf.listChapters.useQuery();
 
   const totalChapters = chapters?.length || 0;
-  const currentPage = progress?.currentPage || 1;
+  const displayPage = progress?.currentPage || currentPage;
   const totalPages = progress?.totalPages || 500; // Default estimate
   const percentComplete = progress?.percentComplete ? parseFloat(progress.percentComplete as any) : 0;
+  
+  // Find current chapter based on page number
+  const currentChapter = chapters?.find((ch: any) => 
+    ch.pdfStartPage && ch.pdfEndPage && 
+    displayPage >= ch.pdfStartPage && displayPage <= ch.pdfEndPage
+  );
+  
+  const handleChapterClick = (chapter: any) => {
+    if (chapter.pdfStartPage) {
+      setCurrentPage(chapter.pdfStartPage);
+      setSelectedChapter(chapter.id);
+    }
+  };
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -91,31 +108,19 @@ export function Book() {
         </CardContent>
       </Card>
 
-      {/* PDF Viewer Placeholder */}
-      <Card>
-        <CardContent className="p-12 text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="p-4 rounded-full bg-muted">
-              <BookOpen className="h-12 w-12 text-muted-foreground" />
-            </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-2">PDF Viewer Coming Soon</h3>
-            <p className="text-muted-foreground mb-4 max-w-md mx-auto">
-              The embedded PDF viewer with highlighting, bookmarks, and note-taking features is currently in development.
-            </p>
-            <div className="flex gap-2 justify-center">
-              <Button variant="outline" className="gap-2">
-                <Download className="h-4 w-4" />
-                Download PDF
-              </Button>
-              <Button asChild>
-                <Link href="/modules">
-                  Start Interactive Modules
-                </Link>
-              </Button>
-            </div>
-          </div>
+      {/* PDF Viewer */}
+      <Card className="h-[800px]">
+        <CardContent className="p-0 h-full">
+          <PDFViewer
+            pdfUrl="/destiny-hacking-book.pdf"
+            initialPage={currentPage}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              // TODO: Save progress to database
+              console.log("Page changed to:", page);
+            }}
+            className="h-full"
+          />
         </CardContent>
       </Card>
 
@@ -125,7 +130,13 @@ export function Book() {
           <h2 className="text-2xl font-bold">Chapters</h2>
           <div className="grid gap-4">
             {chapters.map((chapter: any) => (
-              <Card key={chapter.id} className="cursor-pointer hover:shadow-md transition-all">
+              <Card 
+                key={chapter.id} 
+                className={`cursor-pointer hover:shadow-md transition-all ${
+                  currentChapter?.id === chapter.id ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => handleChapterClick(chapter)}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -138,6 +149,11 @@ export function Book() {
                             Pages {chapter.pdfStartPage}-{chapter.pdfEndPage}
                           </Badge>
                         )}
+                        {currentChapter?.id === chapter.id && (
+                          <Badge variant="default">
+                            Current
+                          </Badge>
+                        )}
                       </div>
                       <CardTitle className="text-xl">{chapter.title}</CardTitle>
                       {chapter.description && (
@@ -146,6 +162,12 @@ export function Book() {
                         </CardDescription>
                       )}
                     </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={`/audiobook?chapter=${chapter.chapterNumber}`}>
+                        <Headphones className="h-4 w-4 mr-2" />
+                        Listen
+                      </Link>
+                    </Button>
                   </div>
                 </CardHeader>
               </Card>

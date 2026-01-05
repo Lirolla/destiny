@@ -1338,6 +1338,43 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
       }),
   }),
 
+  // Unified Progress Tracking
+  progress: router({ getOverallProgress: protectedProcedure.query(async ({ ctx }) => {
+      const userId = ctx.user.id;
+      
+      // Get audiobook progress (count completed chapters)
+      const audiobookChapters = await db.listAudiobookChapters();
+      const audioProgress = { completed: 0, total: audiobookChapters.length };
+      
+      // Get PDF progress (estimate from page number)
+      const pdfProgress = await db.getPdfProgress(userId);
+      const pdfPercent = pdfProgress?.percentComplete ? parseFloat(pdfProgress.percentComplete as any) : 0;
+      
+      // Get module progress
+      const moduleProgress = await db.getModulesWithProgress(userId);
+      const completedModules = moduleProgress.filter((m: any) => m.status === 'completed').length;
+      
+      return {
+        overall: Math.round((pdfPercent + (completedModules / 14) * 100) / 2),
+        audiobook: {
+          completed: audioProgress.completed,
+          total: audioProgress.total,
+          percent: audioProgress.total > 0 ? Math.round((audioProgress.completed / audioProgress.total) * 100) : 0,
+        },
+        pdf: {
+          currentPage: pdfProgress?.currentPage || 1,
+          totalPages: pdfProgress?.totalPages || 500,
+          percent: Math.round(pdfPercent),
+        },
+        modules: {
+          completed: completedModules,
+          total: 14,
+          percent: Math.round((completedModules / 14) * 100),
+        },
+      };
+    }),
+  }),
+
   // Achievements
   achievements: router({
     // List all badges with unlock status

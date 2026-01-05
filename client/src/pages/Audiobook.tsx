@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { AudiobookPlayer } from "@/components/AudiobookPlayer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,20 @@ export function Audiobook() {
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
 
   const { data: chapters, isLoading } = trpc.audiobook.listChapters.useQuery();
+  
+  // Auto-select chapter from URL parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const chapterParam = urlParams.get('chapter');
+    
+    if (chapterParam && chapters && !selectedChapterId) {
+      const chapterNumber = parseInt(chapterParam);
+      const chapter = chapters.find((ch: any) => ch.chapterNumber === chapterNumber);
+      if (chapter && chapter.audioUrl) {
+        setSelectedChapterId(chapter.id);
+      }
+    }
+  }, [chapters, selectedChapterId]);
 
   const formatDuration = (seconds: number | null) => {
     if (!seconds) return "N/A";

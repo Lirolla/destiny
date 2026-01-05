@@ -360,6 +360,9 @@ export default function NewHome() {
           <Button asChild variant="ghost" size="sm">
             <Link href="/audiobook-generation">🎬 Generate Audio (Admin)</Link>
           </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/batch-audiobook-generation">⚡ Batch Generate (Admin)</Link>
+          </Button>
         </div>
       </div>
     </div>

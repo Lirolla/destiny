@@ -25,6 +25,7 @@ import { Audiobook } from "./pages/Audiobook";
 import { Book } from "./pages/Book";
 import { VoiceCloning } from "./pages/VoiceCloning";
 import { AudiobookGeneration } from "./pages/AudiobookGeneration";
+import { BatchAudiobookGeneration } from "./pages/BatchAudiobookGeneration";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 
 function Router() {
@@ -52,6 +53,7 @@ function Router() {
       <Route path={"/book"} component={Book} />
       <Route path={"/voice-cloning"} component={VoiceCloning} />
       <Route path={"/audiobook-generation"} component={AudiobookGeneration} />
+      <Route path={"/batch-audiobook-generation"} component={BatchAudiobookGeneration} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

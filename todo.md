@@ -614,3 +614,24 @@
 - [x] Test complete manuscript-to-audio workflow
 - [x] Write tests for audiobook generation (7 tests passing)
 - [x] Request and validate ElevenLabs API key with TTS permissions
+
+
+## Phase 35: Complete Multi-Format Experience (COMPLETED)
+- [x] Enhance voice recording interface with recording tips and guidelines
+- [x] Add recording quality validation (10-15 minute duration check)
+- [x] Create batch audiobook generation interface
+- [x] Add support for uploading multiple chapter manuscripts at once
+- [x] Implement progress tracking for batch generation
+- [x] Install react-pdf library for PDF viewing
+- [x] Create PDF viewer component with chapter navigation
+- [x] Implement synchronized chapter switching between audiobook and PDF
+- [x] Build unified progress tracking across all formats
+- [x] Add chapter-based navigation with URL parameters
+- [x] Add "Listen" buttons on PDF chapters to jump to audiobook
+- [x] Highlight current chapter in both views
+
+## Next Steps
+- [ ] Upload actual PDF file to public directory
+- [ ] Add PDF highlighting and bookmark features
+- [ ] Implement page-level progress saving to database
+- [ ] Add "Continue where you left off" quick action on home page

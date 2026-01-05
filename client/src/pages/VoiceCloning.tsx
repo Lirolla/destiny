@@ -202,8 +202,15 @@ export function VoiceCloning() {
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          <strong>Recording Guidelines:</strong> Record 10-15 minutes of clear audio reading from the book manuscript. 
-          Speak naturally in a quiet environment. Your voice will be used to generate the complete audiobook narration.
+          <strong>Recording Tips for Best Results:</strong>
+          <ul className="mt-2 space-y-1 text-sm list-disc list-inside">
+            <li>Use a quiet room with minimal background noise</li>
+            <li>Speak naturally as you would when reading the book aloud</li>
+            <li>Maintain consistent distance from microphone (6-12 inches)</li>
+            <li>Read diverse content: narrative, dialogue, different emotions</li>
+            <li>Aim for 10-15 minutes total (longer = better voice quality)</li>
+            <li>Speak clearly but naturally - avoid over-enunciating</li>
+          </ul>
         </AlertDescription>
       </Alert>
 
