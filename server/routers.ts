@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
@@ -1240,33 +1241,45 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
     }),
   }),
 
-  // Voice Cloning
+  // Voice Cloning (Admin/Author Only)
   voice: router({
-    // List user's voice models
+    // List all voice models (admin only)
     listModels: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+      }
       return db.getUserVoiceModels(ctx.user.id);
     }),
 
-    // Get ready voice model
-    getReadyModel: protectedProcedure.query(async ({ ctx }) => {
-      return db.getReadyVoiceModel(ctx.user.id);
+    // Get primary voice model for audiobook generation
+    getPrimaryModel: publicProcedure.query(async () => {
+      return db.getPrimaryVoiceModel();
     }),
 
-    // Create voice model (placeholder - actual implementation requires voice cloning API)
+    // Create voice model with ElevenLabs integration
     createModel: protectedProcedure
       .input(z.object({
         modelName: z.string().min(1).max(100),
         sampleAudioUrl: z.string().url(),
       }))
       .mutation(async ({ ctx, input }) => {
-        // TODO: Integrate with voice cloning API (ElevenLabs, etc.)
-        const modelId = `voice_${Date.now()}`;
+        // Import ElevenLabs helper
+        const { createVoiceClone } = await import("./_core/elevenlabs");
         
+        // Create voice clone via ElevenLabs API
+        const { voiceId } = await createVoiceClone({
+          name: input.modelName,
+          audioFileUrl: input.sampleAudioUrl,
+          description: `Voice clone for ${ctx.user.name || ctx.user.email}`,
+        });
+        
+        // Save to database and mark as primary
         return db.createVoiceModel({
           userId: ctx.user.id,
-          modelId,
+          modelId: voiceId,
           modelName: input.modelName,
           sampleAudioUrl: input.sampleAudioUrl,
+          isPrimary: true, // Author's voice is the primary voice
         });
       }),
   }),

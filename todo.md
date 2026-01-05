@@ -548,3 +548,56 @@
 - [ ] Create shareable highlights from PDF
 - [ ] Add audiobook playback statistics
 - [ ] Implement reading time estimates for PDF
+
+
+## Phase 31: Voice Cloning API Integration ✅
+- [x] Research voice cloning APIs (ElevenLabs selected)
+- [x] Create ElevenLabs API helper module
+- [x] Request and validate ELEVENLABS_API_KEY from user
+- [x] Implement voice cloning API integration
+- [x] Create audio file upload endpoint to S3
+- [x] Update voice cloning router to call ElevenLabs API
+- [x] Update VoiceCloning page to upload and create voice model
+- [x] Test ElevenLabs API connection (2 tests passing)
+- [x] Add formidable for file upload handling
+
+
+## Phase 32: Author Voice Audiobook Generation (IN PROGRESS)
+- [ ] Restrict VoiceCloning page to admin/owner only
+- [ ] Update voice_models table to mark author's voice as "primary"
+- [ ] Create admin audiobook generation interface
+- [ ] Prepare 14 chapter manuscripts as text files
+- [ ] Implement batch text-to-speech generation for all chapters
+- [ ] Upload generated audio files to S3
+- [ ] Calculate audio duration for each chapter
+- [ ] Seed book_chapters table with all 14 chapters
+- [ ] Test complete audiobook playback flow
+- [ ] Remove per-user voice cloning features (not needed)
+
+
+## Phase 32: Author Voice Audiobook Generation (COMPLETED)
+- [x] Restrict VoiceCloning page to admin/owner only
+- [x] Update voice_models table to mark author's voice as "primary"
+- [x] Add isPrimary field to database schema
+- [x] Update voice router to restrict to admin and mark voice as primary
+- [x] Add getPrimaryVoiceModel function to db.ts
+- [x] Fix createVoiceModel to return complete voice model object
+- [x] Add createAudiobookChapter function to db.ts
+- [x] Create AudiobookGeneration admin page
+- [x] Add audiobook generation route to App.tsx
+- [x] Add admin links to NewHome page
+- [x] Write comprehensive tests for author voice workflow (10 tests passing)
+- [x] Test ElevenLabs API integration
+- [x] Test voice model database operations
+- [x] Test audiobook chapter creation
+
+## Phase 33: Next Steps
+- [ ] Implement backend audiobook generation with ElevenLabs TTS
+- [ ] Prepare 14 chapter manuscripts as text files
+- [ ] Implement batch text-to-speech generation for all chapters
+- [ ] Upload generated audio files to S3
+- [ ] Calculate audio duration for each chapter
+- [ ] Seed book_chapters table with all 14 chapters
+- [ ] Test complete audiobook playback flow
+- [ ] Implement PDF viewer with highlighting and navigation
+- [ ] Build cross-format progress synchronization system

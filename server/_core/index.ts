@@ -35,6 +35,12 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  
+  // Voice sample upload endpoint
+  app.post("/api/upload-voice-sample", async (req, res) => {
+    const { uploadVoiceSample } = await import("./uploadVoiceSample");
+    return uploadVoiceSample(req, res);
+  });
   // tRPC API
   app.use(
     "/api/trpc",

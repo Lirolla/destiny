@@ -756,19 +756,21 @@ export type Bookmark = typeof bookmarks.$inferSelect;
 export type InsertBookmark = typeof bookmarks.$inferInsert;
 
 /**
- * Voice Models store user's cloned voice data for audiobook generation.
+ * Voice Models store the author's cloned voice for audiobook narration.
+ * Only admin/owner can create voice models. One primary voice is used for all audiobook chapters.
  */
 export const voiceModels = mysqlTable("voice_models", {
   id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
+  userId: int("userId").notNull(), // Should be owner/admin user ID
   
   // Voice model details
-  modelId: varchar("modelId", { length: 255 }).notNull(), // External API model ID
+  modelId: varchar("modelId", { length: 255 }).notNull(), // ElevenLabs voice ID
   modelName: varchar("modelName", { length: 255 }).notNull(),
   sampleAudioUrl: text("sampleAudioUrl"), // S3 URL to sample recording
   
   // Status
-  status: mysqlEnum("status", ["pending", "training", "ready", "failed"]).default("pending").notNull(),
+  status: mysqlEnum("status", ["pending", "training", "ready", "failed"]).default("ready").notNull(),
+  isPrimary: boolean("isPrimary").default(false).notNull(), // Mark the primary voice for audiobook
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

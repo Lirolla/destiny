@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 
 export function VoiceCloning() {
+  const { data: user, isLoading: userLoading } = trpc.auth.me.useQuery();
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -101,19 +102,84 @@ export function VoiceCloning() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const createModelMutation = trpc.voice.createModel.useMutation({
+    onSuccess: () => {
+      toast.success("Voice model created successfully!");
+      // Clear recording state
+      setAudioBlob(null);
+      setAudioUrl(null);
+      setVoiceName("");
+      setRecordingDuration(0);
+    },
+    onError: (error) => {
+      toast.error(`Failed to create voice model: ${error.message}`);
+    },
+  });
+
   const handleUpload = async () => {
     if (!audioBlob || !voiceName.trim()) {
       toast.error("Please record audio and provide a voice name");
       return;
     }
 
-    // TODO: Implement actual upload to S3 and voice cloning API integration
-    toast.info("Voice cloning upload feature coming soon");
+    try {
+      toast.info("Uploading audio sample...");
+
+      // Upload audio to S3 via server
+      const formData = new FormData();
+      formData.append("file", audioBlob, "voice_sample.webm");
+
+      const uploadResponse = await fetch("/api/upload-voice-sample", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload audio sample");
+      }
+
+      const { url } = await uploadResponse.json();
+
+      // Create voice model with ElevenLabs
+      toast.info("Creating voice clone...");
+      await createModelMutation.mutateAsync({
+        modelName: voiceName,
+        sampleAudioUrl: url,
+      });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload voice sample");
+    }
   };
 
   const minDuration = 600; // 10 minutes
   const maxDuration = 900; // 15 minutes
   const isValidDuration = recordingDuration >= minDuration && recordingDuration <= maxDuration;
+
+  // Only allow owner/admin to access this page
+  if (userLoading) {
+    return (
+      <div className="container mx-auto py-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || user.role !== "admin") {
+    return (
+      <div className="container mx-auto py-8">
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Access Restricted:</strong> This page is only accessible to the book author for voice cloning and audiobook generation.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-8">

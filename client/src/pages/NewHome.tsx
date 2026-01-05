@@ -354,6 +354,12 @@ export default function NewHome() {
           <Button asChild variant="ghost" size="sm">
             <Link href="/settings">⚙️ Settings</Link>
           </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/voice-cloning">🎙️ Voice Clone (Admin)</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/audiobook-generation">🎬 Generate Audio (Admin)</Link>
+          </Button>
         </div>
       </div>
     </div>

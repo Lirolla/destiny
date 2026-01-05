@@ -50,6 +50,13 @@
       "when": 1767648520193,
       "tag": "0006_past_eternity",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1767651468362,
+      "tag": "0007_tough_wallop",
+      "breakpoints": true
     }
   ]
 }

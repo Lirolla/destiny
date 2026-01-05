@@ -1295,6 +1295,34 @@ export async function getAudiobookChapter(chapterId: number) {
   return result[0] || null;
 }
 
+export async function createAudiobookChapter(data: {
+  chapterNumber: number;
+  title: string;
+  description?: string;
+  audioUrl: string;
+  duration: number;
+}) {
+  const result = await db.insert(bookChapters).values({
+    chapterNumber: data.chapterNumber,
+    title: data.title,
+    description: data.description || null,
+    audioUrl: data.audioUrl,
+    audioDuration: data.duration,
+    audioGenerated: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  
+  const insertedId = Number(result[0].insertId);
+  const created = await db
+    .select()
+    .from(bookChapters)
+    .where(eq(bookChapters.id, insertedId))
+    .limit(1);
+  
+  return created[0];
+}
+
 export async function listAudiobookChapters() {
   return db
     .select()
@@ -1493,18 +1521,27 @@ export async function createVoiceModel(data: {
   modelId: string;
   modelName: string;
   sampleAudioUrl?: string;
+  isPrimary?: boolean;
 }) {
   const result = await db.insert(voiceModels).values({
     userId: data.userId,
     modelId: data.modelId,
     modelName: data.modelName,
     sampleAudioUrl: data.sampleAudioUrl || null,
-    status: "pending" as const,
+    isPrimary: data.isPrimary || false,
+    status: "ready" as const,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
   
-  return result;
+  const insertedId = Number(result[0].insertId);
+  const created = await db
+    .select()
+    .from(voiceModels)
+    .where(eq(voiceModels.id, insertedId))
+    .limit(1);
+  
+  return created[0];
 }
 
 export async function getUserVoiceModels(userId: number) {
@@ -1521,6 +1558,19 @@ export async function getReadyVoiceModel(userId: number) {
     .from(voiceModels)
     .where(and(
       eq(voiceModels.userId, userId),
+      eq(voiceModels.status, "ready")
+    ))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+export async function getPrimaryVoiceModel() {
+  const result = await db
+    .select()
+    .from(voiceModels)
+    .where(and(
+      eq(voiceModels.isPrimary, true),
       eq(voiceModels.status, "ready")
     ))
     .limit(1);
