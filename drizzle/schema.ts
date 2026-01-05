@@ -173,6 +173,10 @@ export const dailyCycles = mysqlTable("daily_cycles", {
   // Completion tracking
   isComplete: boolean("isComplete").default(false).notNull(),
   
+  // Grace period for streak recovery
+  completedViaGracePeriod: boolean("completedViaGracePeriod").default(false).notNull(),
+  gracePeriodUsedAt: timestamp("gracePeriodUsedAt"),
+  
   // AI insights (generated after evening reflection)
   aiInsightId: int("aiInsightId").references(() => insights.id, { onDelete: "set null" }),
   
@@ -591,6 +595,52 @@ export const sliderAlignmentSessions = mysqlTable("slider_alignment_sessions", {
 
 export type SliderAlignmentSession = typeof sliderAlignmentSessions.$inferSelect;
 export type InsertSliderAlignmentSession = typeof sliderAlignmentSessions.$inferInsert;
+
+// ============================================================================
+// ACHIEVEMENT BADGES SYSTEM
+// ============================================================================
+
+/**
+ * Achievement Badges track user milestones and accomplishments.
+ * Unlocked badges are displayed on user profile and can trigger notifications.
+ */
+export const achievements = mysqlTable("achievements", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Badge details
+  badgeType: mysqlEnum("badgeType", [
+    "first_calibration",
+    "streak_7",
+    "streak_30",
+    "streak_100",
+    "first_module",
+    "modules_5",
+    "modules_all",
+    "calibrations_100",
+    "calibrations_500",
+    "calibrations_1000",
+    "first_cycle",
+    "cycles_30",
+    "cycles_100",
+    "first_insight",
+    "insights_50",
+    "first_connection",
+    "connections_10",
+    "first_challenge",
+    "challenges_5"
+  ]).notNull(),
+  
+  unlockedAt: timestamp("unlockedAt").defaultNow().notNull(),
+  notified: boolean("notified").default(false).notNull(),
+}, (table) => ({
+  userIdIdx: index("achievements_user_id_idx").on(table.userId),
+  badgeTypeIdx: index("achievements_badge_type_idx").on(table.badgeType),
+  uniqueUserBadge: index("achievements_unique_user_badge").on(table.userId, table.badgeType),
+}));
+
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = typeof achievements.$inferInsert;
 
 // ============================================================================
 // DRIZZLE RELATIONS (for easier querying)

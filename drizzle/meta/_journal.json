@@ -29,6 +29,20 @@
       "when": 1766480632453,
       "tag": "0003_fat_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1767614343193,
+      "tag": "0004_next_chat",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1767614434273,
+      "tag": "0005_flat_ted_forrester",
+      "breakpoints": true
     }
   ]
 }

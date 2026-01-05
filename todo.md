@@ -261,3 +261,31 @@
 - [x] Implement "Skip" and "Next" navigation
 - [x] Store onboarding completion status
 - [x] Test onboarding flow on fresh accounts
+
+
+## Phase 24: Engagement & Gamification Features
+
+### Social Sharing
+- [x] Create share image generator for progress summaries
+- [x] Build anonymized weekly summary data formatter
+- [x] Add social share buttons (Twitter, Facebook, LinkedIn)
+- [x] Implement Web Share API for mobile
+- [x] Create shareable link with preview card
+- [x] Test social media preview rendering
+
+### Streak Recovery
+- [x] Add grace period logic to daily cycle tracking
+- [x] Create "complete yesterday" UI option
+- [x] Update streak calculation to account for grace period
+- [x] Add timezone handling for missed cycles
+- [x] Display grace period status in UI
+- [x] Test streak recovery scenarios
+
+### Achievement Badges
+- [x] Design badge system database schema
+- [x] Create badge definitions (7-day streak, first module, etc.)
+- [x] Build badge unlock detection logic
+- [x] Create badge display UI component
+- [x] Add badge notification system
+- [x] Build user profile with badge showcase
+- [x] Test badge unlock triggers
