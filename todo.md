@@ -601,3 +601,16 @@
 - [ ] Test complete audiobook playback flow
 - [ ] Implement PDF viewer with highlighting and navigation
 - [ ] Build cross-format progress synchronization system
+
+
+## Phase 34: Backend Audiobook Generation Implementation (COMPLETED)
+- [x] Create generateChapter tRPC procedure in audiobook router
+- [x] Implement text-to-speech generation with ElevenLabs generateSpeech
+- [x] Add audio duration calculation helper function
+- [x] Upload generated MP3 to S3 with unique key
+- [x] Save chapter with audio URL to database
+- [x] Connect frontend AudiobookGeneration page to backend mutation
+- [x] Add loading states and progress feedback
+- [x] Test complete manuscript-to-audio workflow
+- [x] Write tests for audiobook generation (7 tests passing)
+- [x] Request and validate ElevenLabs API key with TTS permissions

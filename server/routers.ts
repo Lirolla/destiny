@@ -1136,9 +1136,63 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
       }),
 
     // List all chapters
-    listChapters: protectedProcedure.query(async ({ ctx }) => {
+    listChapters: publicProcedure.query(async () => {
       return db.listAudiobookChapters();
     }),
+
+    // Generate chapter audio (admin only)
+    generateChapter: protectedProcedure
+      .input(z.object({
+        chapterNumber: z.number().min(1).max(14),
+        title: z.string().min(1),
+        manuscriptText: z.string().min(100),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+        }
+
+        // Get primary voice model
+        const primaryVoice = await db.getPrimaryVoiceModel();
+        if (!primaryVoice) {
+          throw new TRPCError({ 
+            code: "PRECONDITION_FAILED", 
+            message: "No primary voice model found. Please create your voice clone first." 
+          });
+        }
+
+        // Import ElevenLabs and S3 helpers
+        const { generateSpeech } = await import("./_core/elevenlabs");
+        const { storagePut } = await import("./storage");
+
+        // Generate speech audio from manuscript text
+        const audioBuffer = await generateSpeech({
+          voiceId: primaryVoice.modelId,
+          text: input.manuscriptText,
+          seed: input.chapterNumber, // Use chapter number as seed for consistency
+        });
+
+        // Upload to S3
+        const timestamp = Date.now();
+        const audioKey = `audiobooks/destiny-hacking/chapter-${input.chapterNumber}-${timestamp}.mp3`;
+        const { url: audioUrl } = await storagePut(audioKey, audioBuffer, "audio/mpeg");
+
+        // Calculate audio duration (estimate: ~150 words per minute, ~5 chars per word)
+        const estimatedWords = input.manuscriptText.length / 5;
+        const estimatedDuration = Math.ceil((estimatedWords / 150) * 60); // in seconds
+
+        // Save chapter to database
+        const chapter = await db.createAudiobookChapter({
+          chapterNumber: input.chapterNumber,
+          title: input.title,
+          description: input.description,
+          audioUrl,
+          duration: estimatedDuration,
+        });
+
+        return chapter;
+      }),
 
     // Get user progress for a chapter
     getProgress: protectedProcedure

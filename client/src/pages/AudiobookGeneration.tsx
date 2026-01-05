@@ -28,6 +28,22 @@ export function AudiobookGeneration() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
 
+  const generateChapterMutation = trpc.audiobook.generateChapter.useMutation({
+    onSuccess: () => {
+      toast.success("Chapter audio generated successfully!");
+      setManuscriptText("");
+      setChapterTitle("");
+      setChapterNumber(prev => prev + 1);
+      setIsGenerating(false);
+      setGenerationProgress(0);
+    },
+    onError: (error) => {
+      toast.error(`Failed to generate audio: ${error.message}`);
+      setIsGenerating(false);
+      setGenerationProgress(0);
+    },
+  });
+
   // Only allow admin to access this page
   if (userLoading) {
     return (
@@ -70,34 +86,21 @@ export function AudiobookGeneration() {
     try {
       // Simulate progress updates
       const progressInterval = setInterval(() => {
-        setGenerationProgress(prev => Math.min(prev + 10, 90));
-      }, 2000);
+        setGenerationProgress(prev => Math.min(prev + 5, 90));
+      }, 3000);
 
-      // TODO: Call backend to generate audio
-      // This will:
-      // 1. Split text into manageable chunks if needed
-      // 2. Call ElevenLabs TTS API with primary voice
-      // 3. Upload generated audio to S3
-      // 4. Calculate audio duration
-      // 5. Save chapter to database
-
-      toast.info("Audiobook generation feature coming soon!");
+      // Call backend to generate audio
+      await generateChapterMutation.mutateAsync({
+        chapterNumber,
+        title: chapterTitle,
+        manuscriptText,
+      });
       
       clearInterval(progressInterval);
       setGenerationProgress(100);
-      
-      setTimeout(() => {
-        setIsGenerating(false);
-        setGenerationProgress(0);
-        setManuscriptText("");
-        setChapterTitle("");
-        setChapterNumber(prev => prev + 1);
-      }, 1000);
     } catch (error) {
       console.error("Generation error:", error);
-      toast.error("Failed to generate audiobook chapter");
-      setIsGenerating(false);
-      setGenerationProgress(0);
+      // Error handling is done in mutation onError
     }
   };
 
