@@ -4,7 +4,8 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { ChevronLeft, ChevronRight, Target, Sun, Sunset, Moon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Target, Sun, Sunset, Moon, BookOpen, Headphones, FileText, TrendingUp } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { Onboarding } from "@/components/Onboarding";
 import { InitialCalibration } from "@/components/InitialCalibration";
 
@@ -26,6 +27,7 @@ export default function NewHome() {
   const { data: axes } = trpc.sliders.listAxes.useQuery();
   const { data: latestStates } = trpc.sliders.getLatestStates.useQuery();
   const { data: todayCycle } = trpc.dailyCycle.getToday.useQuery();
+  const { data: overallProgress } = trpc.progress.getOverallProgress.useQuery();
   
   const [currentSliderIndex, setCurrentSliderIndex] = useState(0);
   const [sliderValues, setSliderValues] = useState<Record<number, number>>({});
@@ -261,6 +263,93 @@ export default function NewHome() {
             </div>
           )}
         </div>
+
+        {/* Continue Where You Left Off */}
+        {overallProgress && overallProgress.overall > 0 && (
+          <Card className="p-6 mb-8 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <TrendingUp className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">Continue Where You Left Off</h3>
+                    <p className="text-sm text-muted-foreground">Overall Progress: {overallProgress.overall}%</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-primary">{overallProgress.overall}%</div>
+                  <div className="text-xs text-muted-foreground">Complete</div>
+                </div>
+              </div>
+
+              <Progress value={overallProgress.overall} className="h-2" />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                {/* Audiobook Progress */}
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-auto py-4 flex flex-col items-start gap-2 hover:bg-primary/5 hover:border-primary/50 transition-all"
+                >
+                  <Link href="/audiobook">
+                    <div className="flex items-center gap-2 w-full">
+                      <Headphones className="w-4 h-4 text-primary" />
+                      <span className="font-semibold text-sm">Audiobook</span>
+                    </div>
+                    <div className="w-full">
+                      <Progress value={overallProgress.audiobook.percent} className="h-1 mb-1" />
+                      <span className="text-xs text-muted-foreground">
+                        {overallProgress.audiobook.completed}/{overallProgress.audiobook.total} chapters
+                      </span>
+                    </div>
+                  </Link>
+                </Button>
+
+                {/* PDF Progress */}
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-auto py-4 flex flex-col items-start gap-2 hover:bg-primary/5 hover:border-primary/50 transition-all"
+                >
+                  <Link href="/book">
+                    <div className="flex items-center gap-2 w-full">
+                      <BookOpen className="w-4 h-4 text-primary" />
+                      <span className="font-semibold text-sm">Read PDF</span>
+                    </div>
+                    <div className="w-full">
+                      <Progress value={overallProgress.pdf.percent} className="h-1 mb-1" />
+                      <span className="text-xs text-muted-foreground">
+                        Page {overallProgress.pdf.currentPage}/{overallProgress.pdf.totalPages}
+                      </span>
+                    </div>
+                  </Link>
+                </Button>
+
+                {/* Modules Progress */}
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-auto py-4 flex flex-col items-start gap-2 hover:bg-primary/5 hover:border-primary/50 transition-all"
+                >
+                  <Link href="/modules">
+                    <div className="flex items-center gap-2 w-full">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <span className="font-semibold text-sm">Practice</span>
+                    </div>
+                    <div className="w-full">
+                      <Progress value={overallProgress.modules.percent} className="h-1 mb-1" />
+                      <span className="text-xs text-muted-foreground">
+                        {overallProgress.modules.completed}/{overallProgress.modules.total} modules
+                      </span>
+                    </div>
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Today's Intention */}
         <Card className="p-6 mb-8 bg-card/50">

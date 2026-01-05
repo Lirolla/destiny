@@ -635,3 +635,17 @@
 - [ ] Add PDF highlighting and bookmark features
 - [ ] Implement page-level progress saving to database
 - [ ] Add "Continue where you left off" quick action on home page
+
+
+## Phase 36: "Continue Where You Left Off" Feature (COMPLETED)
+- [x] Add overall progress card to home page
+- [x] Fetch unified progress data from backend (trpc.progress.getOverallProgress)
+- [x] Display overall completion percentage with visual indicator
+- [x] Add quick resume links for audiobook (jump to last chapter)
+- [x] Add quick resume links for PDF (jump to last page)
+- [x] Add quick resume links for modules (jump to current module)
+- [x] Show individual progress for each format (audiobook, PDF, modules)
+- [x] Add visual progress bars for each format
+- [x] Style card with gradient background and primary color accents
+- [x] Add hover effects on format cards
+- [x] Only show card when progress > 0%
