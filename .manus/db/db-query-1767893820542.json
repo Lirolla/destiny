@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total, MIN(chapterNumber) as min_ch, MAX(chapterNumber) as max_ch FROM book_chapters",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute SELECT COUNT(*) as total, MIN(chapterNumber) as min_ch, MAX(chapterNumber) as max_ch FROM book_chapters",
+  "rows": [
+    {
+      "total": "15",
+      "min_ch": "1",
+      "max_ch": "14"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tmin_ch\tmax_ch\n15\t1\t14\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

@@ -1,0 +1,85 @@
+{
+  "query": "SELECT chapterNumber, pdfStartPage, pdfEndPage FROM book_chapters ORDER BY chapterNumber",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute SELECT chapterNumber, pdfStartPage, pdfEndPage FROM book_chapters ORDER BY chapterNumber",
+  "rows": [
+    {
+      "chapterNumber": "1",
+      "pdfStartPage": "NULL",
+      "pdfEndPage": "NULL"
+    },
+    {
+      "chapterNumber": "1",
+      "pdfStartPage": "NULL",
+      "pdfEndPage": "NULL"
+    },
+    {
+      "chapterNumber": "2",
+      "pdfStartPage": "5",
+      "pdfEndPage": "11"
+    },
+    {
+      "chapterNumber": "3",
+      "pdfStartPage": "12",
+      "pdfEndPage": "11"
+    },
+    {
+      "chapterNumber": "4",
+      "pdfStartPage": "12",
+      "pdfEndPage": "15"
+    },
+    {
+      "chapterNumber": "5",
+      "pdfStartPage": "16",
+      "pdfEndPage": "18"
+    },
+    {
+      "chapterNumber": "6",
+      "pdfStartPage": "19",
+      "pdfEndPage": "22"
+    },
+    {
+      "chapterNumber": "7",
+      "pdfStartPage": "23",
+      "pdfEndPage": "25"
+    },
+    {
+      "chapterNumber": "8",
+      "pdfStartPage": "26",
+      "pdfEndPage": "28"
+    },
+    {
+      "chapterNumber": "9",
+      "pdfStartPage": "29",
+      "pdfEndPage": "32"
+    },
+    {
+      "chapterNumber": "10",
+      "pdfStartPage": "33",
+      "pdfEndPage": "35"
+    },
+    {
+      "chapterNumber": "11",
+      "pdfStartPage": "36",
+      "pdfEndPage": "38"
+    },
+    {
+      "chapterNumber": "12",
+      "pdfStartPage": "39",
+      "pdfEndPage": "41"
+    },
+    {
+      "chapterNumber": "13",
+      "pdfStartPage": "42",
+      "pdfEndPage": "44"
+    },
+    {
+      "chapterNumber": "14",
+      "pdfStartPage": "45",
+      "pdfEndPage": "87"
+    }
+  ],
+  "messages": [],
+  "stdout": "chapterNumber\tpdfStartPage\tpdfEndPage\n1\tNULL\tNULL\n1\tNULL\tNULL\n2\t5\t11\n3\t12\t11\n4\t12\t15\n5\t16\t18\n6\t19\t22\n7\t23\t25\n8\t26\t28\n9\t29\t32\n10\t33\t35\n11\t36\t38\n12\t39\t41\n13\t42\t44\n14\t45\t87\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

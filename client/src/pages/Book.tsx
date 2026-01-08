@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,22 +10,49 @@ import { Link } from "wouter";
 import { PDFViewer } from "@/components/PDFViewer";
 
 export function Book() {
+  const [location] = useLocation();
+  const searchParams = new URLSearchParams(location.split('?')[1] || '');
+  const chapterParam = searchParams.get('chapter');
+  
   const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const { data: progress } = trpc.pdf.getProgress.useQuery();
   const { data: chapters } = trpc.pdf.listChapters.useQuery();
+  const updateProgressMutation = trpc.pdf.updateProgress.useMutation();
 
   const totalChapters = chapters?.length || 0;
+  const totalPages = 87; // Actual PDF page count
   const displayPage = progress?.currentPage || currentPage;
-  const totalPages = progress?.totalPages || 500; // Default estimate
-  const percentComplete = progress?.percentComplete ? parseFloat(progress.percentComplete as any) : 0;
+  const percentComplete = (displayPage / totalPages) * 100;
+  
+  // Initialize page from progress or chapter parameter
+  useEffect(() => {
+    if (progress?.currentPage && currentPage === 1) {
+      setCurrentPage(progress.currentPage);
+    }
+  }, [progress]);
+  
+  // Jump to chapter if specified in URL
+  useEffect(() => {
+    if (chapterParam && chapters) {
+      const chapterNum = parseInt(chapterParam);
+      const chapter = chapters.find((ch: any) => ch.chapterNumber === chapterNum);
+      if (chapter?.pdfStartPage) {
+        setCurrentPage(chapter.pdfStartPage);
+        setSelectedChapter(chapter.id);
+      }
+    }
+  }, [chapterParam, chapters]);
   
   // Find current chapter based on page number
   const currentChapter = chapters?.find((ch: any) => 
     ch.pdfStartPage && ch.pdfEndPage && 
     displayPage >= ch.pdfStartPage && displayPage <= ch.pdfEndPage
   );
+  
+  const currentChapterNumber = currentChapter?.chapterNumber;
   
   const handleChapterClick = (chapter: any) => {
     if (chapter.pdfStartPage) {
@@ -44,7 +72,7 @@ export function Book() {
           <div>
             <h1 className="text-3xl font-bold">Destiny Hacking Book</h1>
             <p className="text-muted-foreground">
-              Read the complete 500-page digital book with highlighting and notes
+              Read the complete 87-page digital book with chapter navigation
             </p>
           </div>
         </div>
@@ -56,13 +84,13 @@ export function Book() {
             Read
           </Button>
           <Button variant="outline" asChild className="gap-2">
-            <Link href="/audiobook">
+            <Link href={currentChapterNumber ? `/audiobook?chapter=${currentChapterNumber}` : "/audiobook"}>
               <Headphones className="h-4 w-4" />
               Listen
             </Link>
           </Button>
           <Button variant="outline" asChild className="gap-2">
-            <Link href="/modules">
+            <Link href={currentChapterNumber ? `/modules/${currentChapterNumber}` : "/modules"}>
               <FileText className="h-4 w-4" />
               Practice
             </Link>
@@ -116,8 +144,18 @@ export function Book() {
             initialPage={currentPage}
             onPageChange={(page) => {
               setCurrentPage(page);
-              // TODO: Save progress to database
-              console.log("Page changed to:", page);
+              
+              // Debounced auto-save (save after 2 seconds of no page changes)
+              if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current);
+              }
+              
+              saveTimeoutRef.current = setTimeout(() => {
+                updateProgressMutation.mutate({
+                  currentPage: page,
+                  totalPages: totalPages,
+                });
+              }, 2000);
             }}
             className="h-full"
           />

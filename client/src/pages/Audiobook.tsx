@@ -12,6 +12,10 @@ export function Audiobook() {
 
   const { data: chapters, isLoading } = trpc.audiobook.listChapters.useQuery();
   
+  // Get current chapter number for format switching
+  const currentChapter = chapters?.find((ch: any) => ch.id === selectedChapterId);
+  const currentChapterNumber = currentChapter?.chapterNumber;
+  
   // Auto-select chapter from URL parameter
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -71,13 +75,13 @@ export function Audiobook() {
             Listen
           </Button>
           <Button variant="outline" asChild className="gap-2">
-            <Link href="/book">
+            <Link href={currentChapterNumber ? `/book?chapter=${currentChapterNumber}` : "/book"}>
               <BookOpen className="h-4 w-4" />
               Read PDF
             </Link>
           </Button>
           <Button variant="outline" asChild className="gap-2">
-            <Link href="/modules">
+            <Link href={currentChapterNumber ? `/modules/${currentChapterNumber}` : "/modules"}>
               <FileText className="h-4 w-4" />
               Practice
             </Link>
