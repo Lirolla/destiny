@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, chapterNumber, title, audioUrl FROM book_chapters WHERE chapterNumber = 2;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute SELECT id, chapterNumber, title, audioUrl FROM book_chapters WHERE chapterNumber = 2;",
+  "rows": [
+    {
+      "id": "30002",
+      "chapterNumber": "2",
+      "title": "The Unbreakable Law of Your Reality",
+      "audioUrl": "https://d2xsxph8kpxj0f.cloudfront.net/111904132/fsRnWghWhaoD2r3KXXoRti/audiobooks/destiny-hacking-fixed/chapter-2-1767878794708.mp3"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tchapterNumber\ttitle\taudioUrl\n30002\t2\tThe Unbreakable Law of Your Reality\thttps://d2xsxph8kpxj0f.cloudfront.net/111904132/fsRnWghWhaoD2r3KXXoRti/audiobooks/destiny-hacking-fixed/chapter-2-1767878794708.mp3\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

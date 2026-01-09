@@ -838,3 +838,13 @@
 - [ ] Add badge display to user profile
 - [ ] Show recent badges on progress dashboard
 - [ ] Test badge unlock triggers
+
+
+## Phase 33: Bug Fixes
+
+### Chapter 2 Audio Issue
+- [x] Investigate Chapter 2 audio file for repeating words
+- [x] Regenerate Chapter 2 audio with correct text (OpenAI TTS Onyx HD)
+- [x] Upload new audio file to storage (S3)
+- [x] Update database with new audio URL
+- [ ] Test audio playback to confirm fix
