@@ -628,7 +628,25 @@ export const achievements = mysqlTable("achievements", {
     "first_connection",
     "connections_10",
     "first_challenge",
-    "challenges_5"
+    "challenges_5",
+    // Flashcard badges
+    "first_flashcard",
+    "flashcards_10",
+    "flashcards_50",
+    "flashcard_streak_7",
+    "flashcard_streak_30",
+    "flashcard_master", // 100+ cards reviewed
+    // Reading badges
+    "first_chapter",
+    "chapters_5",
+    "chapters_10",
+    "book_complete",
+    "reading_streak_7",
+    "reading_streak_30",
+    // Highlight badges
+    "first_highlight",
+    "highlights_25",
+    "highlights_100"
   ]).notNull(),
   
   unlockedAt: timestamp("unlockedAt").defaultNow().notNull(),
@@ -901,6 +919,81 @@ export const pdfAnnotations = mysqlTable("pdf_annotations", {
 
 export type PdfAnnotation = typeof pdfAnnotations.$inferSelect;
 export type InsertPdfAnnotation = typeof pdfAnnotations.$inferInsert;
+
+// ============================================================================
+// SOCIAL SHARING
+// ============================================================================
+
+export const sharedHighlights = mysqlTable("shared_highlights", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  highlightId: int("highlightId").notNull(),
+  
+  // Content (denormalized for performance)
+  selectedText: text("selectedText").notNull(),
+  note: text("note"),
+  color: varchar("color", { length: 20 }),
+  pageNumber: int("pageNumber"),
+  chapterTitle: varchar("chapterTitle", { length: 255 }),
+  
+  // Privacy
+  isPublic: boolean("isPublic").default(true).notNull(),
+  
+  // Engagement metrics
+  likesCount: int("likesCount").default(0).notNull(),
+  commentsCount: int("commentsCount").default(0).notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("shared_highlights_user_id_idx").on(table.userId),
+  highlightIdIdx: index("shared_highlights_highlight_id_idx").on(table.highlightId),
+  isPublicIdx: index("shared_highlights_is_public_idx").on(table.isPublic),
+  createdAtIdx: index("shared_highlights_created_at_idx").on(table.createdAt),
+}));
+
+export type SharedHighlight = typeof sharedHighlights.$inferSelect;
+export type InsertSharedHighlight = typeof sharedHighlights.$inferInsert;
+
+export const highlightReactions = mysqlTable("highlight_reactions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  sharedHighlightId: int("sharedHighlightId").notNull(),
+  
+  // Reaction type: like, bookmark, etc.
+  reactionType: varchar("reactionType", { length: 20 }).default("like").notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("highlight_reactions_user_id_idx").on(table.userId),
+  sharedHighlightIdIdx: index("highlight_reactions_shared_highlight_id_idx").on(table.sharedHighlightId),
+  uniqueReaction: index("highlight_reactions_unique").on(table.userId, table.sharedHighlightId, table.reactionType),
+}));
+
+export type HighlightReaction = typeof highlightReactions.$inferSelect;
+export type InsertHighlightReaction = typeof highlightReactions.$inferInsert;
+
+export const highlightComments = mysqlTable("highlight_comments", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  sharedHighlightId: int("sharedHighlightId").notNull(),
+  
+  // Comment content
+  content: text("content").notNull(),
+  
+  // Threading support
+  parentCommentId: int("parentCommentId"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("highlight_comments_user_id_idx").on(table.userId),
+  sharedHighlightIdIdx: index("highlight_comments_shared_highlight_id_idx").on(table.sharedHighlightId),
+  parentCommentIdIdx: index("highlight_comments_parent_comment_id_idx").on(table.parentCommentId),
+}));
+
+export type HighlightComment = typeof highlightComments.$inferSelect;
+export type InsertHighlightComment = typeof highlightComments.$inferInsert;
 
 // ============================================================================
 // DRIZZLE RELATIONS (for easier querying)

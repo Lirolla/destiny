@@ -9,7 +9,8 @@ import {
   MessageSquare, 
   Trash2, 
   Plus,
-  X
+  X,
+  Brain
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -169,21 +170,40 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
                         </p>
                       </div>
 
-                      {/* Color Badge */}
+                      {/* Actions */}
                       <div className="flex items-center justify-between">
                         <Badge variant="outline" className="text-xs">
                           {colorClasses.label}
                         </Badge>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => deleteHighlightMutation.mutate({ 
-                            highlightId: highlight.id 
-                          })}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => {
+                              // Create flashcard from highlight
+                              const front = highlight.selectedText;
+                              const back = highlightAnnotations?.[0]?.note || "(Add your answer)";
+                              
+                              // Navigate to flashcards with pre-filled data
+                              window.location.href = `/flashcards?create=true&front=${encodeURIComponent(front)}&back=${encodeURIComponent(back)}&page=${pageNumber}`;
+                            }}
+                            title="Create Flashcard"
+                          >
+                            <Brain className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => deleteHighlightMutation.mutate({ 
+                              highlightId: highlight.id 
+                            })}
+                            title="Delete Highlight"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
 
                       {/* Annotations */}

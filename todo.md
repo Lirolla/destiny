@@ -803,3 +803,38 @@
 - [ ] Add privacy controls (public/private highlights)
 - [ ] Create notification system for likes/comments
 - [ ] Test social features and privacy controls
+
+
+## Phase 32: Final Engagement Features
+
+### Flashcard Creation from Highlights
+- [x] Add "Create Flashcard" button to HighlightsSidebar component
+- [x] Pre-fill flashcard front with highlighted text
+- [x] Pre-fill flashcard back with annotation note
+- [x] Add deck selection input in create dialog
+- [x] Show success toast after creation
+- [x] Test flashcard creation workflow
+
+### Social Sharing & Community Feed
+- [x] Add shared_highlights table to database schema
+- [x] Add highlight_reactions table (likes/bookmarks)
+- [x] Add highlight_comments table with threading support
+- [ ] Create tRPC procedures for sharing highlights
+- [ ] Create tRPC procedures for reactions and comments
+- [ ] Build Community Feed page component
+- [ ] Add share button to highlights sidebar
+- [ ] Implement privacy toggle (public/private)
+- [ ] Add like and comment UI components
+- [ ] Show user profiles with shared content
+- [ ] Test social features and privacy controls
+
+### Achievement Badges System
+- [x] Extend achievements table with new badge types (flashcard, reading, highlight badges)
+- [ ] Add badge unlock logic for flashcard milestones
+- [ ] Add badge unlock logic for reading streaks
+- [ ] Add badge unlock logic for chapter completion
+- [ ] Create badge notification system
+- [ ] Update achievements page to show new badges
+- [ ] Add badge display to user profile
+- [ ] Show recent badges on progress dashboard
+- [ ] Test badge unlock triggers

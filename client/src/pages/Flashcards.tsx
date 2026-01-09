@@ -1,19 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Brain, RotateCcw, CheckCircle2, XCircle, Minus, Plus } from "lucide-react";
+import { Brain, RotateCcw, CheckCircle2, XCircle, Minus, Plus, PlusCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 export function Flashcards() {
+  const [location] = useLocation();
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newCardFront, setNewCardFront] = useState("");
+  const [newCardBack, setNewCardBack] = useState("");
+  const [newCardDeck, setNewCardDeck] = useState("Destiny Hacking");
   
   const { data: dueCards, refetch: refetchDue } = trpc.flashcards.getDue.useQuery({ limit: 20 });
   const { data: stats, refetch: refetchStats } = trpc.flashcards.getStats.useQuery();
   const reviewMutation = trpc.flashcards.review.useMutation();
+  
+  const createMutation = trpc.flashcards.create.useMutation({
+    onSuccess: () => {
+      toast.success("Flashcard created!");
+      setShowCreateDialog(false);
+      setNewCardFront("");
+      setNewCardBack("");
+      refetchDue();
+      refetchStats();
+    },
+    onError: (error) => {
+      toast.error(`Failed to create flashcard: ${error.message}`);
+    },
+  });
+  
+  // Handle URL parameters for creating flashcard from highlight
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("create") === "true") {
+      setNewCardFront(params.get("front") || "");
+      setNewCardBack(params.get("back") || "");
+      setShowCreateDialog(true);
+      // Clean URL
+      window.history.replaceState({}, "", "/flashcards");
+    }
+  }, [location]);
   
   const currentCard = dueCards?.[currentIndex];
   const totalDue = dueCards?.length || 0;
@@ -61,18 +102,85 @@ export function Flashcards() {
     <div className="container mx-auto py-8 space-y-8">
       {/* Header */}
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-primary/10">
-            <Brain className="h-8 w-8 text-primary" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-lg bg-primary/10">
+              <Brain className="h-8 w-8 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">Flashcard Review</h1>
+              <p className="text-muted-foreground">
+                Spaced repetition learning from your highlights
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Flashcard Review</h1>
-            <p className="text-muted-foreground">
-              Spaced repetition learning from your highlights
-            </p>
-          </div>
+          <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
+            <PlusCircle className="h-5 w-5" />
+            Create Flashcard
+          </Button>
         </div>
       </div>
+      
+      {/* Create Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Flashcard</DialogTitle>
+            <DialogDescription>
+              Add a new flashcard to your collection
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Front (Question)</label>
+              <Textarea
+                value={newCardFront}
+                onChange={(e) => setNewCardFront(e.target.value)}
+                placeholder="What is the question?"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Back (Answer)</label>
+              <Textarea
+                value={newCardBack}
+                onChange={(e) => setNewCardBack(e.target.value)}
+                placeholder="What is the answer?"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Deck Name (Optional)</label>
+              <Input
+                value={newCardDeck}
+                onChange={(e) => setNewCardDeck(e.target.value)}
+                placeholder="Destiny Hacking"
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!newCardFront.trim() || !newCardBack.trim()) {
+                    toast.error("Please fill in both front and back");
+                    return;
+                  }
+                  createMutation.mutate({
+                    front: newCardFront,
+                    back: newCardBack,
+                    deckName: newCardDeck || undefined,
+                  });
+                }}
+                disabled={createMutation.isPending}
+              >
+                {createMutation.isPending ? "Creating..." : "Create Flashcard"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -71,6 +71,20 @@
       "when": 1767906763650,
       "tag": "0009_flawless_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1767909628607,
+      "tag": "0010_spicy_tana_nile",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1767944540901,
+      "tag": "0011_last_betty_ross",
+      "breakpoints": true
     }
   ]
 }
