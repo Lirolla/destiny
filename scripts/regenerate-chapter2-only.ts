@@ -1,20 +1,8 @@
 /**
- * Regenerate Audiobook with Chatterbox TTS Voice Cloning
+ * Regenerate Chapter 2 Only (Test)
  * 
- * This script regenerates all audiobook chapters using Chatterbox TTS
- * with your cloned voice to eliminate repeating word issues.
- * 
- * Usage:
- *   1. Place your voice sample audio file (10+ seconds) at: /tmp/voice_sample.wav
- *   2. Run: pnpm tsx scripts/regenerate-audiobook-chatterbox.ts
- *   3. Wait for all chapters to be generated (this will take time!)
- * 
- * The script will:
- * - Load your voice sample for cloning
- * - Process each chapter text file
- * - Generate audio using Chatterbox TTS
- * - Upload to S3
- * - Update database with new URLs
+ * This script regenerates only Chapter 2 using Chatterbox TTS
+ * with the voice clone to test quality before regenerating all chapters.
  */
 
 import { spawn } from 'child_process';
@@ -27,15 +15,8 @@ import { bookChapters } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { storagePut } from '../server/storage';
 
-const VOICE_SAMPLE_PATH = process.env.VOICE_SAMPLE_PATH || '/tmp/voice_sample.wav';
+const VOICE_SAMPLE_PATH = '/tmp/voice_sample.wav';
 const CHAPTER_DIR = join(process.cwd(), 'manuscript-chapters');
-
-interface ChapterInfo {
-  id: number;
-  chapterNumber: number;
-  title: string;
-  textFile: string;
-}
 
 /**
  * Execute Python script and return stdout
@@ -194,12 +175,34 @@ print("Concatenation complete")
 }
 
 /**
- * Regenerate a single chapter
+ * Main execution
  */
-async function regenerateChapter(chapter: ChapterInfo, voiceSamplePath: string): Promise<void> {
-  console.log(`\n${'='.repeat(80)}`);
-  console.log(`Processing Chapter ${chapter.chapterNumber}: ${chapter.title}`);
-  console.log(`${'='.repeat(80)}\n`);
+async function main() {
+  console.log('🎙️  Chatterbox Chapter 2 Regeneration (Test)');
+  console.log('='.repeat(80));
+  console.log();
+
+  // Check voice sample
+  if (!existsSync(VOICE_SAMPLE_PATH)) {
+    console.error(`❌ Voice sample not found at: ${VOICE_SAMPLE_PATH}`);
+    process.exit(1);
+  }
+
+  console.log(`✅ Voice sample found: ${VOICE_SAMPLE_PATH}`);
+
+  // Get Chapter 2
+  const chapters = await db
+    .select()
+    .from(bookChapters)
+    .where(eq(bookChapters.chapterNumber, 2));
+
+  if (chapters.length === 0) {
+    console.error('❌ Chapter 2 not found in database');
+    process.exit(1);
+  }
+
+  const chapter = chapters[0];
+  console.log(`\nProcessing Chapter ${chapter.chapterNumber}: ${chapter.title}\n`);
 
   // Read chapter text
   const textFilename = `chapter_${String(chapter.chapterNumber).padStart(2, '0')}.txt`;
@@ -222,11 +225,11 @@ async function regenerateChapter(chapter: ChapterInfo, voiceSamplePath: string):
 
   for (let i = 0; i < chunks.length; i++) {
     console.log(`\nGenerating chunk ${i + 1}/${chunks.length}...`);
-    const chunkFile = join(tempDir, `chapter${chapter.chapterNumber}_chunk${i}.wav`);
+    const chunkFile = join(tempDir, `chapter2_chunk${i}.wav`);
     
     const { duration } = await generateChatterboxAudio(
       chunks[i],
-      voiceSamplePath,
+      VOICE_SAMPLE_PATH,
       chunkFile
     );
     
@@ -239,13 +242,13 @@ async function regenerateChapter(chapter: ChapterInfo, voiceSamplePath: string):
 
   // Concatenate chunks
   console.log('\nConcatenating audio chunks...');
-  const finalWavFile = join(tempDir, `chapter${chapter.chapterNumber}_final.wav`);
+  const finalWavFile = join(tempDir, 'chapter2_final.wav');
   await concatenateWavFiles(chunkFiles, finalWavFile);
 
   // Upload to S3
   console.log('\nUploading to S3...');
   const audioBuffer = readFileSync(finalWavFile);
-  const fileKey = `audiobook/chapter_${chapter.chapterNumber.toString().padStart(2, '0')}_chatterbox.wav`;
+  const fileKey = `audiobook/chapter_02_chatterbox_test.wav`;
   const { url } = await storagePut(fileKey, audioBuffer, 'audio/wav');
   
   console.log(`Uploaded: ${url}`);
@@ -268,52 +271,9 @@ async function regenerateChapter(chapter: ChapterInfo, voiceSamplePath: string):
     }
   }
 
-  console.log(`\n✅ Chapter ${chapter.chapterNumber} complete!\n`);
-}
-
-/**
- * Main execution
- */
-async function main() {
-  console.log('🎙️  Chatterbox Audiobook Regeneration Script');
-  console.log('='.repeat(80));
-  console.log();
-
-  // Check voice sample
-  if (!existsSync(VOICE_SAMPLE_PATH)) {
-    console.error(`❌ Voice sample not found at: ${VOICE_SAMPLE_PATH}`);
-    console.error('Please place your voice sample audio file (10+ seconds) at this path.');
-    console.error('Supported formats: WAV, MP3, OGG');
-    process.exit(1);
-  }
-
-  console.log(`✅ Voice sample found: ${VOICE_SAMPLE_PATH}`);
-
-  // Get all chapters from database
-  const chapters = await db
-    .select({
-      id: bookChapters.id,
-      chapterNumber: bookChapters.chapterNumber,
-      title: bookChapters.title,
-    })
-    .from(bookChapters)
-    .orderBy(bookChapters.chapterNumber);
-
-  console.log(`Found ${chapters.length} chapters to process\n`);
-
-  // Process each chapter
-  for (const chapter of chapters) {
-    try {
-      await regenerateChapter(chapter as ChapterInfo, VOICE_SAMPLE_PATH);
-    } catch (error) {
-      console.error(`\n❌ Failed to process Chapter ${chapter.chapterNumber}:`, error);
-      console.error('Continuing with next chapter...\n');
-    }
-  }
-
-  console.log('\n' + '='.repeat(80));
-  console.log('🎉 Audiobook regeneration complete!');
-  console.log('='.repeat(80));
+  console.log(`\n✅ Chapter 2 regeneration complete!`);
+  console.log(`\n🎧 Test the audio at: ${url}`);
+  console.log('\nIf quality is good, run the full regeneration script for all chapters.');
 }
 
 // Run the script
