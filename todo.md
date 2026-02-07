@@ -1003,3 +1003,14 @@
 - [x] Remove "test chapter" from database (deleted 7 test chapters with IDs 1, 60001-60006)
 - [x] Test audiobook playback after fixes (Chapter 1 plays correctly, currentTime advancing)
 - [x] Save checkpoint
+
+
+## Phase 35: Audiobook Language Switcher (English / Portuguese)
+- [x] Investigate database schema for language support (audioUrlPt column exists)
+- [x] Check if Portuguese audio chapters exist in database (all 14 chapters have PT URLs)
+- [x] Add language field to book_chapters schema if needed (audioUrlPt column already exists)
+- [x] Update backend procedures to filter by language (audioUrlPt already returned by listChapters)
+- [x] Build language switcher UI (pill toggle with flags: 🇬🇧 English / 🇧🇷 Português)
+- [x] Ensure player remembers language preference (localStorage persistence)
+- [x] Test switching between English and Portuguese (verified: EN=chapter_01_elevenlabs.mp3, PT=chapter_01_pt.mp3)
+- [x] Save checkpoint

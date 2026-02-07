@@ -1,21 +1,35 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { AudiobookPlayer } from "@/components/AudiobookPlayer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Headphones, BookOpen, FileText, CheckCircle2, Circle, Clock } from "lucide-react";
+import { Headphones, BookOpen, FileText, CheckCircle2, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { PageHeader } from "@/components/PageHeader";
 
+type AudioLanguage = "en" | "pt";
+
+const LANGUAGE_STORAGE_KEY = "audiobook-language";
+
 export function Audiobook() {
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
+  const [language, setLanguage] = useState<AudioLanguage>(() => {
+    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return (saved === "pt" ? "pt" : "en") as AudioLanguage;
+  });
 
   const { data: chapters, isLoading } = trpc.audiobook.listChapters.useQuery();
   
   // Get current chapter number for format switching
   const currentChapter = chapters?.find((ch: any) => ch.id === selectedChapterId);
   const currentChapterNumber = currentChapter?.chapterNumber;
+
+  // Persist language preference
+  const handleLanguageChange = (lang: AudioLanguage) => {
+    setLanguage(lang);
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+  };
   
   // Auto-select chapter from URL parameter
   useEffect(() => {
@@ -78,10 +92,39 @@ export function Audiobook() {
 
       <div className="px-4 py-4 space-y-4">
 
+      {/* Language Switcher */}
+      <div className="flex items-center justify-center">
+        <div className="inline-flex items-center bg-muted/60 rounded-full p-1 gap-0.5">
+          <button
+            onClick={() => handleLanguageChange("en")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              language === "en"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span className="text-base leading-none">🇬🇧</span>
+            <span>English</span>
+          </button>
+          <button
+            onClick={() => handleLanguageChange("pt")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              language === "pt"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span className="text-base leading-none">🇧🇷</span>
+            <span>Português</span>
+          </button>
+        </div>
+      </div>
+
       {/* Current Player */}
       {selectedChapterId && (
         <AudiobookPlayer
           chapterId={selectedChapterId}
+          language={language}
           onChapterChange={(newId) => {
             const validChapter = chapters?.find(c => c.id === newId);
             if (validChapter) {
@@ -125,7 +168,9 @@ export function Audiobook() {
           <div className="space-y-2">
             {chapters.map((chapter) => {
               const isSelected = selectedChapterId === chapter.id;
-              const hasAudio = !!chapter.audioUrl;
+              const hasAudio = language === "pt"
+                ? !!(chapter as any).audioUrlPt || !!chapter.audioUrl
+                : !!chapter.audioUrl;
 
               return (
                 <Card

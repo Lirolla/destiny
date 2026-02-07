@@ -23,10 +23,11 @@ import { toast } from "sonner";
 
 interface AudiobookPlayerProps {
   chapterId: number;
+  language: "en" | "pt";
   onChapterChange?: (newChapterId: number) => void;
 }
 
-export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerProps) {
+export function AudiobookPlayer({ chapterId, language, onChapterChange }: AudiobookPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -43,6 +44,13 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
   const { data: progress } = trpc.audiobook.getProgress.useQuery({ chapterId });
 
   const utils = trpc.useUtils();
+
+  // Determine the correct audio URL based on language
+  const audioUrl = chapter
+    ? language === "pt"
+      ? (chapter as any).audioUrlPt || (chapter as any).audioUrl
+      : (chapter as any).audioUrl
+    : null;
 
   // Update progress mutation
   const updateProgress = trpc.audiobook.updateProgress.useMutation({
@@ -65,6 +73,26 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
       setPlaybackSpeed(parseFloat(progress.playbackSpeed as any) || 1.0);
     }
   }, [progress, chapterId]);
+
+  // Handle language change - pause and reset when language switches
+  useEffect(() => {
+    if (audioRef.current) {
+      const wasPlaying = isPlaying;
+      audioRef.current.pause();
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+      // After the new source loads, resume if was playing
+      const handleCanPlay = () => {
+        if (wasPlaying) {
+          audioRef.current?.play();
+          setIsPlaying(true);
+        }
+        audioRef.current?.removeEventListener('canplay', handleCanPlay);
+      };
+      audioRef.current.addEventListener('canplay', handleCanPlay);
+    }
+  }, [language]);
 
   // Update playback speed
   useEffect(() => {
@@ -131,7 +159,7 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
       if (syncMode && chapter) {
         localStorage.setItem('audiobook-sync', JSON.stringify({
           chapterId: chapter.id,
-          chapterNumber: chapter.chapterNumber,
+          chapterNumber: (chapter as any).chapterNumber,
           currentTime: audioRef.current.currentTime,
           duration: duration,
           timestamp: Date.now()
@@ -230,24 +258,26 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
 
   return (
     <Card className="w-full">
-      <CardHeader>
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <CardTitle className="text-sm leading-tight">
               Chapter {(chapter as any).chapterNumber}: {(chapter as any).title}
             </CardTitle>
-            <CardDescription>{(chapter as any).description}</CardDescription>
+            <CardDescription className="text-xs mt-0.5">
+              Chapter {(chapter as any).chapterNumber} of Destiny Hacking
+            </CardDescription>
           </div>
-          <Badge variant="secondary">
+          <Badge variant="secondary" className="ml-2 flex-shrink-0">
             {formatTime(duration)}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {/* Audio Element */}
         <audio
           ref={audioRef}
-          src={(chapter as any).audioUrl}
+          src={audioUrl || undefined}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => {
@@ -262,7 +292,7 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
         />
 
         {/* Progress Bar */}
-        <div className="space-y-2">
+        <div className="space-y-1">
           <Slider
             value={[currentTime]}
             max={duration || 100}
@@ -270,7 +300,7 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
             onValueChange={handleSeek}
             className="cursor-pointer"
           />
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
@@ -298,7 +328,7 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
           <Button
             size="lg"
             onClick={togglePlay}
-            className="h-16 w-16 rounded-full"
+            className="h-14 w-14 rounded-full"
           >
             {isPlaying ? (
               <Pause className="h-6 w-6" />
@@ -328,10 +358,11 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
         {/* Secondary Controls */}
         <div className="flex items-center justify-between">
           {/* Volume Control */}
-          <div className="flex items-center gap-2 flex-1 max-w-xs">
+          <div className="flex items-center gap-2 flex-1 max-w-[140px]">
             <Button
               variant="ghost"
               size="icon"
+              className="h-8 w-8"
               onClick={toggleMute}
             >
               {isMuted || volume === 0 ? (
@@ -354,9 +385,9 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
             variant="outline"
             size="sm"
             onClick={cycleSpeed}
-            className="gap-2"
+            className="gap-1 h-8 text-xs"
           >
-            <Clock className="h-4 w-4" />
+            <Clock className="h-3.5 w-3.5" />
             {playbackSpeed}x
           </Button>
 
@@ -365,9 +396,9 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
             variant="outline"
             size="sm"
             onClick={handleAddBookmark}
-            className="gap-2"
+            className="gap-1 h-8 text-xs"
           >
-            <Bookmark className="h-4 w-4" />
+            <Bookmark className="h-3.5 w-3.5" />
             Bookmark
           </Button>
           
@@ -378,7 +409,7 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
             onClick={() => {
               if (!syncMode && chapter) {
                 // Open PDF in sync mode
-                const pdfUrl = `/book?chapter=${chapter.chapterNumber}&sync=true`;
+                const pdfUrl = `/book?chapter=${(chapter as any).chapterNumber}&sync=true`;
                 window.open(pdfUrl, 'pdf-sync', 'width=1200,height=800');
                 setSyncMode(true);
                 toast.success("Sync mode enabled - PDF will follow audio");
@@ -387,66 +418,43 @@ export function AudiobookPlayer({ chapterId, onChapterChange }: AudiobookPlayerP
                 toast.info("Sync mode disabled");
               }
             }}
-            className="gap-2"
+            className="gap-1 h-8 text-xs"
           >
-            <BookOpen className="h-4 w-4" />
+            <BookOpen className="h-3.5 w-3.5" />
             {syncMode ? "Syncing" : "Follow Along"}
           </Button>
         </div>
 
         {/* Sleep Timer */}
-        <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
           <div className="flex items-center gap-2">
             <Timer className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Sleep Timer</span>
+            <span className="text-xs font-medium">Sleep Timer</span>
           </div>
           
           {sleepTimer === null ? (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSleepTimerMinutes(5)}
-              >
-                5m
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSleepTimerMinutes(10)}
-              >
-                10m
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSleepTimerMinutes(15)}
-              >
-                15m
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSleepTimerMinutes(30)}
-              >
-                30m
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSleepTimerMinutes(60)}
-              >
-                60m
-              </Button>
+            <div className="flex gap-1.5">
+              {[5, 10, 15, 30, 60].map((m) => (
+                <Button
+                  key={m}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs px-2"
+                  onClick={() => setSleepTimerMinutes(m)}
+                >
+                  {m}m
+                </Button>
+              ))}
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="text-base font-mono">
+              <Badge variant="secondary" className="text-sm font-mono">
                 {formatTimerRemaining(sleepTimerRemaining)}
               </Badge>
               <Button
                 variant="ghost"
                 size="sm"
+                className="h-7 w-7 p-0"
                 onClick={cancelSleepTimer}
               >
                 <X className="h-4 w-4" />
