@@ -975,4 +975,22 @@
 - [x] Improve mobile responsiveness across all pages
 - [x] Run deep test on all app functionality
 - [x] All 29 vitest tests passing
-- [ ] Save checkpoint and publish
+- [x] Save checkpoint and publish
+
+
+## Phase 33: Native App Polish - Animations, Splash Screen & Pull-to-Refresh
+- [x] Install Framer Motion dependency
+- [x] Add page transition animations (slide-in/out between tabs)
+- [x] Create AnimatedRoutes wrapper component with Framer Motion
+- [x] Implement directional slide (left/right based on tab order)
+- [x] Add splash screen / loading animation on app startup
+- [x] Design splash screen with animated logo, glow ring, and loading bar
+- [x] Splash screen shows only once per session (sessionStorage)
+- [x] Add pull-to-refresh on Home page
+- [x] Add pull-to-refresh on Sliders page
+- [x] Create reusable PullToRefresh component with touch handling
+- [x] Fix service worker caching stale Vite deps
+- [x] Increase bottom nav z-index for preview mode compatibility
+- [x] Test all animations and interactions
+- [x] All 45 new tests passing (mobile-app + native-polish)
+- [x] Save checkpoint

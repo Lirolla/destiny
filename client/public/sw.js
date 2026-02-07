@@ -1,6 +1,6 @@
 // Service Worker for Destiny Hacking PWA
-const CACHE_NAME = 'destiny-hacking-v1';
-const RUNTIME_CACHE = 'destiny-hacking-runtime';
+const CACHE_NAME = 'destiny-hacking-v2';
+const RUNTIME_CACHE = 'destiny-hacking-runtime-v2';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -30,7 +30,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - network first, fallback to cache
+// Fetch event - network first for all requests
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -40,8 +40,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // API requests - network only (no cache for dynamic data)
+  // API requests - network only
   if (url.pathname.startsWith('/api/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  // Skip caching Vite dev server assets (node_modules, @vite, @fs, @react-refresh, HMR)
+  if (
+    url.pathname.includes('node_modules') ||
+    url.pathname.startsWith('/@') ||
+    url.pathname.includes('.vite') ||
+    url.pathname.startsWith('/src/') ||
+    url.pathname.includes('__vite')
+  ) {
     event.respondWith(fetch(request));
     return;
   }
@@ -57,29 +69,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For other requests, try cache first, fallback to network
+  // For static assets (images, fonts, etc.), use stale-while-revalidate
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(request).then((response) => {
-        // Don't cache non-successful responses
-        if (!response || response.status !== 200 || response.type === 'error') {
+    fetch(request)
+      .then((response) => {
+        if (!response || response.status !== 200) {
           return response;
         }
-
-        // Clone the response
         const responseToCache = response.clone();
-
         caches.open(RUNTIME_CACHE).then((cache) => {
           cache.put(request, responseToCache);
         });
-
         return response;
-      });
-    })
+      })
+      .catch(() => {
+        return caches.match(request);
+      })
   );
 });
 
@@ -88,7 +93,6 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SCHEDULE_REMINDER') {
     const { hour, minute } = event.data;
     console.log(`Reminder scheduled for ${hour}:${minute}`);
-    // Store in IndexedDB or use Periodic Background Sync API
   } else if (event.data && event.data.type === 'CANCEL_REMINDER') {
     console.log('Reminder cancelled');
   }
@@ -118,7 +122,7 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Background sync for offline actions (future enhancement)
+// Background sync for offline actions
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-slider-states') {
     event.waitUntil(syncSliderStates());
@@ -126,6 +130,5 @@ self.addEventListener('sync', (event) => {
 });
 
 async function syncSliderStates() {
-  // Placeholder for future offline sync implementation
   console.log('Syncing slider states...');
 }

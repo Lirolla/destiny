@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Onboarding } from "@/components/Onboarding";
 import { InitialCalibration } from "@/components/InitialCalibration";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import {
   BookOpen,
   Headphones,
@@ -17,10 +18,19 @@ import {
 } from "lucide-react";
 
 export default function NewHome() {
+  const utils = trpc.useUtils();
   const { data: user } = trpc.auth.me.useQuery();
   const { data: overallProgress } = trpc.progress.getOverallProgress.useQuery();
   const { data: todayCycle } = trpc.dailyCycle.getToday.useQuery();
   const { data: axes } = trpc.sliders.listAxes.useQuery();
+
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([
+      utils.progress.getOverallProgress.invalidate(),
+      utils.dailyCycle.getToday.invalidate(),
+      utils.sliders.listAxes.invalidate(),
+    ]);
+  }, [utils]);
 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showInitialCalibration, setShowInitialCalibration] = useState(false);
@@ -80,7 +90,7 @@ export default function NewHome() {
         />
       )}
 
-      <div className="min-h-screen bg-background">
+      <PullToRefresh onRefresh={handleRefresh} className="min-h-screen bg-background">
         {/* Hero Header */}
         <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background px-4 pt-6 pb-8">
           <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-primary/5 blur-3xl" />
@@ -319,7 +329,7 @@ export default function NewHome() {
             </Card>
           )}
         </div>
-      </div>
+      </PullToRefresh>
     </>
   );
 }

@@ -12,6 +12,7 @@ import { ArrowLeft, Plus, Gauge } from "lucide-react";
 import { toast } from "sonner";
 import { useAutoAchievementCheck } from "@/hooks/useAchievements";
 import { PageHeader } from "@/components/PageHeader";
+import { PullToRefresh } from "@/components/PullToRefresh";
 
 export default function Sliders() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -98,7 +99,7 @@ export default function Sliders() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <PullToRefresh onRefresh={async () => { await Promise.all([utils.sliders.listAxes.invalidate(), utils.sliders.getLatestStates.invalidate()]); }} className="min-h-screen bg-background">
       <PageHeader title="Emotional Sliders" subtitle="Calibrate your inner state" showBack />
 
       {/* Main Content */}
@@ -207,6 +208,6 @@ export default function Sliders() {
           </div>
         )}
       </main>
-    </div>
+    </PullToRefresh>
   );
 }
