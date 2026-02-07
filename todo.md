@@ -1023,3 +1023,16 @@
 - [x] Fix the root cause of word repetition (progress save → invalidate → re-fetch → position restore loop)
 - [x] Test Portuguese audio playback after fix (12-second monitoring: 0 jumps, steady 1.00s deltas)
 - [x] Save checkpoint
+
+
+## Phase 37: UI Fixes - Player Controls, Chapter Translations, Theme Toggle
+- [x] Redesign AudiobookPlayer volume/speed controls - separate into distinct rows
+- [x] Move volume control to its own full-width row with slider and percentage
+- [x] Move speed button to a separate grid row with bookmark and follow along
+- [x] Add Portuguese translations for all 14 chapter titles (shared/chapterTranslations.ts)
+- [x] Show translated titles when Portuguese language is selected (both chapter list + player header)
+- [x] Restore light/dark theme toggle for user choice (defaultTheme="light" switchable)
+- [x] Remove forced dark theme, allow user preference (localStorage persistence)
+- [x] Add theme toggle button accessible from the app (More page header + Settings section)
+- [x] Test all three fixes on mobile (all verified working)
+- [x] Save checkpoint

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Headphones, BookOpen, FileText, CheckCircle2, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { PageHeader } from "@/components/PageHeader";
+import { getChapterTitle } from "@shared/chapterTranslations";
 
 type AudioLanguage = "en" | "pt";
 
@@ -187,7 +188,7 @@ export function Audiobook() {
                       <span className="text-sm font-bold">{chapter.chapterNumber}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{chapter.title}</p>
+                      <p className="font-medium text-sm truncate">{getChapterTitle(chapter.chapterNumber, language, chapter.title)}</p>
                       <div className="flex items-center gap-2 mt-0.5">
                         {hasAudio ? (
                           <span className="text-[10px] text-primary flex items-center gap-1">

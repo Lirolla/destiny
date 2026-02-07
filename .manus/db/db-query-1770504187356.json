@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'book_chapters' AND COLUMN_NAME LIKE '%title%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'book_chapters' AND COLUMN_NAME LIKE '%title%';",
+  "rows": [
+    {
+      "COLUMN_NAME": "title"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\ntitle\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

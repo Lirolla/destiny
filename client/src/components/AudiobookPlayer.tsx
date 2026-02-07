@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import { toast } from "sonner";
+import { getChapterTitle } from "@shared/chapterTranslations";
 
 interface AudiobookPlayerProps {
   chapterId: number;
@@ -298,10 +299,10 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1">
             <CardTitle className="text-sm leading-tight">
-              Chapter {(chapter as any).chapterNumber}: {(chapter as any).title}
+              {language === "pt" ? "Capítulo" : "Chapter"} {(chapter as any).chapterNumber}: {getChapterTitle((chapter as any).chapterNumber, language, (chapter as any).title)}
             </CardTitle>
             <CardDescription className="text-xs mt-0.5">
-              Chapter {(chapter as any).chapterNumber} of Destiny Hacking
+              {language === "pt" ? `Capítulo ${(chapter as any).chapterNumber} de Destiny Hacking` : `Chapter ${(chapter as any).chapterNumber} of Destiny Hacking`}
             </CardDescription>
           </div>
           <Badge variant="secondary" className="ml-2 flex-shrink-0">
@@ -385,60 +386,59 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
           </Button>
         </div>
 
-        {/* Secondary Controls */}
-        <div className="flex items-center justify-between">
-          {/* Volume Control */}
-          <div className="flex items-center gap-2 flex-1 max-w-[140px]">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={toggleMute}
-            >
-              {isMuted || volume === 0 ? (
-                <VolumeX className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </Button>
-            <Slider
-              value={[isMuted ? 0 : volume]}
-              max={1}
-              step={0.01}
-              onValueChange={handleVolumeChange}
-              className="flex-1"
-            />
-          </div>
+        {/* Volume Control - Full width row */}
+        <div className="flex items-center gap-3 px-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 flex-shrink-0"
+            onClick={toggleMute}
+          >
+            {isMuted || volume === 0 ? (
+              <VolumeX className="h-4 w-4" />
+            ) : (
+              <Volume2 className="h-4 w-4" />
+            )}
+          </Button>
+          <Slider
+            value={[isMuted ? 0 : volume]}
+            max={1}
+            step={0.01}
+            onValueChange={handleVolumeChange}
+            className="flex-1"
+          />
+          <span className="text-xs text-muted-foreground w-8 text-right flex-shrink-0">
+            {Math.round((isMuted ? 0 : volume) * 100)}%
+          </span>
+        </div>
 
-          {/* Speed Control */}
+        {/* Action Buttons Row - evenly spaced */}
+        <div className="grid grid-cols-4 gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={cycleSpeed}
-            className="gap-1 h-8 text-xs"
+            className="h-9 text-xs font-medium"
           >
-            <Clock className="h-3.5 w-3.5" />
+            <Clock className="h-3.5 w-3.5 mr-1" />
             {playbackSpeed}x
           </Button>
 
-          {/* Bookmark */}
           <Button
             variant="outline"
             size="sm"
             onClick={handleAddBookmark}
-            className="gap-1 h-8 text-xs"
+            className="h-9 text-xs font-medium"
           >
-            <Bookmark className="h-3.5 w-3.5" />
-            Bookmark
+            <Bookmark className="h-3.5 w-3.5 mr-1" />
+            Save
           </Button>
           
-          {/* Sync Mode */}
           <Button
             variant={syncMode ? "default" : "outline"}
             size="sm"
             onClick={() => {
               if (!syncMode && chapter) {
-                // Open PDF in sync mode
                 const pdfUrl = `/book?chapter=${(chapter as any).chapterNumber}&sync=true`;
                 window.open(pdfUrl, 'pdf-sync', 'width=1200,height=800');
                 setSyncMode(true);
@@ -448,9 +448,9 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
                 toast.info("Sync mode disabled");
               }
             }}
-            className="gap-1 h-8 text-xs"
+            className="h-9 text-xs font-medium col-span-2"
           >
-            <BookOpen className="h-3.5 w-3.5" />
+            <BookOpen className="h-3.5 w-3.5 mr-1" />
             {syncMode ? "Syncing" : "Follow Along"}
           </Button>
         </div>
