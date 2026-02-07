@@ -15,6 +15,7 @@ import {
   Calendar,
   ArrowRight 
 } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 /**
  * Book Modules Page
@@ -31,10 +32,10 @@ export default function Modules() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading learning path...</p>
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Practice" subtitle="14 modules to master" showBack />
+        <div className="flex items-center justify-center min-h-[300px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       </div>
     );
@@ -42,26 +43,11 @@ export default function Modules() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="container py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Learning Path</h1>
-              <p className="text-muted-foreground">
-                14 modules to master your free will
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <Link href="/">← Home</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Practice" subtitle="14 modules to master your free will" showBack />
 
-      <div className="container py-8">
+      <div className="px-4 py-4">
         {/* Module List */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="space-y-2 mb-6">
           {modulesWithProgress?.map((item) => {
           const module = item;
           const progress = item.progress;
@@ -81,44 +67,40 @@ export default function Modules() {
             return (
               <Card
                 key={module.id}
-                className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
-                  selectedModuleId === module.id ? 'ring-2 ring-primary' : ''
-                } ${isLocked ? 'opacity-60' : ''}`}
+                className={`cursor-pointer transition-all active:scale-[0.98] ${
+                  selectedModuleId === module.id ? 'ring-1 ring-primary bg-primary/5' : 'border-border/50'
+                } ${isLocked ? 'opacity-50' : ''}`}
                 onClick={() => !isLocked && setSelectedModuleId(module.id)}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-muted-foreground">
-                      {module.moduleNumber}
-                    </span>
-                    {statusIcon}
+                <div className="flex items-center gap-3 p-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                    isCompleted ? 'bg-green-500/15' : isLocked ? 'bg-muted' : 'bg-primary/15'
+                  }`}>
+                    {isCompleted ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    ) : isLocked ? (
+                      <Lock className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <span className="text-sm font-bold">{module.moduleNumber}</span>
+                    )}
                   </div>
-                  <Badge variant="outline">{module.estimatedMinutes} min</Badge>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{module.title}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] text-muted-foreground">{module.estimatedMinutes} min</span>
+                      {progress && progress.progressPercentage > 0 && (
+                        <span className="text-[10px] text-primary">{progress.progressPercentage}%</span>
+                      )}
+                      {progress && progress.practiceDaysCompleted > 0 && (
+                        <span className="text-[10px] text-muted-foreground">{progress.practiceDaysCompleted}d practiced</span>
+                      )}
+                    </div>
+                    {progress && progress.progressPercentage > 0 && (
+                      <Progress value={progress.progressPercentage} className="h-1 mt-1.5" />
+                    )}
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 </div>
-
-                <h3 className="font-bold text-lg mb-2">{module.title}</h3>
-                
-                {progress && progress.progressPercentage > 0 && (
-                  <div className="mb-3">
-                    <Progress value={progress.progressPercentage} className="h-2" />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {progress.progressPercentage}% complete
-                    </p>
-                  </div>
-                )}
-
-                {progress && progress.practiceDaysCompleted > 0 && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    <span>{progress.practiceDaysCompleted} practice days</span>
-                  </div>
-                )}
-
-                {isLocked && module.requiredPreviousModule && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Complete Module {module.requiredPreviousModule} first
-                  </p>
-                )}
               </Card>
             );
           })}
@@ -205,90 +187,90 @@ function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
   const isCompleted = progress?.status === "completed";
 
   return (
-    <Card className="p-8 max-w-4xl mx-auto">
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-3xl font-bold text-muted-foreground">
-              Module {module.moduleNumber}
-            </span>
-            {isCompleted && <Badge className="bg-green-500">Completed</Badge>}
+    <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
+      <PageHeader
+        title={`Module ${module.moduleNumber}`}
+        subtitle={module.title}
+        showBack
+        backPath="#"
+        rightAction={
+          <div className="flex items-center gap-2">
+            {isCompleted && <Badge className="bg-green-500 text-xs">Done</Badge>}
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
+              <span className="text-lg">✕</span>
+            </Button>
           </div>
-          <h2 className="text-3xl font-bold mb-2">{module.title}</h2>
-          <p className="text-muted-foreground">
-            {module.estimatedMinutes} minutes • {module.requiredPracticeDays} practice days required
-          </p>
-        </div>
-        <Button variant="ghost" onClick={onClose}>✕</Button>
-      </div>
+        }
+      />
+      <div className="px-4 py-4">
 
       {isLocked ? (
-        <div className="text-center py-12">
-          <Lock className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <p className="text-lg font-semibold mb-2">Module Locked</p>
-          <p className="text-muted-foreground mb-6">
+        <div className="text-center py-8">
+          <Lock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+          <p className="text-base font-semibold mb-1">Module Locked</p>
+          <p className="text-sm text-muted-foreground">
             Complete the previous module and practice for {module.requiredPracticeDays} days to unlock.
           </p>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Core Principle */}
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="w-5 h-5 text-primary" />
-              <h3 className="font-bold text-lg">Core Principle</h3>
+          <section className="bg-card rounded-xl p-4 border border-border/50">
+            <div className="flex items-center gap-2 mb-2">
+              <BookOpen className="w-4 h-4 text-primary" />
+              <h3 className="font-bold text-sm">Core Principle</h3>
             </div>
-            <p className="text-foreground leading-relaxed">{module.corePrinciple}</p>
+            <p className="text-sm text-foreground leading-relaxed">{module.corePrinciple}</p>
           </section>
 
           {/* Mental Model */}
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <Target className="w-5 h-5 text-primary" />
-              <h3 className="font-bold text-lg">Mental Model</h3>
+          <section className="bg-card rounded-xl p-4 border border-border/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Target className="w-4 h-4 text-primary" />
+              <h3 className="font-bold text-sm">Mental Model</h3>
             </div>
-            <p className="text-foreground leading-relaxed">{module.mentalModel}</p>
+            <p className="text-sm text-foreground leading-relaxed">{module.mentalModel}</p>
           </section>
 
           {/* Daily Practice */}
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <Calendar className="w-5 h-5 text-primary" />
-              <h3 className="font-bold text-lg">Daily Practice</h3>
+          <section className="bg-card rounded-xl p-4 border border-border/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Calendar className="w-4 h-4 text-primary" />
+              <h3 className="font-bold text-sm">Daily Practice</h3>
             </div>
-            <p className="text-foreground leading-relaxed mb-4">{module.dailyPractice}</p>
+            <p className="text-sm text-foreground leading-relaxed mb-3">{module.dailyPractice}</p>
             
             {progress && !isCompleted && (
-              <div className="flex items-center gap-4">
-                <Button onClick={handleRecordPractice} disabled={recordPractice.isPending}>
-                  {recordPractice.isPending ? "Recording..." : "Mark Today's Practice Complete"}
+              <div className="flex items-center gap-3">
+                <Button size="sm" onClick={handleRecordPractice} disabled={recordPractice.isPending}>
+                  {recordPractice.isPending ? "Recording..." : "Mark Complete"}
                 </Button>
-                <span className="text-sm text-muted-foreground">
-                  {progress.practiceDaysCompleted} / {module.requiredPracticeDays} days
+                <span className="text-xs text-muted-foreground">
+                  {progress.practiceDaysCompleted}/{module.requiredPracticeDays} days
                 </span>
               </div>
             )}
           </section>
 
           {/* Decision Challenge */}
-          <section>
-            <h3 className="font-bold text-lg mb-3">Decision Challenge</h3>
-            <p className="text-foreground leading-relaxed mb-4">{module.decisionChallenge}</p>
+          <section className="bg-card rounded-xl p-4 border border-border/50">
+            <h3 className="font-bold text-sm mb-2">Decision Challenge</h3>
+            <p className="text-sm text-foreground leading-relaxed mb-3">{module.decisionChallenge}</p>
             
             {progress && !progress.challengeCompleted && !isCompleted && (
-              <Button onClick={handleCompleteChallenge} disabled={completeChallenge.isPending}>
+              <Button size="sm" onClick={handleCompleteChallenge} disabled={completeChallenge.isPending}>
                 {completeChallenge.isPending ? "Completing..." : "Mark Challenge Complete"}
               </Button>
             )}
             {progress?.challengeCompleted && (
-              <Badge className="bg-green-500">Challenge Completed</Badge>
+              <Badge className="bg-green-500 text-xs">Challenge Completed</Badge>
             )}
           </section>
 
           {/* Reflection */}
-          <section>
-            <h3 className="font-bold text-lg mb-3">Reflection</h3>
-            <p className="text-muted-foreground mb-4">{module.reflectionPrompt}</p>
+          <section className="bg-card rounded-xl p-4 border border-border/50">
+            <h3 className="font-bold text-sm mb-2">Reflection</h3>
+            <p className="text-xs text-muted-foreground mb-3">{module.reflectionPrompt}</p>
             
             {!isCompleted && (
               <>
@@ -296,9 +278,10 @@ function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
                   value={reflection}
                   onChange={(e) => setReflection(e.target.value)}
                   placeholder="Write your reflection here..."
-                  className="min-h-32 mb-4"
+                  className="min-h-24 mb-3 text-sm"
                 />
                 <Button 
+                  size="sm"
                   onClick={handleSaveReflection} 
                   disabled={!reflection.trim() || saveReflection.isPending}
                 >
@@ -307,8 +290,8 @@ function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
               </>
             )}
             {progress?.reflectionEntry && (
-              <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm">{progress.reflectionEntry}</p>
+              <div className="bg-muted p-3 rounded-lg mt-3">
+                <p className="text-xs">{progress.reflectionEntry}</p>
               </div>
             )}
           </section>
@@ -344,6 +327,7 @@ function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
           )}
         </div>
       )}
-    </Card>
+      </div>
+    </div>
   );
 }

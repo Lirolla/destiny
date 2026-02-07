@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -7,15 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Brain, TrendingUp, CheckCircle2, Star } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function Insights() {
-  const { user, isLoading: authLoading } = useAuth();
   const [selectedInsightId, setSelectedInsightId] = useState<number | null>(null);
 
   // Fetch insights
   const { data: insights, isLoading: insightsLoading } = trpc.insights.list.useQuery(
     { limit: 20 },
-    { enabled: !!user }
+    {  }
   );
 
   // Mutations
@@ -41,61 +40,12 @@ export default function Insights() {
     rateMutation.mutate({ insightId, rating });
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <Card className="max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Authentication Required</CardTitle>
-            <CardDescription>Sign in to access your insights</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full" size="lg" asChild>
-              <a href="/api/oauth/login">Sign In</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Link>
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold">AI Insights</h1>
-                <p className="text-sm text-muted-foreground">
-                  Pattern analysis and strategic observations
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="AI Insights" subtitle="Pattern analysis & recommendations" showBack />
 
       {/* Main Content */}
-      <main className="container py-8">
+      <main className="px-4 py-4 pb-24">
         {insightsLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />

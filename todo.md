@@ -954,3 +954,25 @@
 - [x] Test English audiobook playback
 
 **Status:** Both English and Portuguese audiobooks complete with professional voice cloning!
+
+
+## Phase 32: Remove Manus Auth & Native App Experience
+- [x] Remove Manus OAuth authentication requirement
+- [x] Create anonymous user system for data persistence
+- [x] Replace protectedProcedure with publicProcedure where needed
+- [x] Update frontend to not require auth for core features
+- [x] Ensure audiobook player works without auth
+- [x] Ensure PDF reader works without auth
+- [x] Transform UI to native app-like experience
+- [x] Add bottom tab navigation (Home, Book, Audio, Practice, More)
+- [x] Create AppShell wrapper with mobile app container
+- [x] Add PageHeader component for consistent mobile-first headers
+- [x] Redesign home screen with card-based mobile layout
+- [x] Create More page with grouped feature menu
+- [x] Update all 20+ pages with mobile-first styling
+- [x] Add PWA enhancements (standalone mode, dark theme, status bar)
+- [x] Add safe area padding for notched devices
+- [x] Improve mobile responsiveness across all pages
+- [x] Run deep test on all app functionality
+- [x] All 29 vitest tests passing
+- [ ] Save checkpoint and publish

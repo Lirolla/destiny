@@ -1,4 +1,3 @@
-import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -7,31 +6,32 @@ import { Gauge, Calendar, Brain, Users, TrendingUp, CheckCircle2, Flame, Setting
 import { SliderHistoryChart } from "@/components/SliderHistoryChart";
 import { ShareProgress } from "@/components/ShareProgress";
 import type { ProgressSummary } from "@/lib/socialShare";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function Dashboard() {
-  const { user, isLoading: authLoading } = useAuth();
+  // Guest users are auto-created
 
   // Fetch data
   const { data: todayCycle } = trpc.dailyCycle.getToday.useQuery(undefined, {
-    enabled: !!user,
+    
   });
 
   const { data: recentCycles } = trpc.dailyCycle.getHistory.useQuery(
     { days: 30 },
-    { enabled: !!user }
+    {  }
   );
 
   const { data: axes } = trpc.sliders.listAxes.useQuery(undefined, {
-    enabled: !!user,
+    
   });
 
   const { data: latestStates } = trpc.sliders.getLatestStates.useQuery(undefined, {
-    enabled: !!user,
+    
   });
 
   const { data: insights } = trpc.insights.list.useQuery(
     { limit: 5 },
-    { enabled: !!user }
+    {  }
   );
 
   // Calculate streak
@@ -67,65 +67,14 @@ export default function Dashboard() {
   const streak = calculateStreak();
   const unreadInsights = insights?.filter(i => !i.isRead).length || 0;
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <Card className="max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome to Destiny Hacking</CardTitle>
-            <CardDescription>
-              Sign in to start calibrating your emotional state and operationalizing free will
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button className="w-full" size="lg" asChild>
-              <a href="/api/oauth/login">Sign In</a>
-            </Button>
-            <div className="text-center">
-              <Link href="/">
-                <Button variant="link" className="text-sm">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Control Panel</h1>
-              <p className="text-sm text-muted-foreground">
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{user.name}</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Control Panel" subtitle="Admin tools & management" showBack />
 
       {/* Main Content */}
-      <main className="container py-8 space-y-8">
+      <main className="px-4 py-4 space-y-4 pb-24">
         {/* Stats Overview */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Your Progress</h2>

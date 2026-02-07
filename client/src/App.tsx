@@ -4,6 +4,7 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AppShell } from "./components/AppShell";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Sliders from "./pages/Sliders";
@@ -16,6 +17,7 @@ import Modules from "./pages/Modules";
 import SowingReaping from "./pages/SowingReaping";
 import Profiles from "./pages/Profiles";
 import NewHome from "./pages/NewHome";
+import More from "./pages/More";
 import WeeklyReview from "./pages/WeeklyReview";
 import PrayerJournal from "./pages/PrayerJournal";
 import BiasClearing from "./pages/BiasClearing";
@@ -33,57 +35,51 @@ import { Flashcards } from "./pages/Flashcards";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={NewHome} />
-      <Route path={" /old-home"} component={Home} />
-      <Route path={"/dashboard"} component={Dashboard} />
-      <Route path={"/sliders"} component={Sliders} />
-      <Route path={"/daily-cycle"} component={DailyCycle} />
-      <Route path={"/insights"} component={Insights} />
-      <Route path={"/inner-circle"} component={InnerCircle} />
-      <Route path={"/settings"} component={Settings} />
-      <Route path={"/challenges"} component={Challenges} />
-      <Route path={"/modules"} component={Modules} />
-      <Route path={"/modules/:id"} component={ModuleDetail} />
-      <Route path={"/sowing-reaping"} component={SowingReaping} />
-      <Route path={"/profiles"} component={Profiles} />
-      <Route path={" /weekly-review"} component={WeeklyReview} />
-      <Route path={"/prayer-journal"} component={PrayerJournal} />
-      <Route path={"/bias-clearing"} component={BiasClearing} />
-      <Route path={"/achievements"} component={Achievements} />
-      <Route path={"/audiobook"} component={Audiobook} />
-      <Route path={"/book"} component={Book} />
-      <Route path={" /progress"} component={ProgressDashboard} />
-      <Route path={" /flashcards"} component={Flashcards} />
-      <Route path={"/voice-cloning"} component={VoiceCloning} />
-      <Route path={"/audiobook-generation"} component={AudiobookGeneration} />
+      <Route path="/" component={NewHome} />
+      <Route path="/old-home" component={Home} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/sliders" component={Sliders} />
+      <Route path="/daily-cycle" component={DailyCycle} />
+      <Route path="/insights" component={Insights} />
+      <Route path="/inner-circle" component={InnerCircle} />
+      <Route path="/settings" component={Settings} />
+      <Route path="/challenges" component={Challenges} />
+      <Route path="/modules" component={Modules} />
+      <Route path="/modules/:id" component={ModuleDetail} />
+      <Route path="/sowing-reaping" component={SowingReaping} />
+      <Route path="/profiles" component={Profiles} />
+      <Route path="/more" component={More} />
+      <Route path="/weekly-review" component={WeeklyReview} />
+      <Route path="/prayer-journal" component={PrayerJournal} />
+      <Route path="/bias-clearing" component={BiasClearing} />
+      <Route path="/achievements" component={Achievements} />
+      <Route path="/audiobook" component={Audiobook} />
+      <Route path="/book" component={Book} />
+      <Route path="/progress" component={ProgressDashboard} />
+      <Route path="/flashcards" component={Flashcards} />
+      <Route path="/voice-cloning" component={VoiceCloning} />
+      <Route path="/audiobook-generation" component={AudiobookGeneration} />
       <Route path="/batch-audiobook-generation" component={BatchAudiobookGeneration} />
       <Route path="/record-voice" component={RecordVoice} />
       <Route path="/generate-audiobook" component={GenerateAudiobook} />
-      <Route path={"/404"} component={NotFound} />
+      <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <AppShell>
+            <Router />
+          </AppShell>
           <OfflineIndicator />
         </TooltipProvider>
       </ThemeProvider>

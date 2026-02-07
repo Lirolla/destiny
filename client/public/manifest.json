@@ -4,7 +4,7 @@
   "description": "A Digital User's Manual for Human Agency - Calibrate emotional state, track cause-effect relationships, and operationalize free will",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#0a0a0f",
   "theme_color": "#01D98D",
   "orientation": "portrait-primary",
   "icons": [
@@ -22,5 +22,7 @@
     }
   ],
   "categories": ["productivity", "health"],
-  "screenshots": []
+  "screenshots": [],
+  "scope": "/",
+  "prefer_related_applications": false
 }

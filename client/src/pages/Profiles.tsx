@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Save, FolderOpen, Trash2, Star } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 /**
  * Slider Profiles Page
@@ -77,24 +78,9 @@ export default function Profiles() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="container py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Slider Profiles</h1>
-              <p className="text-muted-foreground">
-                Save and load different configurations for different contexts
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <Link href="/">← Home</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Slider Profiles" subtitle="Save & load configurations" showBack />
 
-      <div className="container py-8 max-w-4xl">
+      <div className="px-4 py-4 space-y-4 pb-24">
         {/* Create New Profile */}
         {!showCreateForm ? (
           <Card className="p-8 mb-8 text-center">

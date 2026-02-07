@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Headphones, BookOpen, FileText, CheckCircle2, Circle, Clock } from "lucide-react";
 import { Link } from "wouter";
+import { PageHeader } from "@/components/PageHeader";
 
 export function Audiobook() {
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
@@ -44,8 +45,9 @@ export function Audiobook() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
+      <div className="min-h-screen bg-background">
+        <PageHeader title="Audiobook" subtitle="Listen to the complete book" showBack />
+        <div className="flex items-center justify-center min-h-[300px]">
           <p className="text-muted-foreground">Loading audiobook chapters...</p>
         </div>
       </div>
@@ -53,41 +55,28 @@ export function Audiobook() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-primary/10">
-            <Headphones className="h-8 w-8 text-primary" />
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        title="Audiobook"
+        subtitle="Listen to the complete book"
+        showBack
+        rightAction={
+          <div className="flex gap-1.5">
+            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+              <Link href={currentChapterNumber ? `/book?chapter=${currentChapterNumber}` : "/book"}>
+                <BookOpen className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+              <Link href={currentChapterNumber ? `/modules/${currentChapterNumber}` : "/modules"}>
+                <FileText className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Destiny Hacking Audiobook</h1>
-            <p className="text-muted-foreground">
-              Listen to the complete book narrated in your own voice
-            </p>
-          </div>
-        </div>
+        }
+      />
 
-        {/* Format Switcher */}
-        <div className="flex gap-2">
-          <Button variant="default" className="gap-2">
-            <Headphones className="h-4 w-4" />
-            Listen
-          </Button>
-          <Button variant="outline" asChild className="gap-2">
-            <Link href={currentChapterNumber ? `/book?chapter=${currentChapterNumber}` : "/book"}>
-              <BookOpen className="h-4 w-4" />
-              Read PDF
-            </Link>
-          </Button>
-          <Button variant="outline" asChild className="gap-2">
-            <Link href={currentChapterNumber ? `/modules/${currentChapterNumber}` : "/modules"}>
-              <FileText className="h-4 w-4" />
-              Practice
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <div className="px-4 py-4 space-y-4">
 
       {/* Current Player */}
       {selectedChapterId && (
@@ -103,9 +92,9 @@ export function Audiobook() {
       )}
 
       {/* Chapter List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Chapters</h2>
+          <h2 className="text-lg font-bold">Chapters</h2>
           <Badge variant="secondary">
             {chapters?.length || 0} chapters
           </Badge>
@@ -133,7 +122,7 @@ export function Audiobook() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
+          <div className="space-y-2">
             {chapters.map((chapter) => {
               const isSelected = selectedChapterId === chapter.id;
               const hasAudio = !!chapter.audioUrl;
@@ -141,59 +130,46 @@ export function Audiobook() {
               return (
                 <Card
                   key={chapter.id}
-                  className={`cursor-pointer transition-all hover:shadow-md ${
-                    isSelected ? "ring-2 ring-primary" : ""
+                  className={`cursor-pointer transition-all active:scale-[0.98] ${
+                    isSelected ? "ring-2 ring-primary bg-primary/5" : "border-border/50"
                   }`}
                   onClick={() => hasAudio && setSelectedChapterId(chapter.id)}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline">
-                            Chapter {chapter.chapterNumber}
-                          </Badge>
-                          {hasAudio ? (
-                            <Badge variant="secondary" className="gap-1">
-                              <CheckCircle2 className="h-3 w-3" />
-                              Ready
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="gap-1">
-                              <Circle className="h-3 w-3" />
-                              Not Generated
-                            </Badge>
-                          )}
-                        </div>
-                        <CardTitle className="text-xl">{chapter.title}</CardTitle>
-                        {chapter.description && (
-                          <CardDescription className="mt-2">
-                            {chapter.description}
-                          </CardDescription>
+                  <div className="flex items-center gap-3 p-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      hasAudio ? "bg-primary/15" : "bg-muted"
+                    }`}>
+                      <span className="text-sm font-bold">{chapter.chapterNumber}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">{chapter.title}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {hasAudio ? (
+                          <span className="text-[10px] text-primary flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Ready
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground">Not generated</span>
                         )}
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        {hasAudio && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Clock className="h-4 w-4" />
+                        {hasAudio && chapter.audioDuration && (
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <Clock className="h-2.5 w-2.5" />
                             {formatDuration(chapter.audioDuration)}
-                          </div>
+                          </span>
                         )}
                       </div>
                     </div>
-                  </CardHeader>
-                  {!hasAudio && (
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Audio not yet generated. Set up voice cloning to create narration for this chapter.
-                      </p>
-                    </CardContent>
-                  )}
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse flex-shrink-0" />
+                    )}
+                  </div>
                 </Card>
               );
             })}
           </div>
         )}
+      </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Loader2, Play, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { useAuth } from "@/hooks/useAuth";
+import { PageHeader } from "@/components/PageHeader";
 
 const CHAPTERS = [
   { number: 1, title: "The Divine Gift: The Awesome Power and Terrifying Responsibility of Free Will" },
@@ -24,7 +24,6 @@ const CHAPTERS = [
 ];
 
 export function GenerateAudiobook() {
-  const { user } = useAuth();
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentChapter, setCurrentChapter] = useState<number | null>(null);
   const [completedChapters, setCompletedChapters] = useState<Set<number>>(new Set());
@@ -68,22 +67,8 @@ export function GenerateAudiobook() {
 
   const progress = completedChapters.size / CHAPTERS.length * 100;
 
-  // Check if user is admin/owner
-  if (!user || user.openId !== import.meta.env.VITE_OWNER_OPEN_ID) {
-    return (
-      <div className="container mx-auto py-8 max-w-4xl">
-        <Card>
-          <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>This page is only accessible to the app owner.</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
+    <div className="min-h-screen bg-background">
       <div className="space-y-6">
         {/* Header */}
         <div>

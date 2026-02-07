@@ -16,6 +16,7 @@ import {
   Wand2
 } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 export function AudiobookGeneration() {
   const { data: user, isLoading: userLoading } = trpc.auth.me.useQuery();
@@ -47,7 +48,7 @@ export function AudiobookGeneration() {
   // Only allow admin to access this page
   if (userLoading) {
     return (
-      <div className="container mx-auto py-8 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading...</p>
@@ -58,7 +59,7 @@ export function AudiobookGeneration() {
 
   if (!user || user.role !== "admin") {
     return (
-      <div className="container mx-auto py-8">
+      <div className="min-h-screen bg-background">
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -105,21 +106,9 @@ export function AudiobookGeneration() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-primary/10">
-            <Wand2 className="h-8 w-8 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold">Audiobook Generation</h1>
-            <p className="text-muted-foreground">
-              Generate audiobook chapters using your cloned voice
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-background">
+      <PageHeader title="Audiobook Generation" subtitle="Generate chapters with your voice" showBack />
+      <div className="px-4 py-4 space-y-4 pb-24">
 
       {/* Voice Status */}
       <Alert>
@@ -261,6 +250,7 @@ export function AudiobookGeneration() {
           )}
         </CardContent>
       </Card>
+    </div>
     </div>
   );
 }

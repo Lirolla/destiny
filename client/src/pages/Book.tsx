@@ -9,6 +9,7 @@ import { BookOpen, Headphones, FileText, Download, Highlighter } from "lucide-re
 import { Link } from "wouter";
 import { PDFViewer } from "@/components/PDFViewer";
 import { HighlightsSidebar } from "@/components/HighlightsSidebar";
+import { PageHeader } from "@/components/PageHeader";
 
 export function Book() {
   const [location] = useLocation();
@@ -108,181 +109,123 @@ export function Book() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-primary/10">
-            <BookOpen className="h-8 w-8 text-primary" />
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        title="Read Book"
+        subtitle={currentChapter ? `Ch. ${currentChapter.chapterNumber} - ${currentChapter.title}` : `Page ${currentPage} of ${totalPages}`}
+        showBack
+        rightAction={
+          <div className="flex gap-1.5">
+            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+              <Link href={currentChapterNumber ? `/audiobook?chapter=${currentChapterNumber}` : "/audiobook"}>
+                <Headphones className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              variant={showHighlights ? "default" : "ghost"}
+              size="icon"
+              onClick={() => setShowHighlights(!showHighlights)}
+              className="h-8 w-8"
+            >
+              <Highlighter className="h-4 w-4" />
+            </Button>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Destiny Hacking Book</h1>
-            <p className="text-muted-foreground">
-              Read the complete 87-page digital book with chapter navigation
-            </p>
-          </div>
-        </div>
+        }
+      />
 
-        {/* Format Switcher */}
-        <div className="flex gap-2">
-          <Button variant="default" className="gap-2">
-            <BookOpen className="h-4 w-4" />
-            Read Book
-          </Button>
-          <Button variant="outline" className="gap-2" asChild>
-            <Link href={currentChapterNumber ? `/audiobook?chapter=${currentChapterNumber}` : "/audiobook"}>
-              <Headphones className="h-4 w-4" />
-              Listen
-            </Link>
-          </Button>
-          <Button variant="outline" className="gap-2" asChild>
-            <Link href="/modules">
-              <FileText className="h-4 w-4" />
-              Practice
-            </Link>
-          </Button>
+      <div className="px-4 py-3 space-y-3">
+
+      {/* Compact Reading Progress */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1">
+          <Progress value={percentComplete} className="h-1.5" />
         </div>
+        <span className="text-xs text-muted-foreground whitespace-nowrap">{percentComplete.toFixed(0)}%</span>
       </div>
 
-      {/* Reading Progress */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Reading Progress</CardTitle>
-          <CardDescription>
-            {currentChapter ? `Currently reading: Chapter ${currentChapter.chapterNumber} - ${currentChapter.title}` : 'Track your reading progress'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
-                Page {currentPage} of {totalPages}
-              </span>
-              <span className="font-medium">{percentComplete.toFixed(0)}% complete</span>
-            </div>
-            <Progress value={percentComplete} className="h-2" />
-          </div>
-          
-          <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{totalChapters}</div>
-              <div className="text-sm text-muted-foreground">Total Chapters</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{currentPage}</div>
-              <div className="text-sm text-muted-foreground">Current Page</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">
-                {Math.ceil((totalPages - currentPage) / 20)}
-              </div>
-              <div className="text-sm text-muted-foreground">Hours Remaining</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* PDF Viewer with Highlights */}
-      <div className="flex gap-4">
-        <Card className={`h-[800px] transition-all ${showHighlights ? 'flex-1' : 'w-full'}`}>
-          <CardContent className="p-0 h-full flex flex-col">
-            {/* Highlights Toggle */}
-            <div className="p-4 border-b">
-              <Button
-                variant={showHighlights ? "default" : "outline"}
-                onClick={() => setShowHighlights(!showHighlights)}
-                className="gap-2"
-              >
-                <Highlighter className="h-4 w-4" />
-                {showHighlights ? "Hide" : "Show"} Highlights
-              </Button>
-            </div>
-            
-            <div className="flex-1 overflow-hidden">
-              <PDFViewer
-                pdfUrl="/destiny-hacking-book.pdf"
-                initialPage={currentPage}
-                onPageChange={(page) => {
-                  setCurrentPage(page);
-                  
-                  // Debounced auto-save (save after 2 seconds of no page changes)
-                  if (saveTimeoutRef.current) {
-                    clearTimeout(saveTimeoutRef.current);
-                  }
-                  
-                  saveTimeoutRef.current = setTimeout(() => {
-                    updateProgressMutation.mutate({
-                      currentPage: page,
-                      totalPages: totalPages,
-                    });
-                  }, 2000);
-                }}
-                className="h-full"
-              />
-            </div>
+      {/* PDF Viewer - Full height mobile-first */}
+      <div className="relative">
+        <Card className="h-[calc(100vh-220px)] border-border/50">
+          <CardContent className="p-0 h-full">
+            <PDFViewer
+              pdfUrl="/destiny-hacking-book.pdf"
+              initialPage={currentPage}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                if (saveTimeoutRef.current) {
+                  clearTimeout(saveTimeoutRef.current);
+                }
+                saveTimeoutRef.current = setTimeout(() => {
+                  updateProgressMutation.mutate({
+                    currentPage: page,
+                    totalPages: totalPages,
+                  });
+                }, 2000);
+              }}
+              className="h-full"
+            />
           </CardContent>
         </Card>
         
-        {/* Highlights Sidebar */}
+        {/* Highlights overlay */}
         {showHighlights && (
-          <HighlightsSidebar 
-            pageNumber={currentPage}
-            onClose={() => setShowHighlights(false)}
-          />
+          <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm">
+            <PageHeader
+              title="Highlights"
+              subtitle={`Page ${currentPage}`}
+              showBack
+              backPath="#"
+              rightAction={
+                <Button variant="ghost" size="sm" onClick={() => setShowHighlights(false)}>
+                  Done
+                </Button>
+              }
+            />
+            <div className="p-4 overflow-y-auto h-[calc(100vh-60px)]">
+              <HighlightsSidebar 
+                pageNumber={currentPage}
+                onClose={() => setShowHighlights(false)}
+              />
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Chapter Navigation */}
+      {/* Compact Chapter Navigation */}
       {chapters && chapters.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Chapters</h2>
-          <div className="grid gap-4">
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Chapters</h2>
+          <div className="space-y-1">
             {chapters.map((chapter: any) => (
               <Card 
                 key={chapter.id} 
-                className={`cursor-pointer hover:shadow-md transition-all ${
-                  currentChapter?.id === chapter.id ? 'ring-2 ring-primary' : ''
+                className={`cursor-pointer active:scale-[0.98] transition-all ${
+                  currentChapter?.id === chapter.id ? 'ring-1 ring-primary bg-primary/5' : 'border-border/50'
                 }`}
                 onClick={() => handleChapterClick(chapter)}
               >
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline">
-                          Chapter {chapter.chapterNumber}
-                        </Badge>
-                        {chapter.pdfStartPage && chapter.pdfEndPage && (
-                          <Badge variant="secondary">
-                            Pages {chapter.pdfStartPage}-{chapter.pdfEndPage}
-                          </Badge>
-                        )}
-                        {currentChapter?.id === chapter.id && (
-                          <Badge variant="default">
-                            Current
-                          </Badge>
-                        )}
-                      </div>
-                      <CardTitle className="text-xl">{chapter.title}</CardTitle>
-                      {chapter.description && (
-                        <CardDescription className="mt-2">
-                          {chapter.description}
-                        </CardDescription>
-                      )}
-                    </div>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/audiobook?chapter=${chapter.chapterNumber}`}>
-                        <Headphones className="h-4 w-4 mr-2" />
-                        Listen
-                      </Link>
-                    </Button>
+                <div className="flex items-center gap-3 p-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    currentChapter?.id === chapter.id ? 'bg-primary/20' : 'bg-muted'
+                  }`}>
+                    <span className="text-xs font-bold">{chapter.chapterNumber}</span>
                   </div>
-                </CardHeader>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{chapter.title}</p>
+                    {chapter.pdfStartPage && (
+                      <p className="text-[10px] text-muted-foreground">p. {chapter.pdfStartPage}-{chapter.pdfEndPage}</p>
+                    )}
+                  </div>
+                  {currentChapter?.id === chapter.id && (
+                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+                  )}
+                </div>
               </Card>
             ))}
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

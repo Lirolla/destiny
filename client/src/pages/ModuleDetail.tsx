@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, CheckCircle2, Circle, ArrowLeft, Target } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 /**
  * Module Detail Page
@@ -105,30 +106,9 @@ export default function ModuleDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border sticky top-0 bg-background z-10">
-        <div className="container py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/modules">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Link>
-              </Button>
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold">{(module as any).title}</h1>
-                  <Badge variant="secondary">Module {(module as any).moduleNumber}</Badge>
-                </div>
-                <p className="text-muted-foreground">{(module as any).corePrinciple || ''}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Module Detail" subtitle="Interactive learning" showBack />
 
-      <div className="container py-8 max-w-4xl">
+      <div className="px-4 py-4 space-y-4 pb-24">
         {/* Progress Overview */}
         <Card className="p-6 mb-8">
           <div className="flex items-center justify-between mb-4">

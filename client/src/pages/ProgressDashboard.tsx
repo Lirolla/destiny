@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PageHeader } from "@/components/PageHeader";
 
 export function ProgressDashboard() {
   const { data: pdfProgress } = trpc.pdf.getProgress.useQuery();
@@ -89,21 +90,9 @@ export function ProgressDashboard() {
   const totalHoursRemaining = pdfHoursRemaining + audioHoursRemaining + moduleHoursRemaining;
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-primary/10">
-            <TrendingUp className="h-8 w-8 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold">Learning Progress</h1>
-            <p className="text-muted-foreground">
-              Track your journey across all learning formats
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-background">
+      <PageHeader title="Progress" subtitle="Your learning journey" showBack />
+      <div className="px-4 py-4 space-y-4 pb-24">
 
       {/* Overall Progress Card */}
       <Card className="overflow-hidden">
@@ -286,6 +275,7 @@ export function ProgressDashboard() {
           </Button>
         </CardContent>
       </Card>
+    </div>
     </div>
   );
 }

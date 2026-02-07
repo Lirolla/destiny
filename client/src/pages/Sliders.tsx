@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,9 @@ import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, Plus, Gauge } from "lucide-react";
 import { toast } from "sonner";
 import { useAutoAchievementCheck } from "@/hooks/useAchievements";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function Sliders() {
-  const { user, isLoading: authLoading } = useAuth();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newAxis, setNewAxis] = useState({
     leftLabel: "",
@@ -24,14 +23,10 @@ export default function Sliders() {
   });
 
   // Fetch axes
-  const { data: axes, isLoading: axesLoading } = trpc.sliders.listAxes.useQuery(undefined, {
-    enabled: !!user,
-  });
+  const { data: axes, isLoading: axesLoading } = trpc.sliders.listAxes.useQuery();
 
   // Fetch latest states
-  const { data: latestStates } = trpc.sliders.getLatestStates.useQuery(undefined, {
-    enabled: !!user,
-  });
+  const { data: latestStates } = trpc.sliders.getLatestStates.useQuery();
 
   // Mutations
   const utils = trpc.useUtils();
@@ -91,7 +86,7 @@ export default function Sliders() {
     });
   };
 
-  if (authLoading) {
+  if (axesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -102,113 +97,12 @@ export default function Sliders() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <Card className="max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Authentication Required</CardTitle>
-            <CardDescription>
-              Sign in to access your emotional sliders
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button className="w-full" size="lg" asChild>
-              <a href="/api/oauth/login">Sign In</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Link>
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold">Emotional Sliders</h1>
-                <p className="text-sm text-muted-foreground">Calibrate your emotional state</p>
-              </div>
-            </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Axis
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create Emotional Axis</DialogTitle>
-                  <DialogDescription>
-                    Define a bipolar emotional dimension (e.g., Fear ← → Courage)
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="leftLabel">Left Pole (e.g., Fear)</Label>
-                    <Input
-                      id="leftLabel"
-                      placeholder="Fear, Anxiety, Doubt..."
-                      value={newAxis.leftLabel}
-                      onChange={(e) => setNewAxis({ ...newAxis, leftLabel: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="rightLabel">Right Pole (e.g., Courage)</Label>
-                    <Input
-                      id="rightLabel"
-                      placeholder="Courage, Confidence, Certainty..."
-                      value={newAxis.rightLabel}
-                      onChange={(e) => setNewAxis({ ...newAxis, rightLabel: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contextTag">Context Tag (optional)</Label>
-                    <Input
-                      id="contextTag"
-                      placeholder="work, relationships, conflict..."
-                      value={newAxis.contextTag}
-                      onChange={(e) => setNewAxis({ ...newAxis, contextTag: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Description (optional)</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="What does this axis measure?"
-                      value={newAxis.description}
-                      onChange={(e) => setNewAxis({ ...newAxis, description: e.target.value })}
-                      rows={3}
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleCreateAxis} disabled={createAxisMutation.isPending}>
-                    {createAxisMutation.isPending ? "Creating..." : "Create Axis"}
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Emotional Sliders" subtitle="Calibrate your inner state" showBack />
 
       {/* Main Content */}
-      <main className="container py-8">
+      <main className="px-4 py-4 pb-24">
         {axesLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />

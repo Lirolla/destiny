@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -10,21 +9,21 @@ import { ArrowLeft, Sun, Clock, Moon, CheckCircle2, Sparkles, AlertCircle } from
 import { toast } from "sonner";
 import { calculateGracePeriod, formatGracePeriodExpiry, getYesterdayDate } from "@/lib/streakRecovery";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function DailyCycle() {
-  const { user, isLoading: authLoading } = useAuth();
   const [phase, setPhase] = useState<"morning" | "midday" | "evening" | "complete">("morning");
 
   // Fetch today's cycle
   const { data: todayCycle, isLoading: cycleLoading, refetch: refetchCycle } = trpc.dailyCycle.getToday.useQuery(undefined, {
-    enabled: !!user,
+    
   });
 
   // Fetch yesterday's cycle for grace period
   const yesterdayDate = getYesterdayDate();
   const { data: recentCycles } = trpc.dailyCycle.getHistory.useQuery(
     { days: 2 },
-    { enabled: !!user }
+    {  }
   );
   const yesterdayCycle = recentCycles?.find(c => c.cycleDate === yesterdayDate);
 
@@ -35,7 +34,7 @@ export default function DailyCycle() {
 
   // Fetch axes for morning calibration
   const { data: axes } = trpc.sliders.listAxes.useQuery(undefined, {
-    enabled: !!user,
+    
   });
 
   // Determine current phase based on cycle data
@@ -152,61 +151,12 @@ export default function DailyCycle() {
     });
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <Card className="max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Authentication Required</CardTitle>
-            <CardDescription>Sign in to access your daily cycle</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full" size="lg" asChild>
-              <a href="/api/oauth/login">Sign In</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Link>
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold">Daily Will Cycle</h1>
-                <p className="text-sm text-muted-foreground">
-                  {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Daily Cycle" subtitle="Morning, midday & evening rituals" showBack />
 
       {/* Main Content */}
-      <main className="container py-8">
+      <main className="px-4 py-4 pb-24">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Grace Period Banner */}
           {gracePeriod.available && gracePeriod.expiresAt && (
@@ -279,29 +229,27 @@ export default function DailyCycle() {
                             <div className="text-sm font-medium">
                               {axis.leftLabel} ← → {axis.rightLabel}
                             </div>
-                            <div className="text-lg font-bold text-primary">{value}</div>
+                            <div className="text-xs font-mono px-2 py-1 rounded-md bg-muted tabular-nums">
+                              {value}
+                            </div>
                           </div>
                           <Slider
                             value={[value]}
-                            onValueChange={(v) => {
-                              setMorningCalibrations({ ...morningCalibrations, [axis.id]: v[0] });
-                            }}
+                            onValueChange={([val]) => setMorningCalibrations(prev => ({ ...prev, [axis.id]: val }))}
+                            min={0}
                             max={100}
                             step={1}
                           />
-                          <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>{axis.leftLabel}</span>
-                            <span>{axis.rightLabel}</span>
-                          </div>
                         </div>
                       );
                     })}
-                    <Button 
-                      onClick={handleMorningComplete} 
-                      disabled={startMorningMutation.isPending}
+                    <Button
                       className="w-full"
+                      size="lg"
+                      onClick={handleMorningComplete}
+                      disabled={startMorningMutation.isPending}
                     >
-                      {startMorningMutation.isPending ? "Recording..." : "Complete Morning Calibration"}
+                      {startMorningMutation.isPending ? "Calibrating..." : "Complete Morning Calibration"}
                     </Button>
                   </>
                 )}
@@ -315,52 +263,50 @@ export default function DailyCycle() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Clock className="h-6 w-6 text-primary" />
-                  <CardTitle>Midday: Decisive Action</CardTitle>
+                  <CardTitle>Midday Action</CardTitle>
                 </div>
                 <CardDescription>
-                  Commit to ONE action today. Not a goal. Not a wish. A decision.
+                  Define a single, decisive action to take before your evening reflection.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* AI Prompt */}
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="intended-action" className="font-medium">Intended Action</label>
+                  <Textarea
+                    id="intended-action"
+                    placeholder="e.g., Go for a 15-minute walk without my phone"
+                    value={intendedAction}
+                    onChange={(e) => setIntendedAction(e.target.value)}
+                    rows={3}
+                  />
+                </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">AI-Generated Prompt (Optional)</label>
+                    <label htmlFor="ai-prompt" className="font-medium">AI Decisive Prompt (Optional)</label>
                     <Button
+                      variant="ghost"
                       size="sm"
-                      variant="outline"
                       onClick={() => generatePrompt()}
                       disabled={promptLoading}
                     >
                       <Sparkles className="h-4 w-4 mr-2" />
-                      {promptLoading ? "Generating..." : "Generate Prompt"}
+                      {promptLoading ? "Generating..." : "Generate"}
                     </Button>
                   </div>
-                  {aiPrompt && (
-                    <div className="p-4 bg-muted rounded-lg text-sm">
-                      {aiPrompt}
-                    </div>
-                  )}
-                </div>
-
-                {/* Intended Action */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Your Intended Action</label>
                   <Textarea
-                    placeholder="What specific action will you take today? Be concrete."
-                    value={intendedAction}
-                    onChange={(e) => setIntendedAction(e.target.value)}
+                    id="ai-prompt"
+                    placeholder="Let the AI generate a prompt to help you commit to your action..."
+                    value={aiPrompt}
+                    onChange={(e) => setAiPrompt(e.target.value)}
                     rows={4}
+                    className="bg-muted/50"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Example: "Speak up in the 3pm meeting about the timeline concern" not "Be more confident"
-                  </p>
                 </div>
-
                 <Button
+                  className="w-full"
+                  size="lg"
                   onClick={handleMiddayComplete}
                   disabled={completeMiddayMutation.isPending}
-                  className="w-full"
                 >
                   {completeMiddayMutation.isPending ? "Committing..." : "Commit to Action"}
                 </Button>
@@ -374,58 +320,48 @@ export default function DailyCycle() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Moon className="h-6 w-6 text-primary" />
-                  <CardTitle>Evening: Cause-Effect Mapping</CardTitle>
+                  <CardTitle>Evening Reflection</CardTitle>
                 </div>
                 <CardDescription>
-                  Map what happened. This is evidence, not therapy.
+                  Reflect on the action you took and its effect on your state.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Reminder of intended action */}
-                {todayCycle?.intendedAction && (
-                  <div className="p-4 bg-muted rounded-lg">
-                    <div className="text-xs text-muted-foreground mb-1">You committed to:</div>
-                    <div className="text-sm font-medium">{todayCycle.intendedAction}</div>
-                  </div>
-                )}
-
-                {/* Action Taken */}
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">What Actually Happened</label>
+                  <label htmlFor="action-taken" className="font-medium">Action Taken</label>
                   <Textarea
-                    placeholder="Did you do it? What changed?"
+                    id="action-taken"
+                    placeholder="What did you do?"
                     value={actionTaken}
                     onChange={(e) => setActionTaken(e.target.value)}
                     rows={3}
                   />
                 </div>
-
-                {/* Observed Effect */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Observed Effect</label>
+                  <label htmlFor="observed-effect" className="font-medium">Observed Effect</label>
                   <Textarea
-                    placeholder="What was the result? What changed externally?"
+                    id="observed-effect"
+                    placeholder="What was the immediate result?"
                     value={observedEffect}
                     onChange={(e) => setObservedEffect(e.target.value)}
                     rows={3}
                   />
                 </div>
-
-                {/* Reflection (Optional) */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Reflection (Optional)</label>
+                  <label htmlFor="reflection" className="font-medium">Deeper Reflection (Optional)</label>
                   <Textarea
-                    placeholder="What did you learn about the cause-effect relationship?"
+                    id="reflection"
+                    placeholder="Any further thoughts or connections?"
                     value={reflection}
                     onChange={(e) => setReflection(e.target.value)}
-                    rows={3}
+                    rows={5}
                   />
                 </div>
-
                 <Button
+                  className="w-full"
+                  size="lg"
                   onClick={handleEveningComplete}
                   disabled={completeEveningMutation.isPending}
-                  className="w-full"
                 >
                   {completeEveningMutation.isPending ? "Completing..." : "Complete Daily Cycle"}
                 </Button>
@@ -435,39 +371,19 @@ export default function DailyCycle() {
 
           {/* Complete Phase */}
           {phase === "complete" && (
-            <Card>
-              <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
-                  <CheckCircle2 className="h-16 w-16 text-primary" />
-                </div>
-                <CardTitle>Daily Cycle Complete</CardTitle>
-                <CardDescription>
-                  You've completed today's practice. This is evidence of conscious will.
-                </CardDescription>
-              </CardHeader>
+            <Card className="text-center py-12">
               <CardContent className="space-y-4">
-                {todayCycle && (
-                  <div className="space-y-3 text-sm">
-                    <div className="p-3 bg-muted rounded-lg">
-                      <div className="text-xs text-muted-foreground mb-1">Intended Action:</div>
-                      <div>{todayCycle.intendedAction}</div>
-                    </div>
-                    <div className="p-3 bg-muted rounded-lg">
-                      <div className="text-xs text-muted-foreground mb-1">What Happened:</div>
-                      <div>{todayCycle.actionTaken}</div>
-                    </div>
-                    <div className="p-3 bg-muted rounded-lg">
-                      <div className="text-xs text-muted-foreground mb-1">Observed Effect:</div>
-                      <div>{todayCycle.observedEffect}</div>
-                    </div>
-                  </div>
-                )}
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1" asChild>
-                    <Link href="/dashboard">Back to Dashboard</Link>
+                <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
+                <h2 className="text-2xl font-bold">Daily Cycle Complete!</h2>
+                <p className="text-muted-foreground max-w-sm mx-auto">
+                  You have successfully completed your will cycle for the day. Return tomorrow to continue building your streak.
+                </p>
+                <div className="flex gap-4 justify-center pt-4">
+                  <Button asChild>
+                    <Link href="/dashboard">Go to Dashboard</Link>
                   </Button>
-                  <Button className="flex-1" asChild>
-                    <Link href="/insights">View Insights</Link>
+                  <Button variant="outline" asChild>
+                    <Link href="/history">View History</Link>
                   </Button>
                 </div>
               </CardContent>

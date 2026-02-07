@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 export function Flashcards() {
   const [location] = useLocation();
@@ -99,27 +100,19 @@ export function Flashcards() {
   };
   
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-primary/10">
-              <Brain className="h-8 w-8 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">Flashcard Review</h1>
-              <p className="text-muted-foreground">
-                Spaced repetition learning from your highlights
-              </p>
-            </div>
-          </div>
-          <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-            <PlusCircle className="h-5 w-5" />
-            Create Flashcard
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        title="Flashcards"
+        subtitle="Spaced repetition learning"
+        showBack
+        rightAction={
+          <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-1 h-8">
+            <PlusCircle className="h-3.5 w-3.5" />
+            New
           </Button>
-        </div>
-      </div>
+        }
+      />
+      <div className="px-4 py-4 space-y-4 pb-24">
       
       {/* Create Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -385,6 +378,7 @@ export function Flashcards() {
           </div>
         </CardContent>
       </Card>
+    </div>
     </div>
   );
 }

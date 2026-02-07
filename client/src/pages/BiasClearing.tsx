@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Brain, CloudFog, Sparkles, TrendingDown } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 /**
  * Bias Clearing Interface
@@ -63,24 +64,9 @@ export default function BiasClearing() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="container py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Bias Clearing</h1>
-              <p className="text-muted-foreground">
-                Recognize and clear cognitive fog for better decision-making
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <Link href="/">← Home</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Bias Clearing" subtitle="Clear mental fog & biases" showBack />
 
-      <div className="container py-8 max-w-4xl">
+      <div className="px-4 py-4 space-y-4 pb-24">
         {/* Start New Check */}
         {!showPrompt ? (
           <Card className="p-8 mb-8 text-center">

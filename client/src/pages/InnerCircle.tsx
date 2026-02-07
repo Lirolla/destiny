@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -7,19 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Users, UserPlus, CheckCircle2, Clock, XCircle, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function InnerCircle() {
-  const { user, isLoading: authLoading } = useAuth();
 
   // Fetch data
   const { data: connections, isLoading: connectionsLoading } = trpc.innerCircle.listConnections.useQuery(
     undefined,
-    { enabled: !!user }
+    {  }
   );
 
   const { data: sharedStates } = trpc.innerCircle.getSharedStates.useQuery(
     undefined,
-    { enabled: !!user }
+    {  }
   );
 
   // Mutations
@@ -39,64 +38,15 @@ export default function InnerCircle() {
     acceptInviteMutation.mutate({ connectionId });
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <Card className="max-w-md w-full mx-4">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Authentication Required</CardTitle>
-            <CardDescription>Sign in to access your Inner Circle</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full" size="lg" asChild>
-              <a href="/api/oauth/login">Sign In</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   const pendingInvites = connections?.filter(c => c.status === "pending") || [];
   const activeConnections = connections?.filter(c => c.status === "accepted") || [];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/dashboard">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Link>
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold">Inner Circle</h1>
-                <p className="text-sm text-muted-foreground">
-                  Mutual accountability, not social media
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Inner Circle" subtitle="Accountability partners" showBack />
 
       {/* Main Content */}
-      <main className="container py-8 space-y-8">
+      <main className="px-4 py-4 space-y-4 pb-24">
         {/* Pending Invites */}
         {pendingInvites.length > 0 && (
           <Card>

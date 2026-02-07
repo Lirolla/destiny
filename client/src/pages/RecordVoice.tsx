@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Mic, Square, Play, Pause, Upload, CheckCircle2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { PageHeader } from "@/components/PageHeader";
 
 const SAMPLE_TEXT = `**Sample 1: Narrative Style**
 
@@ -155,7 +156,7 @@ export function RecordVoice() {
   };
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
+    <div className="min-h-screen bg-background">
       <div className="space-y-6">
         {/* Header */}
         <div>

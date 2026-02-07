@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Lightbulb, Zap, Target } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 /**
  * Prayer Journal
@@ -57,24 +58,9 @@ export default function PrayerJournal() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="container py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Prayer Journal</h1>
-              <p className="text-muted-foreground">
-                Four-Part Prayer Protocol: Gratitude → Clarity → Strength → Alignment
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <Link href="/">← Home</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Prayer Journal" subtitle="Four-part prayer protocol" showBack />
 
-      <div className="container py-8 max-w-4xl">
+      <div className="px-4 py-4 space-y-4 pb-24">
         {/* Today's Prayer */}
         {hasTodaysPrayer && !showForm && (
           <Card className="p-8 mb-8 bg-primary/5 border-primary/20">

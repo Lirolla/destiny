@@ -1,39 +1,26 @@
-import { useAuth } from "@/hooks/useAuth";
+
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BadgeShowcase } from "@/components/BadgeShowcase";
 import { BADGE_DEFINITIONS, type BadgeType } from "@/lib/badges";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Lock } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 
 export default function Achievements() {
-  const { user, isLoading: authLoading } = useAuth();
 
   // TODO: Implement achievements backend
   // For now, use mock data
   const achievements: Array<{ badgeType: string }> = [];
   const achievementsLoading = false;
 
-  if (authLoading || achievementsLoading) {
+  if (achievementsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
           <p className="text-muted-foreground">Loading achievements...</p>
         </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle>Sign In Required</CardTitle>
-            <CardDescription>Please sign in to view your achievements</CardDescription>
-          </CardHeader>
-        </Card>
       </div>
     );
   }
@@ -55,23 +42,10 @@ export default function Achievements() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container py-6">
-          <div className="flex items-center gap-4">
-            <Trophy className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold">Achievements</h1>
-              <p className="text-muted-foreground">
-                Track your progress and unlock badges as you master Destiny Hacking
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Achievements" subtitle="Badges & milestones earned" showBack />
 
       {/* Main Content */}
-      <main className="container py-8 space-y-8">
+      <main className="px-4 py-4 space-y-4 pb-24">
         {/* Overall Progress */}
         <Card>
           <CardHeader>
