@@ -1050,3 +1050,21 @@
 - [x] Language switcher works (header, subtitle, chapters all translate)
 - [x] PDFs uploaded to app storage CloudFront with CORS, removed from public folder
 - [x] Save checkpoint
+
+
+## Phase 39: Global Language Toggle, Auto-play, Continue Card
+- [x] Create LanguageContext with global EN/PT state persisted in localStorage
+- [x] Add language toggle to More page settings section (EN/PT pill toggle)
+- [x] Update Book page to use global language context instead of local state
+- [x] Update Audiobook page to use global language context instead of local state
+- [x] Update AudiobookPlayer with onChapterEnded callback
+- [x] Translate More page labels (all sections, headers, descriptions)
+- [x] Add auto-play next chapter when current chapter ends in AudiobookPlayer
+- [x] Add auto-play toggle setting in the player (with localStorage persistence)
+- [x] Create continue reading/listening card on Home screen
+- [x] Show last-read book page with resume button and progress bar
+- [x] Show last-played audiobook chapter with resume button and progress bar
+- [x] Add getLastListenedChapter db function and tRPC procedure
+- [x] Translate Home page labels with global language context
+- [x] Test all three features end-to-end (all verified working in browser)
+- [x] Save checkpoint

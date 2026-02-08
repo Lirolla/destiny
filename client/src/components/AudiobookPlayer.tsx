@@ -17,7 +17,8 @@ import {
   ChevronRight,
   BookOpen,
   Timer,
-  X
+  X,
+  ListEnd
 } from "lucide-react";
 import { toast } from "sonner";
 import { getChapterTitle } from "@shared/chapterTranslations";
@@ -26,9 +27,10 @@ interface AudiobookPlayerProps {
   chapterId: number;
   language: "en" | "pt";
   onChapterChange?: (newChapterId: number) => void;
+  onChapterEnded?: () => void;
 }
 
-export function AudiobookPlayer({ chapterId, language, onChapterChange }: AudiobookPlayerProps) {
+export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapterEnded }: AudiobookPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -39,6 +41,9 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
   const [syncMode, setSyncMode] = useState(false);
   const [sleepTimer, setSleepTimer] = useState<number | null>(null); // minutes
   const [sleepTimerRemaining, setSleepTimerRemaining] = useState<number>(0); // seconds
+  const [autoPlay, setAutoPlay] = useState(() => {
+    return localStorage.getItem('audiobook-autoplay') !== 'false'; // default true
+  });
 
   // Track whether we've already restored position for this chapter+language combo
   // This prevents the progress query from repeatedly resetting currentTime during playback
@@ -281,7 +286,12 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
       playbackSpeed: playbackSpeedRef.current,
       completed: true,
     });
-  }, [chapterId]);
+    // Auto-play next chapter after a short delay if enabled
+    if (autoPlay && onChapterEnded) {
+      toast.info(language === 'pt' ? 'Próximo capítulo...' : 'Next chapter...');
+      setTimeout(() => onChapterEnded(), 1500);
+    }
+  }, [chapterId, onChapterEnded, autoPlay, language]);
 
   if (!chapter) {
     return (
@@ -413,7 +423,7 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
         </div>
 
         {/* Action Buttons Row - evenly spaced */}
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-5 gap-1.5">
           <Button
             variant="outline"
             size="sm"
@@ -435,6 +445,23 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
           </Button>
           
           <Button
+            variant={autoPlay ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              const newVal = !autoPlay;
+              setAutoPlay(newVal);
+              localStorage.setItem('audiobook-autoplay', String(newVal));
+              toast.success(newVal 
+                ? (language === 'pt' ? 'Reprodução automática ativada' : 'Auto-play enabled')
+                : (language === 'pt' ? 'Reprodução automática desativada' : 'Auto-play disabled'));
+            }}
+            className="h-9 text-xs font-medium"
+          >
+            <ListEnd className="h-3.5 w-3.5 mr-1" />
+            Auto
+          </Button>
+
+          <Button
             variant={syncMode ? "default" : "outline"}
             size="sm"
             onClick={() => {
@@ -448,7 +475,7 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange }: Audiob
                 toast.info("Sync mode disabled");
               }
             }}
-            className="h-9 text-xs font-medium col-span-2"
+            className="h-9 text-xs font-medium"
           >
             <BookOpen className="h-3.5 w-3.5 mr-1" />
             {syncMode ? "Syncing" : "Follow Along"}

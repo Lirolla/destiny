@@ -11,17 +11,14 @@ import { PDFViewer } from "@/components/PDFViewer";
 import { HighlightsSidebar } from "@/components/HighlightsSidebar";
 import { PageHeader } from "@/components/PageHeader";
 import { getChapterTitle } from "@shared/chapterTranslations";
+import { useLanguage, type AppLanguage } from "@/contexts/LanguageContext";
 
-type BookLanguage = "en" | "pt";
-
-const BOOK_LANGUAGE_KEY = "book-language";
-
-const PDF_URLS: Record<BookLanguage, string> = {
+const PDF_URLS: Record<AppLanguage, string> = {
   en: "https://d2xsxph8kpxj0f.cloudfront.net/111904132/fsRnWghWhaoD2r3KXXoRti/pdfs/destiny-hacking-book.pdf",
   pt: "https://d2xsxph8kpxj0f.cloudfront.net/111904132/fsRnWghWhaoD2r3KXXoRti/pdfs/destiny-hacking-book-pt.pdf",
 };
 
-const TOTAL_PAGES: Record<BookLanguage, number> = {
+const TOTAL_PAGES: Record<AppLanguage, number> = {
   en: 87,
   pt: 65,
 };
@@ -35,10 +32,7 @@ export function Book() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showHighlights, setShowHighlights] = useState(false);
   const [syncMode, setSyncMode] = useState(false);
-  const [language, setLanguage] = useState<BookLanguage>(() => {
-    const saved = localStorage.getItem(BOOK_LANGUAGE_KEY);
-    return (saved === "pt" ? "pt" : "en") as BookLanguage;
-  });
+  const { language, setLanguage, t } = useLanguage();
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const { data: progress } = trpc.pdf.getProgress.useQuery();
@@ -49,10 +43,9 @@ export function Book() {
   const displayPage = progress?.currentPage || currentPage;
   const percentComplete = (displayPage / totalPages) * 100;
   
-  // Persist language preference
-  const handleLanguageChange = (lang: BookLanguage) => {
+  // Handle language change - reset page when switching
+  const handleLanguageChange = (lang: AppLanguage) => {
     setLanguage(lang);
-    localStorage.setItem(BOOK_LANGUAGE_KEY, lang);
     // Reset to page 1 when switching language since page numbers may differ
     setCurrentPage(1);
   };

@@ -1140,6 +1140,11 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
       return db.listAudiobookChapters();
     }),
 
+    // Get last listened chapter for continue card
+    getLastListened: protectedProcedure.query(async ({ ctx }) => {
+      return db.getLastListenedChapter(ctx.user.id);
+    }),
+
     // Generate chapter audio (admin only)
     generateChapter: protectedProcedure
       .input(z.object({

@@ -35,6 +35,7 @@ import { GenerateAudiobook } from "./pages/GenerateAudiobook";
 import { ProgressDashboard } from "./pages/ProgressDashboard";
 import { Flashcards } from "./pages/Flashcards";
 import { OfflineIndicator } from "./components/OfflineIndicator";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 function Router() {
   const [location] = useLocation();
@@ -80,16 +81,18 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light" switchable>
-        <TooltipProvider>
+      <LanguageProvider>
+        <ThemeProvider defaultTheme="light" switchable>
+          <TooltipProvider>
           <Toaster />
           <SplashScreen />
           <AppShell>
             <Router />
           </AppShell>
           <OfflineIndicator />
-        </TooltipProvider>
-      </ThemeProvider>
+          </TooltipProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }

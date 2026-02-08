@@ -5,6 +5,7 @@ import {
   Calendar,
   ChevronRight,
   Compass,
+  Globe,
   Heart,
   Layers,
   Lightbulb,
@@ -18,123 +19,125 @@ import {
   Zap,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
-
-const menuSections = [
-  {
-    title: "Daily Practice",
-    items: [
-      {
-        icon: Compass,
-        label: "Daily Cycle",
-        description: "Morning, midday & evening rituals",
-        path: "/daily-cycle",
-        color: "text-amber-500",
-        bg: "bg-amber-500/10",
-      },
-      {
-        icon: Layers,
-        label: "Emotional Sliders",
-        description: "Calibrate your inner state",
-        path: "/sliders",
-        color: "text-blue-500",
-        bg: "bg-blue-500/10",
-      },
-      {
-        icon: Brain,
-        label: "Bias Clearing",
-        description: "Clear mental fog & biases",
-        path: "/bias-clearing",
-        color: "text-purple-500",
-        bg: "bg-purple-500/10",
-      },
-      {
-        icon: Heart,
-        label: "Prayer Journal",
-        description: "Four-part prayer protocol",
-        path: "/prayer-journal",
-        color: "text-rose-500",
-        bg: "bg-rose-500/10",
-      },
-    ],
-  },
-  {
-    title: "Growth & Tracking",
-    items: [
-      {
-        icon: BarChart3,
-        label: "Progress Dashboard",
-        description: "Your learning journey overview",
-        path: "/progress",
-        color: "text-emerald-500",
-        bg: "bg-emerald-500/10",
-      },
-      {
-        icon: Trophy,
-        label: "Achievements",
-        description: "Badges & milestones earned",
-        path: "/achievements",
-        color: "text-yellow-500",
-        bg: "bg-yellow-500/10",
-      },
-      {
-        icon: Zap,
-        label: "Flashcards",
-        description: "Review key concepts",
-        path: "/flashcards",
-        color: "text-orange-500",
-        bg: "bg-orange-500/10",
-      },
-      {
-        icon: Calendar,
-        label: "Weekly Review",
-        description: "Reflect on your week",
-        path: "/weekly-review",
-        color: "text-cyan-500",
-        bg: "bg-cyan-500/10",
-      },
-    ],
-  },
-  {
-    title: "Community & Tools",
-    items: [
-      {
-        icon: Users,
-        label: "Inner Circle",
-        description: "Connect with accountability partners",
-        path: "/inner-circle",
-        color: "text-indigo-500",
-        bg: "bg-indigo-500/10",
-      },
-      {
-        icon: Sprout,
-        label: "Sowing & Reaping",
-        description: "Track cause-effect relationships",
-        path: "/sowing-reaping",
-        color: "text-green-500",
-        bg: "bg-green-500/10",
-      },
-      {
-        icon: Lightbulb,
-        label: "AI Insights",
-        description: "Pattern analysis & recommendations",
-        path: "/insights",
-        color: "text-sky-500",
-        bg: "bg-sky-500/10",
-      },
-      {
-        icon: Star,
-        label: "Challenges",
-        description: "Group challenges & competitions",
-        path: "/challenges",
-        color: "text-pink-500",
-        bg: "bg-pink-500/10",
-      },
-    ],
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function More() {
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
+
+  const menuSections = [
+    {
+      title: t("Daily Practice", "Prática Diária"),
+      items: [
+        {
+          icon: Compass,
+          label: t("Daily Cycle", "Ciclo Diário"),
+          description: t("Morning, midday & evening rituals", "Rituais da manhã, meio-dia e noite"),
+          path: "/daily-cycle",
+          color: "text-amber-500",
+          bg: "bg-amber-500/10",
+        },
+        {
+          icon: Layers,
+          label: t("Emotional Sliders", "Controles Emocionais"),
+          description: t("Calibrate your inner state", "Calibre seu estado interior"),
+          path: "/sliders",
+          color: "text-blue-500",
+          bg: "bg-blue-500/10",
+        },
+        {
+          icon: Brain,
+          label: t("Bias Clearing", "Limpeza de Vieses"),
+          description: t("Clear mental fog & biases", "Limpe a névoa mental e vieses"),
+          path: "/bias-clearing",
+          color: "text-purple-500",
+          bg: "bg-purple-500/10",
+        },
+        {
+          icon: Heart,
+          label: t("Prayer Journal", "Diário de Oração"),
+          description: t("Four-part prayer protocol", "Protocolo de oração em quatro partes"),
+          path: "/prayer-journal",
+          color: "text-rose-500",
+          bg: "bg-rose-500/10",
+        },
+      ],
+    },
+    {
+      title: t("Growth & Tracking", "Crescimento e Acompanhamento"),
+      items: [
+        {
+          icon: BarChart3,
+          label: t("Progress Dashboard", "Painel de Progresso"),
+          description: t("Your learning journey overview", "Visão geral da sua jornada"),
+          path: "/progress",
+          color: "text-emerald-500",
+          bg: "bg-emerald-500/10",
+        },
+        {
+          icon: Trophy,
+          label: t("Achievements", "Conquistas"),
+          description: t("Badges & milestones earned", "Medalhas e marcos alcançados"),
+          path: "/achievements",
+          color: "text-yellow-500",
+          bg: "bg-yellow-500/10",
+        },
+        {
+          icon: Zap,
+          label: t("Flashcards", "Cartões de Estudo"),
+          description: t("Review key concepts", "Revise conceitos-chave"),
+          path: "/flashcards",
+          color: "text-orange-500",
+          bg: "bg-orange-500/10",
+        },
+        {
+          icon: Calendar,
+          label: t("Weekly Review", "Revisão Semanal"),
+          description: t("Reflect on your week", "Reflita sobre sua semana"),
+          path: "/weekly-review",
+          color: "text-cyan-500",
+          bg: "bg-cyan-500/10",
+        },
+      ],
+    },
+    {
+      title: t("Community & Tools", "Comunidade e Ferramentas"),
+      items: [
+        {
+          icon: Users,
+          label: t("Inner Circle", "Círculo Interno"),
+          description: t("Connect with accountability partners", "Conecte-se com parceiros de responsabilidade"),
+          path: "/inner-circle",
+          color: "text-indigo-500",
+          bg: "bg-indigo-500/10",
+        },
+        {
+          icon: Sprout,
+          label: t("Sowing & Reaping", "Semeadura e Colheita"),
+          description: t("Track cause-effect relationships", "Acompanhe relações de causa e efeito"),
+          path: "/sowing-reaping",
+          color: "text-green-500",
+          bg: "bg-green-500/10",
+        },
+        {
+          icon: Lightbulb,
+          label: t("AI Insights", "Insights de IA"),
+          description: t("Pattern analysis & recommendations", "Análise de padrões e recomendações"),
+          path: "/insights",
+          color: "text-sky-500",
+          bg: "bg-sky-500/10",
+        },
+        {
+          icon: Star,
+          label: t("Challenges", "Desafios"),
+          description: t("Group challenges & competitions", "Desafios em grupo e competições"),
+          path: "/challenges",
+          color: "text-pink-500",
+          bg: "bg-pink-500/10",
+        },
+      ],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -142,9 +145,9 @@ export default function More() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border">
         <div className="px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">More</h1>
+            <h1 className="text-2xl font-bold">{t("More", "Mais")}</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              All features & tools
+              {t("All features & tools", "Todos os recursos e ferramentas")}
             </p>
           </div>
           {/* Theme Toggle */}
@@ -207,9 +210,46 @@ export default function More() {
         {/* Settings Section */}
         <div>
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">
-            Settings
+            {t("Settings", "Configurações")}
           </h2>
           <div className="bg-card rounded-xl border border-border overflow-hidden divide-y divide-border">
+            {/* Language Toggle Row */}
+            <div className="flex items-center gap-3 px-4 py-3.5">
+              <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                <Globe className="w-5 h-5 text-emerald-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm">{t("Language", "Idioma")}</div>
+                <div className="text-xs text-muted-foreground">
+                  {language === "en" ? "English" : "Português"}
+                </div>
+              </div>
+              <div className="inline-flex items-center bg-muted/60 rounded-full p-0.5 gap-0.5">
+                <button
+                  onClick={() => setLanguage("en")}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                    language === "en"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  <span className="text-sm leading-none">🇬🇧</span>
+                  <span>EN</span>
+                </button>
+                <button
+                  onClick={() => setLanguage("pt")}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                    language === "pt"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  <span className="text-sm leading-none">🇧🇷</span>
+                  <span>PT</span>
+                </button>
+              </div>
+            </div>
+
             {/* Theme Toggle Row */}
             <div className="flex items-center gap-3 px-4 py-3.5">
               <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center flex-shrink-0">
@@ -220,9 +260,9 @@ export default function More() {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">Appearance</div>
+                <div className="font-medium text-sm">{t("Appearance", "Aparência")}</div>
                 <div className="text-xs text-muted-foreground">
-                  {theme === "dark" ? "Dark mode" : "Light mode"}
+                  {theme === "dark" ? t("Dark mode", "Modo escuro") : t("Light mode", "Modo claro")}
                 </div>
               </div>
               {toggleTheme && (
@@ -251,9 +291,9 @@ export default function More() {
                 <Settings className="w-5 h-5 text-gray-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">Settings</div>
+                <div className="font-medium text-sm">{t("Settings", "Configurações")}</div>
                 <div className="text-xs text-muted-foreground truncate">
-                  Notifications, export & preferences
+                  {t("Notifications, export & preferences", "Notificações, exportação e preferências")}
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />

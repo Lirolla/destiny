@@ -1389,6 +1389,26 @@ export async function updateAudiobookProgress(data: {
   }
 }
 
+export async function getLastListenedChapter(userId: number) {
+  const result = await db
+    .select({
+      chapterId: audiobookProgress.chapterId,
+      currentPosition: audiobookProgress.currentPosition,
+      completed: audiobookProgress.completed,
+      lastListenedAt: audiobookProgress.lastListenedAt,
+      chapterNumber: bookChapters.chapterNumber,
+      title: bookChapters.title,
+      audioDuration: bookChapters.audioDuration,
+    })
+    .from(audiobookProgress)
+    .innerJoin(bookChapters, eq(audiobookProgress.chapterId, bookChapters.id))
+    .where(eq(audiobookProgress.userId, userId))
+    .orderBy(desc(audiobookProgress.lastListenedAt))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
 export async function createAudiobookBookmark(data: {
   userId: number;
   chapterId: number;
