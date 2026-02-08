@@ -1068,3 +1068,13 @@
 - [x] Translate Home page labels with global language context
 - [x] Test all three features end-to-end (all verified working in browser)
 - [x] Save checkpoint
+
+
+## Phase 40: Redesign AudiobookPlayer Controls Layout
+- [x] Redesign volume/speed/bookmark/auto/follow controls into clean separated rows
+- [x] Volume: own full-width row with icon, slider, and percentage in muted background
+- [x] Action buttons (Speed, Bookmark, Auto, Follow Along): 2x2 grid with left-aligned labels
+- [x] Sleep Timer: own row at the bottom
+- [x] Ensure no overlapping or cramped controls on mobile
+- [x] Test on mobile viewport
+- [ ] Save checkpoint

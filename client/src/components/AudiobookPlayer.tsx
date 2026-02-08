@@ -396,12 +396,12 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
           </Button>
         </div>
 
-        {/* Volume Control - Full width row */}
-        <div className="flex items-center gap-3 px-1">
+        {/* Volume Control - Collapsible row */}
+        <div className="flex items-center gap-2 p-2.5 bg-muted/30 rounded-lg">
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9 flex-shrink-0"
+            className="h-8 w-8 flex-shrink-0"
             onClick={toggleMute}
           >
             {isMuted || volume === 0 ? (
@@ -417,31 +417,31 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
             onValueChange={handleVolumeChange}
             className="flex-1"
           />
-          <span className="text-xs text-muted-foreground w-8 text-right flex-shrink-0">
+          <span className="text-xs text-muted-foreground w-9 text-right flex-shrink-0 font-mono">
             {Math.round((isMuted ? 0 : volume) * 100)}%
           </span>
         </div>
 
-        {/* Action Buttons Row - evenly spaced */}
-        <div className="grid grid-cols-5 gap-1.5">
+        {/* Action Buttons - 2x2 grid for clear separation */}
+        <div className="grid grid-cols-2 gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={cycleSpeed}
-            className="h-9 text-xs font-medium"
+            className="h-10 text-xs font-medium justify-start px-3"
           >
-            <Clock className="h-3.5 w-3.5 mr-1" />
-            {playbackSpeed}x
+            <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
+            {language === 'pt' ? 'Velocidade' : 'Speed'}: {playbackSpeed}x
           </Button>
 
           <Button
             variant="outline"
             size="sm"
             onClick={handleAddBookmark}
-            className="h-9 text-xs font-medium"
+            className="h-10 text-xs font-medium justify-start px-3"
           >
-            <Bookmark className="h-3.5 w-3.5 mr-1" />
-            Save
+            <Bookmark className="h-4 w-4 mr-2 flex-shrink-0" />
+            {language === 'pt' ? 'Marcador' : 'Bookmark'}
           </Button>
           
           <Button
@@ -455,10 +455,10 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
                 ? (language === 'pt' ? 'Reprodução automática ativada' : 'Auto-play enabled')
                 : (language === 'pt' ? 'Reprodução automática desativada' : 'Auto-play disabled'));
             }}
-            className="h-9 text-xs font-medium"
+            className="h-10 text-xs font-medium justify-start px-3"
           >
-            <ListEnd className="h-3.5 w-3.5 mr-1" />
-            Auto
+            <ListEnd className="h-4 w-4 mr-2 flex-shrink-0" />
+            {language === 'pt' ? 'Auto-reprodução' : 'Auto-play'}: {autoPlay ? 'ON' : 'OFF'}
           </Button>
 
           <Button
@@ -469,16 +469,16 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
                 const pdfUrl = `/book?chapter=${(chapter as any).chapterNumber}&sync=true`;
                 window.open(pdfUrl, 'pdf-sync', 'width=1200,height=800');
                 setSyncMode(true);
-                toast.success("Sync mode enabled - PDF will follow audio");
+                toast.success(language === 'pt' ? 'Modo sincronizado ativado' : 'Sync mode enabled - PDF will follow audio');
               } else {
                 setSyncMode(false);
-                toast.info("Sync mode disabled");
+                toast.info(language === 'pt' ? 'Modo sincronizado desativado' : 'Sync mode disabled');
               }
             }}
-            className="h-9 text-xs font-medium"
+            className="h-10 text-xs font-medium justify-start px-3"
           >
-            <BookOpen className="h-3.5 w-3.5 mr-1" />
-            {syncMode ? "Syncing" : "Follow Along"}
+            <BookOpen className="h-4 w-4 mr-2 flex-shrink-0" />
+            {syncMode ? (language === 'pt' ? 'Sincronizando' : 'Syncing') : (language === 'pt' ? 'Acompanhar' : 'Follow Along')}
           </Button>
         </div>
 
