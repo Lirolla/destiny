@@ -1078,3 +1078,13 @@
 - [x] Ensure no overlapping or cramped controls on mobile
 - [x] Test on mobile viewport
 - [ ] Save checkpoint
+
+
+## Phase 41: Fix Chapter 14 Portuguese Audio Volume Fluctuation
+- [x] Investigate Chapter 14 PT audio file (audioUrlPt in database)
+- [x] Regenerate Chapter 14 Portuguese audio with ElevenLabs (10 chunks, 42K chars)
+- [x] Apply audio normalization to prevent volume fluctuations (ffmpeg loudnorm filter)
+- [x] Upload fixed audio to S3 (25MB file, 52m 48s duration)
+- [x] Update database with new audioUrlPt
+- [x] Test Chapter 14 PT audio playback (player loads successfully, ready for user testing)
+- [ ] Save checkpoint
