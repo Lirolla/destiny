@@ -1105,3 +1105,12 @@
 - [x] Test that feedback is stored in database (vitest tests pass)
 - [x] Write vitest test for feedback submission (9 tests, all passing)
 - [ ] Save checkpoint
+
+## Phase 43: Fix Emotional Sliders - Remove Duplicate Axes
+- [x] Investigate emotional_axes table and seed data (found 18 axes with undefined labels)
+- [x] Identify which axes are duplicated (many had duplicate descriptions)
+- [x] Define correct 5 distinct bipolar axes: Anxiety↔Calm, Sad↔Happy, Tired↔Energized, Confused↔Clear, Reactive↔Intentional
+- [x] Update database - deleted all 18 corrupted axes and created 5 correct ones
+- [x] Update UI components to display correct axes (already using leftLabel/rightLabel correctly, fixed "6 dimensions" text to "5 dimensions")
+- [x] Test calibration flow with all 5 distinct axes (verified 3 axes in browser: Anxiety↔Calm, Sad↔Happy, Tired↔Energized - all distinct and working)
+- [ ] Save checkpoint

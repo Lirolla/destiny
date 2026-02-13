@@ -78,7 +78,7 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
         <DialogHeader>
           <DialogTitle>Initial Calibration</DialogTitle>
           <DialogDescription>
-            Let's establish your baseline emotional state across all 6 dimensions
+            Let's establish your baseline emotional state across all 5 dimensions
           </DialogDescription>
         </DialogHeader>
 
