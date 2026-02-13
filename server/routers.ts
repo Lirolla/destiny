@@ -182,6 +182,48 @@ export const appRouter = router({
       return { score, calibratedCount: latestStates.length, totalAxes: axes.length, level };
     }),
 
+    // Get 3 lowest-scoring axes for midday focus
+    getLowest3: protectedProcedure.query(async ({ ctx }) => {
+      const axes = await db.getUserAxes(ctx.user.id);
+      const latestStates = await db.getLatestStatesPerAxis(ctx.user.id);
+      
+      if (!latestStates || latestStates.length === 0) return [];
+      
+      // Sort by value ascending, take lowest 3
+      const axisMap = new Map(axes.map(a => [a.id, a]));
+      const sorted = [...latestStates]
+        .sort((a, b) => a.value - b.value)
+        .slice(0, 3)
+        .map(state => ({
+          ...state,
+          axis: axisMap.get(state.axisId),
+        }));
+      
+      return sorted;
+    }),
+
+    // Get current check-in period based on time of day
+    getCheckInStatus: protectedProcedure.query(async ({ ctx }) => {
+      const now = new Date();
+      const hour = now.getHours();
+      const today = now.toISOString().split('T')[0];
+      const cycle = await db.getTodayCycle(ctx.user.id, today);
+      
+      let period: 'morning' | 'midday' | 'evening';
+      if (hour < 12) period = 'morning';
+      else if (hour < 17) period = 'midday';
+      else period = 'evening';
+      
+      return {
+        period,
+        morningDone: !!cycle?.morningCompletedAt,
+        middayDone: !!cycle?.middayCompletedAt,
+        eveningDone: !!cycle?.eveningCompletedAt,
+        isComplete: !!cycle?.isComplete,
+        cycleExists: !!cycle,
+      };
+    }),
+
     // Reorder axes
     reorderAxes: protectedProcedure
       .input(
@@ -1595,6 +1637,16 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
         { id: "first_insight", name: "Pattern Recognition", description: "Receive your first AI insight", category: "insight", rarity: "common", icon: "💡" },
         { id: "insights_10", name: "Self-Aware", description: "Collect 10 AI insights", category: "insight", rarity: "uncommon", icon: "💡" },
         { id: "insight_rated_high", name: "Breakthrough", description: "Rate an insight as highly valuable", category: "insight", rarity: "rare", icon: "💡" },
+        // Axis mastery badges
+        { id: "axis_above_70_any", name: "Rising Pilot", description: "Get any axis above 70", category: "mastery", rarity: "common", icon: "✈️" },
+        { id: "axis_above_70_5", name: "Taking Control", description: "Get 5 axes above 70 simultaneously", category: "mastery", rarity: "uncommon", icon: "✈️" },
+        { id: "axis_above_70_10", name: "Master Pilot", description: "Get 10 axes above 70 simultaneously", category: "mastery", rarity: "rare", icon: "✈️" },
+        { id: "invictus", name: "Invictus", description: "All 15 axes above 70 — Master of your fate, Captain of your soul", category: "mastery", rarity: "legendary", icon: "👑" },
+        { id: "axis_streak_7", name: "Steady Hand", description: "Maintain any axis above 70 for 7 consecutive days", category: "mastery", rarity: "uncommon", icon: "🏔️" },
+        { id: "axis_streak_30", name: "Iron Will", description: "Maintain any axis above 70 for 30 consecutive days", category: "mastery", rarity: "rare", icon: "🏔️" },
+        { id: "axis_streak_90", name: "Unbreakable", description: "Maintain any axis above 70 for 90 consecutive days", category: "mastery", rarity: "legendary", icon: "🏔️" },
+        { id: "destiny_score_80", name: "High Destiny", description: "Reach an Overall Destiny Score of 80+", category: "mastery", rarity: "rare", icon: "⭐" },
+        { id: "destiny_score_90", name: "Transcendent", description: "Reach an Overall Destiny Score of 90+", category: "mastery", rarity: "legendary", icon: "🌟" },
       ];
 
       // Check which badges are unlocked
@@ -1644,6 +1696,52 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
       // Check insight badges
       if (insightCount >= 1) await db.unlockBadge(userId, "first_insight") && newlyUnlocked.push("first_insight");
       if (insightCount >= 10) await db.unlockBadge(userId, "insights_10") && newlyUnlocked.push("insights_10");
+
+      // Check axis mastery badges
+      const latestStates = await db.getLatestStatesPerAxis(userId);
+      const axesAbove70 = latestStates.filter(s => s.value >= 70).length;
+      
+      if (axesAbove70 >= 1) await db.unlockBadge(userId, "axis_above_70_any") && newlyUnlocked.push("axis_above_70_any");
+      if (axesAbove70 >= 5) await db.unlockBadge(userId, "axis_above_70_5") && newlyUnlocked.push("axis_above_70_5");
+      if (axesAbove70 >= 10) await db.unlockBadge(userId, "axis_above_70_10") && newlyUnlocked.push("axis_above_70_10");
+      if (axesAbove70 >= 15) await db.unlockBadge(userId, "invictus") && newlyUnlocked.push("invictus");
+
+      // Check Destiny Score badges
+      if (latestStates.length > 0) {
+        const total = latestStates.reduce((sum, s) => sum + s.value, 0);
+        const destinyScore = Math.round(total / latestStates.length);
+        if (destinyScore >= 80) await db.unlockBadge(userId, "destiny_score_80") && newlyUnlocked.push("destiny_score_80");
+        if (destinyScore >= 90) await db.unlockBadge(userId, "destiny_score_90") && newlyUnlocked.push("destiny_score_90");
+      }
+
+      // Check axis streak badges (7/30/90 days above 70)
+      const axes = await db.getUserAxes(userId);
+      for (const axis of axes) {
+        const history = await db.getStateHistory(userId, axis.id, 90);
+        if (history.length === 0) continue;
+        
+        // Sort by date descending and count consecutive days above 70
+        const sorted = [...history].sort((a, b) => 
+          new Date(b.clientTimestamp).getTime() - new Date(a.clientTimestamp).getTime()
+        );
+        
+        let consecutiveDays = 0;
+        const seen = new Set<string>();
+        for (const state of sorted) {
+          const day = new Date(state.clientTimestamp).toISOString().split('T')[0];
+          if (seen.has(day)) continue;
+          seen.add(day);
+          if (state.value >= 70) {
+            consecutiveDays++;
+          } else {
+            break;
+          }
+        }
+        
+        if (consecutiveDays >= 7) { await db.unlockBadge(userId, "axis_streak_7"); if (!newlyUnlocked.includes("axis_streak_7")) newlyUnlocked.push("axis_streak_7"); }
+        if (consecutiveDays >= 30) { await db.unlockBadge(userId, "axis_streak_30"); if (!newlyUnlocked.includes("axis_streak_30")) newlyUnlocked.push("axis_streak_30"); }
+        if (consecutiveDays >= 90) { await db.unlockBadge(userId, "axis_streak_90"); if (!newlyUnlocked.includes("axis_streak_90")) newlyUnlocked.push("axis_streak_90"); }
+      }
 
        return { newlyUnlocked };
     }),

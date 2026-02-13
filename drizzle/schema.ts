@@ -656,7 +656,28 @@ export const achievements = mysqlTable("achievements", {
     // Highlight badges
     "first_highlight",
     "highlights_25",
-    "highlights_100"
+    "highlights_100",
+    // Calibration count badges
+    "calibration_10",
+    "calibration_50",
+    "calibration_100",
+    // Streak badges
+    "streak_3",
+    // Social badges
+    "inner_circle_5",
+    // Insight badges
+    "insights_10",
+    "insight_rated_high",
+    // Axis mastery badges
+    "axis_above_70_any",
+    "axis_above_70_5",
+    "axis_above_70_10",
+    "invictus",
+    "axis_streak_7",
+    "axis_streak_30",
+    "axis_streak_90",
+    "destiny_score_80",
+    "destiny_score_90"
   ]).notNull(),
   
   unlockedAt: timestamp("unlockedAt").defaultNow().notNull(),

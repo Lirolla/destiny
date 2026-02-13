@@ -9,6 +9,7 @@ import { useAutoAchievementCheck } from "@/hooks/useAchievements";
 import { PageHeader } from "@/components/PageHeader";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { Link } from "wouter";
+import { DestinyRadarChart } from "@/components/DestinyRadarChart";
 
 // Destiny Score level config
 const LEVEL_CONFIG = {
@@ -182,6 +183,24 @@ export default function Sliders() {
                   })}
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Radar Chart */}
+        {axes && axes.length > 0 && latestStates && latestStates.length > 0 && (
+          <Card className="border-0 bg-card/50 overflow-hidden">
+            <CardContent className="pt-6 pb-4">
+              <div className="text-center mb-2">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Your Free Will Radar
+                </div>
+              </div>
+              <DestinyRadarChart
+                axes={axes}
+                currentStates={latestStates}
+                height={320}
+              />
             </CardContent>
           </Card>
         )}

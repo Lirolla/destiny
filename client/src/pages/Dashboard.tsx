@@ -2,11 +2,12 @@ import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Gauge, Calendar, Brain, Users, TrendingUp, CheckCircle2, Flame, Settings } from "lucide-react";
+import { Gauge, Calendar, Brain, Users, TrendingUp, CheckCircle2, Flame, Settings, Sun, Clock, Moon, Target } from "lucide-react";
 import { SliderHistoryChart } from "@/components/SliderHistoryChart";
 import { ShareProgress } from "@/components/ShareProgress";
 import type { ProgressSummary } from "@/lib/socialShare";
 import { PageHeader } from "@/components/PageHeader";
+import { DestinyRadarChart } from "@/components/DestinyRadarChart";
 
 export default function Dashboard() {
   // Guest users are auto-created
@@ -33,6 +34,9 @@ export default function Dashboard() {
     { limit: 5 },
     {  }
   );
+
+  const { data: destinyScore } = trpc.sliders.getDestinyScore.useQuery();
+  const { data: checkInStatus } = trpc.sliders.getCheckInStatus.useQuery();
 
   // Calculate streak
   const calculateStreak = () => {
@@ -75,6 +79,67 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="px-4 py-4 space-y-4 pb-24">
+        {/* Check-In Prompt Banner */}
+        {checkInStatus && !checkInStatus.isComplete && (
+          <Card className="border-primary/30 bg-gradient-to-r from-primary/5 to-transparent">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {checkInStatus.period === 'morning' && !checkInStatus.morningDone && (
+                    <><Sun className="h-6 w-6 text-amber-500" />
+                    <div>
+                      <p className="font-medium text-sm">Morning Calibration Awaits</p>
+                      <p className="text-xs text-muted-foreground">Start your day by calibrating all 15 axes</p>
+                    </div></>
+                  )}
+                  {checkInStatus.period === 'midday' && checkInStatus.morningDone && !checkInStatus.middayDone && (
+                    <><Target className="h-6 w-6 text-blue-500" />
+                    <div>
+                      <p className="font-medium text-sm">Midday Focus Time</p>
+                      <p className="text-xs text-muted-foreground">Recalibrate your 3 lowest axes & commit to action</p>
+                    </div></>
+                  )}
+                  {checkInStatus.period === 'evening' && checkInStatus.middayDone && !checkInStatus.eveningDone && (
+                    <><Moon className="h-6 w-6 text-indigo-400" />
+                    <div>
+                      <p className="font-medium text-sm">Evening Reflection</p>
+                      <p className="text-xs text-muted-foreground">Map cause-effect and complete your cycle</p>
+                    </div></>
+                  )}
+                  {!checkInStatus.cycleExists && (
+                    <><Sun className="h-6 w-6 text-amber-500" />
+                    <div>
+                      <p className="font-medium text-sm">Start Today's Cycle</p>
+                      <p className="text-xs text-muted-foreground">Begin with your morning calibration</p>
+                    </div></>
+                  )}
+                </div>
+                <Button size="sm" asChild>
+                  <Link href="/daily-cycle">Go</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Destiny Score + Radar */}
+        {destinyScore?.score !== null && destinyScore?.score !== undefined && axes && latestStates && latestStates.length > 0 && (
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg">Destiny Score</CardTitle>
+                  <CardDescription>Your overall free will mastery</CardDescription>
+                </div>
+                <div className="text-3xl font-bold text-primary">{destinyScore.score}%</div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <DestinyRadarChart axes={axes} currentStates={latestStates} height={280} />
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Overview */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Your Progress</h2>

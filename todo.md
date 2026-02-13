@@ -1135,15 +1135,32 @@
 - [x] Check database schema for modules/exercises (bookModules + moduleProgress tables, all 14 modules seeded)
 - [x] Identify what was planned and what's broken (decisionChallenge JSON rendered directly as React child → crash)
 - [x] Fix Practice Modules: created DecisionChallengeView component to render branching scenarios interactively
-- [ ] Save checkpoint
+- [x] Save checkpoint
 
 ## Phase 46: Daily Check-In Flow (Morning/Midday/Evening)
-- [ ] Implement daily check-in cycle
-- [ ] Midday check shows only 3 lowest axes
+- [x] Check-in type field already exists in dailyCycles schema (morning/midday/evening)
+- [x] Create backend procedures: getCheckInStatus (time-of-day aware) + getLowest3 axes
+- [x] Morning check-in: full 15-axis calibration with motivational prompt
+- [x] Midday check-in: show only the 3 lowest-scoring axes for focused improvement
+- [x] Evening check-in: full review with daily summary and Destiny Score change
+- [x] Enhanced DailyCycle page with period-aware UI, Destiny Score display, Invictus quote
+- [x] Add check-in prompt banner on Dashboard (Morning/Midday/Evening context-aware)
+- [ ] Save checkpoint
 
 ## Phase 47: Spider/Radar Chart for 15 Axes
-- [ ] Add radar chart visualization for all 15 axes
+- [x] Install Chart.js + react-chartjs-2
+- [x] Create DestinyRadarChart component showing all 15 axes with emoji labels
+- [x] Display current values with green colour-coded fill and border
+- [x] Add to Sliders page above the axis list
+- [x] Add to Dashboard with Destiny Score header (84% shown)
+- [ ] Save checkpoint
 
-## Phase 48: Milestone Badges
-- [ ] Award badges for maintaining axis scores above 70
-- [ ] Invictus Badge for all 15 above 70
+## Phase 48: Milestone Badges for Axis Scores
+- [x] Design badge system: 7-day, 30-day, 90-day streak per axis
+- [x] Create Invictus Badge: all 15 axes above 70 simultaneously (legendary rarity, crown emoji)
+- [x] Added 9 mastery badges: Rising Pilot, Awakening, Axis Commander, Invictus, 7/30/90-day streaks, High Destiny (80%), Transcendent (90%)
+- [x] Badge notification via checkAndUnlock procedure
+- [x] Integrated with existing achievements system in routers.ts
+- [x] Updated database enum with all new badge types
+- [x] All 7 vitest tests passing (destiny-features.test.ts)
+- [ ] Save checkpoint
