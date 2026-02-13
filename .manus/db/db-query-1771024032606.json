@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE emotional_axes \nADD COLUMN axisNumber int NOT NULL DEFAULT 0,\nADD COLUMN axisName varchar(100),\nADD COLUMN subtitle varchar(200),\nADD COLUMN emoji varchar(10),\nADD COLUMN colorLow varchar(7),\nADD COLUMN colorHigh varchar(7),\nADD COLUMN reflectionPrompt text,\nADD COLUMN chapterRef varchar(200);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute ALTER TABLE emotional_axes \nADD COLUMN axisNumber int NOT NULL DEFAULT 0,\nADD COLUMN axisName varchar(100),\nADD COLUMN subtitle varchar(200),\nADD COLUMN emoji varchar(10),\nADD COLUMN colorLow varchar(7),\nADD COLUMN colorHigh varchar(7),\nADD COLUMN reflectionPrompt text,\nADD COLUMN chapterRef varchar(200);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2502
+}

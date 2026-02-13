@@ -1113,4 +1113,19 @@
 - [x] Update database - deleted all 18 corrupted axes and created 5 correct ones
 - [x] Update UI components to display correct axes (already using leftLabel/rightLabel correctly, fixed "6 dimensions" text to "5 dimensions")
 - [x] Test calibration flow with all 5 distinct axes (verified 3 axes in browser: Anxiety↔Calm, Sad↔Happy, Tired↔Energized - all distinct and working)
+- [x] Save checkpoint
+
+## Phase 44: Implement 15 Axes of Free Will System (Master Prompt)
+- [x] Update emotional_axes schema to add new fields: emoji, colorLow, colorHigh, subtitle, reflectionPrompt, chapterRef, axisNumber
+- [x] Push schema migration (ALTER TABLE to add columns)
+- [x] Delete existing 5 axes and seed all 15 correct axes with full metadata
+- [x] Update backend tRPC procedures for 15-axis system (createAxis updated with new fields)
+- [x] Add Overall Destiny Score calculation (average of all 15 axes, with level: critical/needs_work/growing/strong/mastery)
+- [x] Redesign Sliders page UI with emoji, colour gradients, reflection prompts
+- [x] Display Overall Destiny Score with colour coding (Red/Orange/Yellow/Green/Gold)
+- [x] Update InitialCalibration dialog for 15 axes (show "15 dimensions", emoji, colours, reflection prompts)
+- [x] Implement chapter linking: when axis score < 30, show red zone alert with link to corresponding chapter
+- [x] Add slider colour transition from low colour to high colour (interpolateColor function)
+- [x] Show reflection prompt on axis detail/tap (expandable card with reflection section)
+- [x] Test all 15 axes display correctly (all 15 verified in browser + 4 vitest tests passing)
 - [ ] Save checkpoint

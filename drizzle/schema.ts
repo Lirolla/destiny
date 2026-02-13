@@ -64,26 +64,36 @@ export type SliderProfile = typeof sliderProfiles.$inferSelect;
 export type InsertSliderProfile = typeof sliderProfiles.$inferInsert;
 
 /**
- * Emotional Axes define the bipolar dimensions users can calibrate.
- * Each axis has two opposing poles (e.g., Fear ← → Courage).
- * Users can create custom axes for different life contexts.
+ * Emotional Axes define the 15 bipolar dimensions of Free Will.
+ * Each axis maps to a chapter of the Destiny Hacking book.
+ * Axis 0 = Introduction, Axes 1-14 = Chapters 1-14.
  */
 export const emotionalAxes = mysqlTable("emotional_axes", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
   
   // Axis definition
-  leftLabel: varchar("leftLabel", { length: 50 }).notNull(), // e.g., "Fear"
-  rightLabel: varchar("rightLabel", { length: 50 }).notNull(), // e.g., "Courage"
-  contextTag: varchar("contextTag", { length: 50 }), // e.g., "work", "relationships", "conflict"
+  axisNumber: int("axisNumber").notNull(), // 0-14, maps to chapter
+  axisName: varchar("axisName", { length: 100 }), // e.g., "The Will Axis"
+  leftLabel: varchar("leftLabel", { length: 50 }).notNull(), // Clouded State
+  rightLabel: varchar("rightLabel", { length: 50 }).notNull(), // Clear State
+  subtitle: varchar("subtitle", { length: 200 }), // e.g., "Is your will broken or alive?"
+  contextTag: varchar("contextTag", { length: 50 }), // e.g., "work", "relationships"
   
   // Display and ordering
   displayOrder: int("displayOrder").default(0),
   isActive: boolean("isActive").default(true).notNull(),
   
-  // Metadata for future features
-  color: varchar("color", { length: 7 }), // Hex color for UI customization
-  description: text("description"), // Optional explanation of what this axis measures
+  // Visual metadata
+  emoji: varchar("emoji", { length: 10 }), // e.g., "🔋"
+  colorLow: varchar("colorLow", { length: 7 }), // Hex colour for clouded state
+  colorHigh: varchar("colorHigh", { length: 7 }), // Hex colour for clear state
+  color: varchar("color", { length: 7 }), // Legacy: general colour
+  
+  // Content
+  description: text("description"), // Full description of what this axis measures
+  reflectionPrompt: text("reflectionPrompt"), // Reflection question for the user
+  chapterRef: varchar("chapterRef", { length: 200 }), // Source chapter reference
   
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

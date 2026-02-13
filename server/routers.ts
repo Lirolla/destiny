@@ -51,11 +51,19 @@ export const appRouter = router({
     createAxis: protectedProcedure
       .input(
         z.object({
+          axisNumber: z.number().min(0).max(14).optional(),
+          axisName: z.string().max(100).optional(),
           leftLabel: z.string().min(1).max(50),
           rightLabel: z.string().min(1).max(50),
+          subtitle: z.string().max(200).optional(),
           contextTag: z.string().max(50).optional(),
+          emoji: z.string().max(10).optional(),
+          colorLow: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+          colorHigh: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
           color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
           description: z.string().optional(),
+          reflectionPrompt: z.string().optional(),
+          chapterRef: z.string().max(200).optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -67,11 +75,19 @@ export const appRouter = router({
 
         return db.createAxis({
           userId: ctx.user.id,
+          axisNumber: input.axisNumber ?? maxOrder + 1,
+          axisName: input.axisName || null,
           leftLabel: input.leftLabel,
           rightLabel: input.rightLabel,
+          subtitle: input.subtitle || null,
           contextTag: input.contextTag || null,
+          emoji: input.emoji || null,
+          colorLow: input.colorLow || null,
+          colorHigh: input.colorHigh || null,
           color: input.color || null,
           description: input.description || null,
+          reflectionPrompt: input.reflectionPrompt || null,
+          chapterRef: input.chapterRef || null,
           displayOrder: maxOrder + 1,
           isActive: true,
         });
@@ -142,6 +158,28 @@ export const appRouter = router({
     // Get latest state for all axes
     getLatestStates: protectedProcedure.query(async ({ ctx }) => {
       return db.getLatestStatesPerAxis(ctx.user.id);
+    }),
+
+    // Get Overall Destiny Score (average of all 15 axes)
+    getDestinyScore: protectedProcedure.query(async ({ ctx }) => {
+      const axes = await db.getUserAxes(ctx.user.id);
+      const latestStates = await db.getLatestStatesPerAxis(ctx.user.id);
+      
+      if (!latestStates || latestStates.length === 0) {
+        return { score: null, calibratedCount: 0, totalAxes: axes.length, level: 'uncalibrated' as const };
+      }
+      
+      const total = latestStates.reduce((sum, s) => sum + s.value, 0);
+      const score = Math.round(total / latestStates.length);
+      
+      let level: 'critical' | 'needs_work' | 'growing' | 'strong' | 'mastery';
+      if (score <= 30) level = 'critical';
+      else if (score <= 50) level = 'needs_work';
+      else if (score <= 70) level = 'growing';
+      else if (score <= 85) level = 'strong';
+      else level = 'mastery';
+      
+      return { score, calibratedCount: latestStates.length, totalAxes: axes.length, level };
     }),
 
     // Reorder axes
