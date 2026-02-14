@@ -1,12 +1,15 @@
 // Service Worker for Destiny Hacking PWA
-const CACHE_NAME = 'destiny-hacking-v2';
-const RUNTIME_CACHE = 'destiny-hacking-runtime-v2';
+const CACHE_NAME = 'destiny-hacking-v3';
+const RUNTIME_CACHE = 'destiny-hacking-runtime-v3';
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
   '/',
   '/manifest.json',
 ];
+
+// Scheduled reminder timers (in-memory, reset on SW restart)
+const scheduledTimers = {};
 
 // Install event - cache core assets
 self.addEventListener('install', (event) => {
@@ -46,7 +49,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Skip caching Vite dev server assets (node_modules, @vite, @fs, @react-refresh, HMR)
+  // Skip caching Vite dev server assets
   if (
     url.pathname.includes('node_modules') ||
     url.pathname.startsWith('/@') ||
@@ -69,7 +72,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For static assets (images, fonts, etc.), use stale-while-revalidate
+  // For static assets, use stale-while-revalidate
   event.respondWith(
     fetch(request)
       .then((response) => {
@@ -88,25 +91,102 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+/**
+ * Calculate milliseconds until the next occurrence of a given hour:minute (local time).
+ */
+function msUntilNextOccurrence(hour, minute) {
+  const now = new Date();
+  const target = new Date(now);
+  target.setHours(hour, minute, 0, 0);
+  if (target <= now) {
+    target.setDate(target.getDate() + 1);
+  }
+  return target.getTime() - now.getTime();
+}
+
+/**
+ * Schedule a daily notification at a given hour:minute.
+ * Uses setTimeout to fire once, then reschedules for the next day.
+ */
+function scheduleDailyReminder(id, hour, minute, title, body) {
+  // Clear any existing timer for this id
+  if (scheduledTimers[id]) {
+    clearTimeout(scheduledTimers[id]);
+    delete scheduledTimers[id];
+  }
+
+  const delay = msUntilNextOccurrence(hour, minute);
+
+  scheduledTimers[id] = setTimeout(() => {
+    // Show the notification
+    self.registration.showNotification(title, {
+      body: body,
+      icon: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
+      badge: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
+      tag: id,
+      renotify: true,
+      data: { url: '/' },
+    });
+
+    // Reschedule for the next day
+    scheduleDailyReminder(id, hour, minute, title, body);
+  }, delay);
+}
+
 // Handle messages from client (for notification scheduling)
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SCHEDULE_REMINDER') {
-    const { hour, minute } = event.data;
-    console.log(`Reminder scheduled for ${hour}:${minute}`);
-  } else if (event.data && event.data.type === 'CANCEL_REMINDER') {
-    console.log('Reminder cancelled');
+  if (!event.data) return;
+
+  switch (event.data.type) {
+    case 'SCHEDULE_REMINDER': {
+      const { id, hour, minute, title, body } = event.data;
+      scheduleDailyReminder(
+        id || 'default',
+        hour,
+        minute,
+        title || 'Destiny Hacking',
+        body || 'Time for your daily practice'
+      );
+      break;
+    }
+
+    case 'CANCEL_REMINDER': {
+      const cancelId = event.data.id || 'default';
+      if (scheduledTimers[cancelId]) {
+        clearTimeout(scheduledTimers[cancelId]);
+        delete scheduledTimers[cancelId];
+      }
+      break;
+    }
+
+    case 'CANCEL_ALL_REMINDERS': {
+      Object.keys(scheduledTimers).forEach((id) => {
+        clearTimeout(scheduledTimers[id]);
+        delete scheduledTimers[id];
+      });
+      break;
+    }
+
+    case 'GET_SCHEDULED': {
+      // Report back which reminders are active
+      event.source.postMessage({
+        type: 'SCHEDULED_REMINDERS',
+        ids: Object.keys(scheduledTimers),
+      });
+      break;
+    }
   }
 });
 
-// Handle push notifications
+// Handle push notifications (from server-side push)
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'Destiny Hacking';
   const options = {
     body: data.body || 'Time for your daily practice',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    data: { url: data.url || '/' }
+    icon: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
+    badge: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
+    data: { url: data.url || '/' },
   };
 
   event.waitUntil(

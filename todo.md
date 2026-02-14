@@ -1245,3 +1245,16 @@
 - [x] B8: .env.example completeness
 - [x] Write 11 vitest tests for new features (final-features.test.ts)
 - [x] Save checkpoint and sync to GitHub
+
+## Phase 59: Three Enhancements
+- [x] Add Portuguese translations to PROLOGUE_PARAGRAPHS, HIGHLIGHT_PHRASES, MARCUS_AURELIUS_QUOTE, DOCTRINE_CARDS, SHARE_QUOTES in shared/prologue.ts
+- [x] Update Philosophy page to display PT text when language is Portuguese
+- [x] Update DoctrineCard to show PT doctrine text when language is Portuguese
+- [x] Update SevenDayReveal to show PT text when language is Portuguese
+- [x] Add PWA manifest.json with Merx logo icons (192px, 512px), apple-touch-icon, favicon
+- [x] Enhance service worker with notification scheduling (SCHEDULE_REMINDER, CANCEL_REMINDER, daily recurring)
+- [x] Register service worker in index.html with apple-touch-icon and favicon links
+- [x] Add native Anthropic /v1/messages API format with buildAnthropicPayload and convertAnthropicResponse
+- [x] Handle Anthropic-specific headers (anthropic-version, x-api-key) and system message separation
+- [x] Write 15 vitest tests for new features (phase59-enhancements.test.ts)
+- [x] Save checkpoint and sync to GitHub

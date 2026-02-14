@@ -296,6 +296,158 @@ const normalizeResponseFormat = ({
   };
 };
 
+/**
+ * Convert OpenAI-style messages to Anthropic /v1/messages format.
+ * Anthropic separates the system prompt from the messages array.
+ */
+function buildAnthropicPayload(
+  messages: Message[],
+  model: string,
+  tools?: Tool[],
+  toolChoice?: ReturnType<typeof normalizeToolChoice>,
+  maxTokens?: number
+): { payload: Record<string, unknown>; } {
+  // Extract system messages
+  const systemMessages = messages.filter((m) => m.role === "system");
+  const nonSystemMessages = messages.filter((m) => m.role !== "system");
+
+  const systemText = systemMessages
+    .map((m) => {
+      const content = m.content;
+      if (typeof content === "string") return content;
+      if (Array.isArray(content)) {
+        return content
+          .map((p) => (typeof p === "string" ? p : "text" in p ? p.text : ""))
+          .join("\n");
+      }
+      return "text" in content ? content.text : "";
+    })
+    .join("\n\n");
+
+  // Convert messages to Anthropic format
+  const anthropicMessages = nonSystemMessages.map((m) => {
+    const normalized = normalizeMessage(m);
+    const content = normalized.content;
+
+    if (typeof content === "string") {
+      return { role: normalized.role === "assistant" ? "assistant" : "user", content };
+    }
+
+    // Convert content array
+    if (Array.isArray(content)) {
+      const anthropicContent = content.map((part: Record<string, unknown>) => {
+        if ((part as TextContent).type === "text") {
+          return { type: "text", text: (part as TextContent).text };
+        }
+        if ((part as ImageContent).type === "image_url") {
+          const imgPart = part as ImageContent;
+          return {
+            type: "image",
+            source: {
+              type: "url",
+              url: imgPart.image_url.url,
+            },
+          };
+        }
+        return { type: "text", text: JSON.stringify(part) };
+      });
+      return {
+        role: normalized.role === "assistant" ? "assistant" : "user",
+        content: anthropicContent,
+      };
+    }
+
+    return { role: normalized.role === "assistant" ? "assistant" : "user", content: String(content) };
+  });
+
+  const payload: Record<string, unknown> = {
+    model,
+    max_tokens: maxTokens || 4096,
+    messages: anthropicMessages,
+  };
+
+  if (systemText) {
+    payload.system = systemText;
+  }
+
+  // Convert tools to Anthropic format
+  if (tools && tools.length > 0) {
+    payload.tools = tools.map((t) => ({
+      name: t.function.name,
+      description: t.function.description || "",
+      input_schema: t.function.parameters || { type: "object", properties: {} },
+    }));
+  }
+
+  // Convert tool_choice
+  if (toolChoice) {
+    if (toolChoice === "auto") {
+      payload.tool_choice = { type: "auto" };
+    } else if (toolChoice === "none") {
+      // Anthropic doesn't have "none" — omit tool_choice
+    } else if (typeof toolChoice === "object" && "function" in toolChoice) {
+      payload.tool_choice = { type: "tool", name: toolChoice.function.name };
+    }
+  }
+
+  return { payload };
+}
+
+/**
+ * Convert Anthropic response to OpenAI-compatible InvokeResult.
+ */
+function convertAnthropicResponse(anthropicResp: Record<string, unknown>): InvokeResult {
+  const content = anthropicResp.content as Array<Record<string, unknown>> || [];
+
+  // Extract text content
+  const textParts = content
+    .filter((c) => c.type === "text")
+    .map((c) => c.text as string);
+  const fullText = textParts.join("");
+
+  // Extract tool use blocks
+  const toolUseParts = content.filter((c) => c.type === "tool_use");
+  const toolCalls: ToolCall[] = toolUseParts.map((tu) => ({
+    id: tu.id as string,
+    type: "function" as const,
+    function: {
+      name: tu.name as string,
+      arguments: JSON.stringify(tu.input),
+    },
+  }));
+
+  const usage = anthropicResp.usage as Record<string, number> | undefined;
+
+  return {
+    id: anthropicResp.id as string || "anthropic-" + Date.now(),
+    created: Math.floor(Date.now() / 1000),
+    model: anthropicResp.model as string || "claude",
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: fullText,
+          ...(toolCalls.length > 0 ? { tool_calls: toolCalls } : {}),
+        },
+        finish_reason:
+          (anthropicResp.stop_reason as string) === "end_turn"
+            ? "stop"
+            : (anthropicResp.stop_reason as string) === "tool_use"
+              ? "tool_calls"
+              : (anthropicResp.stop_reason as string) || "stop",
+      },
+    ],
+    usage: usage
+      ? {
+          prompt_tokens: usage.input_tokens || 0,
+          completion_tokens: usage.output_tokens || 0,
+          total_tokens: (usage.input_tokens || 0) + (usage.output_tokens || 0),
+        }
+      : undefined,
+  };
+}
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 
@@ -308,10 +460,52 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     output_schema,
     responseFormat,
     response_format,
+    maxTokens,
+    max_tokens,
   } = params;
 
+  const isAnthropic = ENV.llmProvider === "anthropic";
+  const model = resolveModel();
+  const apiKey = resolveApiKey();
+
+  const normalizedTC = normalizeToolChoice(toolChoice || tool_choice, tools);
+
+  // ── Anthropic path ──
+  if (isAnthropic) {
+    const { payload } = buildAnthropicPayload(
+      messages,
+      model,
+      tools,
+      normalizedTC,
+      maxTokens || max_tokens
+    );
+
+    const headers: Record<string, string> = {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    };
+
+    const response = await fetch(resolveApiUrl(), {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Anthropic invoke failed: ${response.status} ${response.statusText} \u2013 ${errorText}`
+      );
+    }
+
+    const anthropicResp = (await response.json()) as Record<string, unknown>;
+    return convertAnthropicResponse(anthropicResp);
+  }
+
+  // ── OpenAI / Manus Forge path ──
   const payload: Record<string, unknown> = {
-    model: resolveModel(),
+    model,
     messages: messages.map(normalizeMessage),
   };
 
@@ -319,18 +513,14 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.tools = tools;
   }
 
-  const normalizedToolChoice = normalizeToolChoice(
-    toolChoice || tool_choice,
-    tools
-  );
-  if (normalizedToolChoice) {
-    payload.tool_choice = normalizedToolChoice;
+  if (normalizedTC) {
+    payload.tool_choice = normalizedTC;
   }
 
-  payload.max_tokens = 32768
+  payload.max_tokens = maxTokens || max_tokens || 32768;
   payload.thinking = {
     "budget_tokens": 128
-  }
+  };
 
   const normalizedResponseFormat = normalizeResponseFormat({
     responseFormat,
@@ -343,18 +533,10 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const apiKey = resolveApiKey();
   const headers: Record<string, string> = {
     "content-type": "application/json",
     authorization: `Bearer ${apiKey}`,
   };
-
-  // Anthropic requires a different header format
-  if (ENV.llmProvider === "anthropic") {
-    headers["x-api-key"] = apiKey;
-    headers["anthropic-version"] = "2023-06-01";
-    delete headers.authorization;
-  }
 
   const response = await fetch(resolveApiUrl(), {
     method: "POST",
@@ -365,7 +547,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
+      `LLM invoke failed: ${response.status} ${response.statusText} \u2013 ${errorText}`
     );
   }
 

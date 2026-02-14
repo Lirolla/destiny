@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
  * Rotates weekly using the week number of the year modulo 8.
  */
 export function DoctrineCard() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const currentDoctrine = useMemo(() => {
     const now = new Date();
@@ -33,11 +33,11 @@ export function DoctrineCard() {
               {t("Doctrine of the Week", "Doutrina da Semana")}
             </p>
             <p className="text-sm md:text-base italic text-foreground/90 leading-relaxed">
-              "{currentDoctrine.doctrine}"
+              "{language === 'pt' ? currentDoctrine.doctrinePt : currentDoctrine.doctrine}"
             </p>
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground">
-                — {currentDoctrine.source}
+                — {language === 'pt' ? currentDoctrine.sourcePt : currentDoctrine.source}
               </p>
               <Link
                 href="/philosophy"

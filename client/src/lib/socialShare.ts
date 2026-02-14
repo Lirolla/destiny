@@ -50,7 +50,9 @@ export function generateShareText(summary: ProgressSummary): string {
     lines.push(``, `📈 ${summary.improvement}`);
   }
 
-  const quote = SHARE_QUOTES[Math.floor(Math.random() * SHARE_QUOTES.length)];
+  const quoteObj = SHARE_QUOTES[Math.floor(Math.random() * SHARE_QUOTES.length)];
+  // Use English for shared text (universal audience)
+  const quote = quoteObj.en;
   lines.push(``, `💬 "${quote}"`, ``, `Training my free will with Destiny Hacking`);
   lines.push(`— destinyhacking.app`);
 

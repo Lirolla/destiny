@@ -3,7 +3,11 @@ import { Link } from "wouter";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InvictusFooter } from "@/components/InvictusFooter";
-import { PROLOGUE_PARAGRAPHS, HIGHLIGHT_PHRASES } from "../../../shared/prologue";
+import {
+  PROLOGUE_PARAGRAPHS,
+  HIGHLIGHT_PHRASES,
+  MARCUS_AURELIUS_QUOTE,
+} from "../../../shared/prologue";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
@@ -13,45 +17,28 @@ import { useLanguage } from "@/contexts/LanguageContext";
 function HighlightedParagraph({
   text,
   index,
+  lang,
 }: {
   text: string;
   index: number;
+  lang: "en" | "pt";
 }) {
   const isLastParagraph = index === PROLOGUE_PARAGRAPHS.length - 1;
   const isMarcusAureliusParagraph = index === 5;
 
-  // Build highlighted text
-  let segments: Array<{ text: string; highlighted: boolean }> = [
-    { text, highlighted: false },
-  ];
-
-  for (const phrase of HIGHLIGHT_PHRASES) {
-    const newSegments: typeof segments = [];
-    for (const seg of segments) {
-      if (seg.highlighted) {
-        newSegments.push(seg);
-        continue;
-      }
-      const parts = seg.text.split(phrase);
-      for (let i = 0; i < parts.length; i++) {
-        if (parts[i]) newSegments.push({ text: parts[i], highlighted: false });
-        if (i < parts.length - 1)
-          newSegments.push({ text: phrase, highlighted: true });
-      }
-    }
-    segments = newSegments;
-  }
+  const phrases = HIGHLIGHT_PHRASES.map((h) => h[lang]);
 
   // Extract the Marcus Aurelius quote for blockquote treatment
   if (isMarcusAureliusParagraph) {
-    const quoteText = `"You have power over your mind—not outside events. Realise this, and you will find strength."`;
-    const beforeQuote = text.split(quoteText)[0];
-    const afterQuote = text.split(quoteText)[1];
+    const quoteText = `"${MARCUS_AURELIUS_QUOTE[lang]}"`;
+    const parts = text.split(quoteText);
+    const beforeQuote = parts[0] || "";
+    const afterQuote = parts[1] || "";
 
     return (
       <div className="space-y-6">
         <p className="text-lg md:text-xl leading-relaxed text-foreground/90">
-          {renderSegments(splitWithHighlights(beforeQuote))}
+          {renderSegments(splitWithHighlights(beforeQuote, phrases))}
         </p>
         <blockquote className="border-l-4 border-[#01D98D] pl-6 py-4 my-8">
           <p className="text-xl md:text-2xl leading-relaxed italic text-foreground/95 font-medium">
@@ -62,7 +49,7 @@ function HighlightedParagraph({
           </cite>
         </blockquote>
         <p className="text-lg md:text-xl leading-relaxed text-foreground/90">
-          {renderSegments(splitWithHighlights(afterQuote || ""))}
+          {renderSegments(splitWithHighlights(afterQuote, phrases))}
         </p>
       </div>
     );
@@ -70,18 +57,23 @@ function HighlightedParagraph({
 
   // Last paragraph gets special treatment
   if (isLastParagraph) {
-    const finalSentence = "All that remains is for you to decide.";
+    const finalSentence =
+      lang === "pt"
+        ? "Tudo o que resta é decidires."
+        : "All that remains is for you to decide.";
     const beforeFinal = text.replace(finalSentence, "");
 
     return (
       <div>
         <p className="text-xl md:text-2xl leading-relaxed text-foreground/90">
-          {renderSegments(splitWithHighlights(beforeFinal))}
+          {renderSegments(splitWithHighlights(beforeFinal, phrases))}
           <span className="text-[#01D98D] font-bold">{finalSentence}</span>
         </p>
       </div>
     );
   }
+
+  const segments = splitWithHighlights(text, phrases);
 
   return (
     <p className="text-lg md:text-xl leading-relaxed text-foreground/90">
@@ -99,12 +91,13 @@ function HighlightedParagraph({
 }
 
 function splitWithHighlights(
-  text: string
+  text: string,
+  phrases: readonly string[]
 ): Array<{ text: string; highlighted: boolean }> {
   let segments: Array<{ text: string; highlighted: boolean }> = [
     { text, highlighted: false },
   ];
-  for (const phrase of HIGHLIGHT_PHRASES) {
+  for (const phrase of phrases) {
     const newSegments: typeof segments = [];
     for (const seg of segments) {
       if (seg.highlighted) {
@@ -138,7 +131,8 @@ function renderSegments(
 }
 
 export default function Philosophy() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lang = language === "pt" ? "pt" : "en";
 
   return (
     <div className="min-h-screen bg-background">
@@ -190,7 +184,7 @@ export default function Philosophy() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <HighlightedParagraph text={paragraph} index={index} />
+            <HighlightedParagraph text={paragraph[lang]} index={index} lang={lang} />
           </motion.div>
         ))}
 

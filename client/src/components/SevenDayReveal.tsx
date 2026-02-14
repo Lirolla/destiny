@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { PROLOGUE_PARAGRAPHS } from "../../../shared/prologue";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const STORAGE_KEY = "seven_day_reveal_shown";
 
@@ -16,14 +17,10 @@ interface SevenDayRevealProps {
  */
 export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
   const [stage, setStage] = useState(0);
+  const { t, language } = useLanguage();
+  const lang = language === "pt" ? "pt" : "en";
 
   useEffect(() => {
-    // Stage 0: "One week ago, you began." — visible immediately
-    // Stage 1: "Seven mornings..." — after 3s
-    // Stage 2: Prologue paragraph 7 — after 6s
-    // Stage 3: Prologue paragraph 8 — after 8.5s
-    // Stage 4: Prologue paragraph 9 (final) — after 11s
-    // Stage 5: Button — after 14s
     const timers = [
       setTimeout(() => setStage(1), 3000),
       setTimeout(() => setStage(2), 6000),
@@ -41,12 +38,15 @@ export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
   }, [onClose]);
 
   // The final three paragraphs of the prologue (indices 6, 7, 8)
-  const prologueParagraph7 = PROLOGUE_PARAGRAPHS[6];
-  const prologueParagraph8 = PROLOGUE_PARAGRAPHS[7];
-  const prologueParagraph9 = PROLOGUE_PARAGRAPHS[8];
+  const prologueParagraph7 = PROLOGUE_PARAGRAPHS[6][lang];
+  const prologueParagraph8 = PROLOGUE_PARAGRAPHS[7][lang];
+  const prologueParagraph9 = PROLOGUE_PARAGRAPHS[8][lang];
 
   // Split the final sentence from the last paragraph
-  const finalSentence = "All that remains is for you to decide.";
+  const finalSentence =
+    lang === "pt"
+      ? "Tudo o que resta é decidires."
+      : "All that remains is for you to decide.";
   const lastParaWithoutFinal = prologueParagraph9.replace(finalSentence, "");
 
   return (
@@ -66,7 +66,7 @@ export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5 }}
           >
-            "One week ago, you began."
+            "{t("One week ago, you began.", "Há uma semana, começaste.")}"
           </motion.p>
 
           {/* Stage 1: Seven mornings */}
@@ -77,8 +77,10 @@ export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5 }}
             >
-              "Seven mornings. Seven calibrations. Seven conscious choices to
-              show up and exercise your will."
+              "{t(
+                "Seven mornings. Seven calibrations. Seven conscious choices to show up and exercise your will.",
+                "Sete manhãs. Sete calibrações. Sete escolhas conscientes de aparecer e exercer a tua vontade."
+              )}"
             </motion.p>
           )}
 
@@ -147,7 +149,7 @@ export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
                 size="lg"
                 className="bg-[#01D98D] hover:bg-[#01D98D]/90 text-black font-semibold text-lg px-8 py-6"
               >
-                Continue the Journey
+                {t("Continue the Journey", "Continuar a Jornada")}
               </Button>
 
               {/* Invictus quote at the bottom */}
