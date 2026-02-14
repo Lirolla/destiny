@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, TrendingUp, Target, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { CauseEffectMap } from "@/components/CauseEffectMap";
 
 /**
  * Weekly Review Screen
@@ -221,6 +222,13 @@ function ReviewCard({ review }: ReviewCardProps) {
         </div>
       )}
 
+      {/* Cause-Effect Map */}
+      <CauseEffectSection
+        weekStartDate={review.weekStartDate}
+        weekEndDate={review.weekEndDate}
+        patternSummary={review.patternSummary}
+      />
+
       {/* Adjustment Recommendations */}
       {review.adjustmentRecommendations && (
         <div className="mb-6">
@@ -292,5 +300,37 @@ function ReviewCard({ review }: ReviewCardProps) {
         )}
       </div>
     </Card>
+  );
+}
+
+/** Fetches cycles for the review period and renders the CauseEffectMap */
+function CauseEffectSection({
+  weekStartDate,
+  weekEndDate,
+  patternSummary,
+}: {
+  weekStartDate: string;
+  weekEndDate: string;
+  patternSummary?: string;
+}) {
+  const { data: cycles, isLoading } = trpc.weeklyReviews.getCycles.useQuery(
+    { weekStartDate, weekEndDate },
+    { staleTime: 60_000 }
+  );
+
+  if (isLoading) {
+    return (
+      <div className="mb-6">
+        <div className="h-24 bg-muted/30 rounded-lg animate-pulse" />
+      </div>
+    );
+  }
+
+  if (!cycles || cycles.length === 0) return null;
+
+  return (
+    <div className="mb-6">
+      <CauseEffectMap cycles={cycles} patterns={patternSummary} />
+    </div>
   );
 }

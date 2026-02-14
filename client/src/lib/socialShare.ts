@@ -5,11 +5,14 @@
  * Privacy-first: shares only aggregate stats, never specific emotional content.
  */
 
+import { SHARE_QUOTES } from "../../../shared/prologue";
+
 export interface ProgressSummary {
   weekStreak: number;
   totalCalibrations: number;
   modulesCompleted: number;
   cyclesCompleted: number;
+  destinyScore?: number;
   topAxis?: string;
   improvement?: string;
 }
@@ -25,6 +28,10 @@ export function generateShareText(summary: ProgressSummary): string {
 
   if (summary.weekStreak > 0) {
     lines.push(`🔥 ${summary.weekStreak}-day streak`);
+  }
+
+  if (summary.destinyScore !== undefined) {
+    lines.push(`⚡ Destiny Score: ${summary.destinyScore}%`);
   }
 
   if (summary.totalCalibrations > 0) {
@@ -43,7 +50,9 @@ export function generateShareText(summary: ProgressSummary): string {
     lines.push(``, `📈 ${summary.improvement}`);
   }
 
-  lines.push(``, `Training my free will with Destiny Hacking 💪`);
+  const quote = SHARE_QUOTES[Math.floor(Math.random() * SHARE_QUOTES.length)];
+  lines.push(``, `💬 "${quote}"`, ``, `Training my free will with Destiny Hacking`);
+  lines.push(`— destinyhacking.app`);
 
   return lines.join('\n');
 }

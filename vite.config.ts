@@ -3,11 +3,22 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "path";
-import { defineConfig } from "vite";
-import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+import { defineConfig, type Plugin } from "vite";
 
+// Conditionally load Manus runtime plugin — only available in Manus environment
+function loadManusPlugin(): Plugin | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require("vite-plugin-manus-runtime");
+    return mod.vitePluginManusRuntime();
+  } catch {
+    // Not in Manus environment — skip
+    return null;
+  }
+}
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime()];
+const manusPlugin = loadManusPlugin();
+const plugins = [react(), tailwindcss(), jsxLocPlugin(), ...(manusPlugin ? [manusPlugin] : [])];
 
 export default defineConfig({
   plugins,
@@ -27,15 +38,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: [
-      ".manuspre.computer",
-      ".manus.computer",
-      ".manus-asia.computer",
-      ".manuscomputer.ai",
-      ".manusvm.computer",
-      "localhost",
-      "127.0.0.1",
-    ],
+    allowedHosts: true, // Allow all hosts for development flexibility
     fs: {
       strict: true,
       deny: ["**/.*"],

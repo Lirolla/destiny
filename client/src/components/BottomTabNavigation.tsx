@@ -3,11 +3,11 @@ import { Home, BookOpen, Headphones, GraduationCap, MoreHorizontal } from "lucid
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const tabs = [
-  { id: "home", labelEn: "Home", labelPt: "Início", icon: Home, path: "/" },
-  { id: "book", labelEn: "Book", labelPt: "Livro", icon: BookOpen, path: "/book" },
-  { id: "audio", labelEn: "Audio", labelPt: "Áudio", icon: Headphones, path: "/audiobook" },
-  { id: "practice", labelEn: "Practice", labelPt: "Prática", icon: GraduationCap, path: "/modules" },
-  { id: "more", labelEn: "More", labelPt: "Mais", icon: MoreHorizontal, path: "/more" },
+  { id: "home", labelEn: "Bridge", labelPt: "Ponte", icon: Home, path: "/" },
+  { id: "book", labelEn: "Chapters", labelPt: "Capítulos", icon: BookOpen, path: "/book" },
+  { id: "audio", labelEn: "Listen", labelPt: "Ouvir", icon: Headphones, path: "/audiobook" },
+  { id: "practice", labelEn: "Calibrate", labelPt: "Calibrar", icon: GraduationCap, path: "/modules" },
+  { id: "more", labelEn: "Arsenal", labelPt: "Arsenal", icon: MoreHorizontal, path: "/more" },
 ];
 
 export function BottomTabNavigation() {

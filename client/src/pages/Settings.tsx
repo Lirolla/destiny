@@ -12,6 +12,7 @@ import { downloadCSV, downloadJSON, convertToCSV, formatCompleteDataForExport, f
 import { requestNotificationPermission, areNotificationsEnabled, scheduleDailyReminder, sendLocalNotification } from "@/lib/pushNotifications";
 import { AxisManagement } from "@/components/AxisManagement";
 import { PageHeader } from "@/components/PageHeader";
+import { NotificationScheduler } from "@/components/NotificationScheduler";
 
 export default function Settings() {
 
@@ -153,110 +154,8 @@ export default function Settings() {
         {/* Axis Management */}
         <AxisManagement />
 
-        {/* Notification Settings */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-primary" />
-              <CardTitle>Daily Reminders</CardTitle>
-            </div>
-            <CardDescription>
-              Get notified to complete your daily calibration and reflection
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Enable Notifications */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="notifications-enabled">Enable Notifications</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive daily reminders for your practice
-                </p>
-              </div>
-              <Switch
-                id="notifications-enabled"
-                checked={enabled}
-                onCheckedChange={(checked) => {
-                  if (checked && Notification.permission !== "granted") {
-                    handleRequestPermission();
-                  } else {
-                    setEnabled(checked);
-                    setHasChanges(true);
-                  }
-                }}
-              />
-            </div>
-
-            {/* Reminder Time */}
-            {enabled && (
-              <div className="space-y-2">
-                <Label htmlFor="reminder-time" className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  Reminder Time
-                </Label>
-                <Input
-                  id="reminder-time"
-                  type="time"
-                  value={reminderTime}
-                  onChange={(e) => {
-                    setReminderTime(e.target.value);
-                    setHasChanges(true);
-                  }}
-                  className="max-w-xs"
-                />
-                <p className="text-xs text-muted-foreground">
-                  You'll receive a notification at this time every day
-                </p>
-              </div>
-            )}
-
-            {/* Browser Permission Status */}
-            <div className="rounded-lg border p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Browser Permission</span>
-                <span className="text-sm text-muted-foreground">
-                  {typeof Notification !== "undefined"
-                    ? Notification.permission === "granted"
-                      ? "✓ Granted"
-                      : Notification.permission === "denied"
-                      ? "✗ Denied"
-                      : "Not requested"
-                    : "Not supported"}
-                </span>
-              </div>
-              {typeof Notification !== "undefined" && Notification.permission === "default" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRequestPermission}
-                  className="w-full"
-                >
-                  Request Permission
-                </Button>
-              )}
-              {typeof Notification !== "undefined" && Notification.permission === "denied" && (
-                <p className="text-xs text-muted-foreground">
-                  Notifications are blocked. Please enable them in your browser settings.
-                </p>
-              )}
-            </div>
-
-            {/* Test Notification */}
-            <div className="pt-4 border-t">
-              <Button
-                variant="outline"
-                onClick={handleSendTest}
-                disabled={sendTestMutation.isPending}
-                className="w-full"
-              >
-                Send Test Notification
-              </Button>
-              <p className="text-xs text-muted-foreground mt-2">
-                This will send a test notification to the project owner
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Client-Side Notification Scheduling */}
+        <NotificationScheduler />
 
         {/* Data Export */}
         <Card>

@@ -36,6 +36,7 @@ import { ProgressDashboard } from "./pages/ProgressDashboard";
 import { Flashcards } from "./pages/Flashcards";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import Privacy from "./pages/Privacy";
+import Philosophy from "./pages/Philosophy";
 import MonthlyReportPage from "./pages/MonthlyReportPage";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -73,6 +74,8 @@ function Router() {
         <Route path="/record-voice" component={RecordVoice} />
         <Route path="/generate-audiobook" component={GenerateAudiobook} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/philosophy" component={Philosophy} />
+        <Route path="/about" component={Philosophy} />
         <Route path="/monthly-report" component={MonthlyReportPage} />
         <Route path="/404" component={NotFound} />
         {/* Final fallback route */}

@@ -10,7 +10,7 @@ import { invokeLLM } from "./_core/llm";
 // Stoic Strategist System Prompt
 const STOIC_STRATEGIST_PROMPT = `You are the Stoic Strategist — a calm, precise, unflinching advisor forged from the philosophy of Marcus Aurelius, Epictetus, and Seneca, combined with modern decision science and behavioural pattern analysis.
 
-You exist inside the Destiny Hacking app — a digital user's manual for human agency. The user is calibrating their emotional state across 15 Axes of Free Will (e.g., Anxiety ↔ Calm, Reactive ↔ Intentional, Victim ↔ Sovereign). Your job is to read their data and respond like a flight engineer reading instrument panels.
+You exist inside the Destiny Hacking app — a digital user's manual for human agency. The user is calibrating their emotional state across 15 Axes of Free Will (e.g., Powerless ↔ Powerful, Blame ↔ Ownership, Victimhood ↔ Agency, Reactive ↔ Stoic Composure, Drifting ↔ Architect of Destiny). Your job is to read their data and respond like a flight engineer reading instrument panels.
 
 PERSONALITY:
 - You speak like a military strategist briefing a pilot before a mission
@@ -42,7 +42,17 @@ RESPONSE PATTERNS:
 - When there's a pattern: "I see [Axis A] and [Axis B] moving together over the last 5 days. That's not coincidence — that's a cause-effect chain worth mapping."
 - After a daily cycle: "You planted [action]. The harvest isn't instant. But the trajectory is now set. Watch for the echo in 48 hours."
 
-TONE: Command interface, not diary. Pilot, not passenger. Engineer, not therapist.`;
+TONE: Command interface, not diary. Pilot, not passenger. Engineer, not therapist.
+
+PHILOSOPHICAL VOCABULARY — USE THESE PHRASES NATURALLY:
+When discussing cause and effect, use "the universal balance" — a system of accountability woven into existence.
+When discussing divine will, use "God observes but does not micromanage" — the user has been given the gift, it is theirs to use.
+When discussing consequences, use "ripples" — every choice ripples through the universe.
+When discussing suffering, use "raw material" — suffering is the ore from which strength is forged.
+When discussing agency, use "the key has always been in your hands" — there is no external saviour coming.
+When discussing the central question, use "Am I waiting for change, or am I willing to create it?"
+When discussing the book's philosophy, the balance is "impartial, unwavering, and unyielding" — it is a mirror, not a judge.
+Never present these ideas as religious dogma. Present them as operational philosophy — tools for decision-making.`;
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -848,11 +858,55 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
           }
         }
 
+        // Build per-participant leaderboard
+        const leaderboard: Array<{
+          userId: number;
+          displayName: string;
+          completedDays: number;
+          currentStreak: number;
+          completionRate: number;
+        }> = [];
+
+        const challengeDays = Math.max(1, Math.ceil(
+          (new Date(session.endDate).getTime() - new Date(session.startDate).getTime()) / (1000 * 60 * 60 * 24)
+        ) + 1);
+
+        for (const participant of participants) {
+          const cycles = await db.getCyclesInDateRange(
+            participant.userId,
+            session.startDate,
+            session.endDate
+          );
+
+          const completedDays = cycles.filter(c => c.isComplete).length;
+
+          let currentStreak = 0;
+          for (let i = cycles.length - 1; i >= 0; i--) {
+            if (cycles[i].isComplete) currentStreak++;
+            else break;
+          }
+
+          // Get display name
+          const user = await db.getUserById(participant.userId);
+          leaderboard.push({
+            userId: participant.userId,
+            displayName: user?.name || `Pilot #${participant.userId}`,
+            completedDays,
+            currentStreak,
+            completionRate: Math.round((completedDays / challengeDays) * 100),
+          });
+        }
+
+        // Sort by completedDays desc, then currentStreak desc
+        leaderboard.sort((a, b) => b.completedDays - a.completedDays || b.currentStreak - a.currentStreak);
+
         return {
           participants: participantCount,
           totalCompletions,
-          averageStreak: participantCount > 0 ? totalStreak / participantCount : 0,
+          averageStreak: participantCount > 0 ? Math.round(totalStreak / participantCount) : 0,
           topStreak,
+          challengeDays,
+          leaderboard,
         };
       }),
   }),
@@ -1099,6 +1153,16 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
       .input(z.object({ limit: z.number().min(1).max(20).default(10) }))
       .query(async ({ ctx, input }) => {
         return db.getUserWeeklyReviews(ctx.user.id, input.limit);
+      }),
+
+    // Get cycles for a review period (for cause-effect map)
+    getCycles: protectedProcedure
+      .input(z.object({
+        weekStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        weekEndDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      }))
+      .query(async ({ ctx, input }) => {
+        return db.getCyclesInDateRange(ctx.user.id, input.weekStartDate, input.weekEndDate);
       }),
 
     // Update identity shift

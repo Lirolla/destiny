@@ -209,14 +209,45 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
+const resolveApiUrl = () => {
+  const provider = ENV.llmProvider;
+
+  if (provider === "openai") {
+    return "https://api.openai.com/v1/chat/completions";
+  }
+
+  // TODO: Add native Anthropic API format support
+  // Anthropic uses /v1/messages with anthropic-version header
+  // For now, only manus and openai are fully supported
+  if (provider === "anthropic") {
+    return "https://api.anthropic.com/v1/messages";
+  }
+
+  // Default: Manus forge
+  return ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
     ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
     : "https://forge.manus.im/v1/chat/completions";
+};
+
+const resolveApiKey = () => {
+  const provider = ENV.llmProvider;
+  if (provider === "openai") return ENV.openaiApiKey;
+  if (provider === "anthropic") return ENV.anthropicApiKey;
+  return ENV.forgeApiKey;
+};
+
+const resolveModel = () => {
+  if (ENV.llmModel) return ENV.llmModel;
+  const provider = ENV.llmProvider;
+  if (provider === "openai") return "gpt-4o";
+  if (provider === "anthropic") return "claude-sonnet-4-20250514";
+  return "gemini-2.5-flash";
+};
 
 const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  const key = resolveApiKey();
+  if (!key) {
+    throw new Error(`API key not configured for LLM provider: ${ENV.llmProvider}`);
   }
 };
 
@@ -280,7 +311,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   } = params;
 
   const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+    model: resolveModel(),
     messages: messages.map(normalizeMessage),
   };
 
@@ -312,12 +343,22 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
+  const apiKey = resolveApiKey();
+  const headers: Record<string, string> = {
+    "content-type": "application/json",
+    authorization: `Bearer ${apiKey}`,
+  };
+
+  // Anthropic requires a different header format
+  if (ENV.llmProvider === "anthropic") {
+    headers["x-api-key"] = apiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    delete headers.authorization;
+  }
+
   const response = await fetch(resolveApiUrl(), {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
-    },
+    headers,
     body: JSON.stringify(payload),
   });
 

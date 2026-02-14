@@ -10,6 +10,7 @@ import type { ProgressSummary } from "@/lib/socialShare";
 import { PageHeader } from "@/components/PageHeader";
 import { DestinyRadarChart } from "@/components/DestinyRadarChart";
 import { InvictusFooter } from "@/components/InvictusFooter";
+import { DoctrineCard } from "@/components/DoctrineCard";
 
 export default function Dashboard() {
   // Guest users are auto-created
@@ -123,6 +124,9 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* Doctrine of the Week */}
+        <DoctrineCard />
+
         {/* Reflection Prompt of the Day */}
         {lowestAxis && (lowestAxis as any).reflectionPrompt && (
           <Card className="border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-transparent">
@@ -211,6 +215,7 @@ export default function Dashboard() {
               totalCalibrations: latestStates?.length || 0,
               modulesCompleted: modulesCompleted,
               cyclesCompleted: recentCycles?.filter(c => c.isComplete).length || 0,
+              destinyScore: destinyScore?.score ?? undefined,
               topAxis: axes && axes.length > 0 ? `${axes[0].leftLabel} ↔ ${axes[0].rightLabel}` : undefined,
               improvement: streak >= 7 ? `${streak}-day streak maintained!` : undefined,
             }}

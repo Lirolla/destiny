@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PageHeader } from "@/components/PageHeader";
 import { useAutoAchievementCheck } from "@/hooks/useAchievements";
 import { InvictusFooter } from "@/components/InvictusFooter";
+import { SevenDayReveal, shouldShowSevenDayReveal } from "@/components/SevenDayReveal";
 
 function interpolateColor(colorLow: string, colorHigh: string, value: number): string {
   const hex = (c: string) => parseInt(c, 16);
@@ -136,6 +137,8 @@ export default function DailyCycle() {
     onError: (error) => toast.error(`Failed: ${error.message}`),
   });
 
+  const [showSevenDayReveal, setShowSevenDayReveal] = useState(false);
+
   const completeEveningMutation = trpc.dailyCycle.completeEvening.useMutation({
     onSuccess: () => {
       refetchCycle();
@@ -143,6 +146,33 @@ export default function DailyCycle() {
       utils.sliders.getDestinyScore.invalidate();
       toast.success("Daily cycle complete! 🌙");
       achievementCheck.onSuccess();
+      // Check if this is the 7th consecutive day for the SevenDayReveal
+      const { data: history } = trpc.useUtils().dailyCycle.getHistory.getData({ days: 30 }) as any || {};
+      if (history) {
+        const completedCycles = [...(Array.isArray(history) ? history : [])]
+          .filter((c: any) => c.isComplete)
+          .sort((a: any, b: any) => new Date(b.cycleDate).getTime() - new Date(a.cycleDate).getTime());
+        let streak = 0;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        for (let i = 0; i < completedCycles.length; i++) {
+          const d = new Date(completedCycles[i].cycleDate);
+          d.setHours(0, 0, 0, 0);
+          const expected = new Date(today);
+          expected.setDate(today.getDate() - i);
+          if (d.getTime() === expected.getTime()) streak++;
+          else break;
+        }
+        // Include today's just-completed cycle
+        if (streak === 0) streak = 1;
+        if (shouldShowSevenDayReveal(streak)) {
+          setShowSevenDayReveal(true);
+          return;
+        }
+      } else {
+        // Fallback: just check localStorage-based simple count
+        // The reveal will be checked on next load
+      }
       setPhase("complete");
     },
     onError: (error) => toast.error(`Failed: ${error.message}`),
@@ -227,6 +257,9 @@ export default function DailyCycle() {
 
   return (
     <div className="min-h-screen bg-background">
+      {showSevenDayReveal && (
+        <SevenDayReveal onClose={() => { setShowSevenDayReveal(false); setPhase("complete"); }} />
+      )}
       <PageHeader title="Daily Will Cycle" subtitle={greeting} showBack />
 
       <main className="px-4 py-4 pb-24">

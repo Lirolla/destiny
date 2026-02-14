@@ -526,6 +526,15 @@ import { users, type User, type InsertUser } from "../drizzle/schema";
 /**
  * Get user by openId
  */
+export async function getUserById(id: number): Promise<User | null> {
+  const results = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+  return results[0] || null;
+}
+
 export async function getUserByOpenId(openId: string): Promise<User | null> {
   const results = await db
     .select()

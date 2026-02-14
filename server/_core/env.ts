@@ -9,4 +9,7 @@ export const ENV = {
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   elevenLabsApiKey: process.env.ELEVENLABS_API_KEY ?? "",
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
+  llmProvider: process.env.LLM_PROVIDER ?? "manus",  // "manus" | "openai" | "anthropic"
+  llmModel: process.env.LLM_MODEL ?? "",              // Override model name
 };

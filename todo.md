@@ -1226,3 +1226,22 @@
 - [x] Replace green star icon on FirstImpression/splash screen with Merx X logo
 - [x] Upload logo to S3 and use CDN URL
 - [x] Save checkpoint
+
+## Phase 57: FINAL COMPLETION PROMPT — Prologue Integration (Part A)
+- [x] A1: Create Philosophy page (/philosophy and /about routes) with animated prologue reading experience
+- [x] A2: Add Doctrine Cards (weekly rotating) to Dashboard between greeting and reflection prompt
+- [x] A3: Enhance Stoic Strategist vocabulary with prologue phrases + fix incorrect axis labels
+- [x] A4: Build SevenDayReveal overlay triggered after 7-day streak evening completion
+- [x] A5: Add shareable prologue quotes to social share engine + destinyScore in share text
+
+## Phase 58: FINAL COMPLETION PROMPT — Remaining 8 Items (Part B)
+- [x] B1: LLM Provider Fallback (manus/openai/anthropic) with env-based switching
+- [x] B2: Cause-Effect Mapping visualisation in Weekly Review (daily cycle timeline)
+- [x] B3: Client-Side Notification Scheduling (morning/midday/evening reminders)
+- [x] B4: Challenge Leaderboard Stats with participant rankings
+- [x] B5: Manus Runtime Decoupling (conditional vite plugin, allowedHosts, optionalDependencies)
+- [x] B6: Navigation Label Update (Bridge, Chapters, Listen, Calibrate, Arsenal)
+- [x] B7: Deploy & Seed Scripts in package.json
+- [x] B8: .env.example completeness
+- [x] Write 11 vitest tests for new features (final-features.test.ts)
+- [x] Save checkpoint and sync to GitHub
