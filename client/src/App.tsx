@@ -89,7 +89,7 @@ function App() {
   return (
     <ErrorBoundary>
       <LanguageProvider>
-        <ThemeProvider defaultTheme="dark" switchable>
+        <ThemeProvider defaultTheme="light" switchable>
           <TooltipProvider>
           <Toaster />
           <SplashScreen />

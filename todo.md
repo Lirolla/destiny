@@ -1267,3 +1267,14 @@
 - [x] Fix updateAxis test to use a dedicated test axis instead of corrupting book axes
 - [x] Verify only 15 correct book axes remain (all 32 tests pass)
 - [x] Save checkpoint and sync to GitHub
+
+## Phase 61: Fix Black Screen Error
+- [ ] Diagnose black screen error reported by user
+- [ ] Fix root cause
+- [ ] Test and verify fix
+- [ ] Save checkpoint
+
+## Phase 62: Fix Publish Build Failure
+- [x] Fix optionalDependencies lockfile mismatch — moved vite-plugin-manus-runtime back to devDependencies
+- [x] Regenerate pnpm-lock.yaml — confirmed root importers has no optionalDependencies
+- [x] Save checkpoint and publish
