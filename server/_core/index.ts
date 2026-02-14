@@ -36,6 +36,16 @@ async function startServer() {
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   
+  // Health check endpoint
+  app.get("/api/health", (_req, res) => {
+    res.json({
+      status: "ok",
+      app: "destiny-hacking",
+      version: "1.0.0",
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   // Voice sample upload endpoint
   app.post("/api/upload-voice-sample", async (req, res) => {
     const { uploadVoiceSample } = await import("./uploadVoiceSample");

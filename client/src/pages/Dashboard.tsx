@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { ShareProgress } from "@/components/ShareProgress";
 import type { ProgressSummary } from "@/lib/socialShare";
 import { PageHeader } from "@/components/PageHeader";
 import { DestinyRadarChart } from "@/components/DestinyRadarChart";
+import { InvictusFooter } from "@/components/InvictusFooter";
 
 export default function Dashboard() {
   // Guest users are auto-created
@@ -37,6 +39,30 @@ export default function Dashboard() {
 
   const { data: destinyScore } = trpc.sliders.getDestinyScore.useQuery();
   const { data: checkInStatus } = trpc.sliders.getCheckInStatus.useQuery();
+  const { data: modulesList } = trpc.modules.list.useQuery();
+  const { data: lowest3 } = trpc.sliders.getLowest3.useQuery();
+
+  const modulesCompleted = useMemo(() => {
+    if (!modulesList) return 0;
+    return modulesList.filter((m: any) => m.status === 'completed').length;
+  }, [modulesList]);
+
+  // Get the lowest axis for Reflection Prompt of the Day
+  const lowestAxis = useMemo(() => {
+    if (!lowest3 || lowest3.length === 0 || !axes) return null;
+    const lowestState = lowest3[0];
+    const axis = axes.find((a: any) => a.id === lowestState.axisId);
+    if (!axis) return null;
+    return { ...axis, value: lowestState.value };
+  }, [lowest3, axes]);
+
+  // Time-of-day greeting
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }, []);
 
   // Calculate streak
   const calculateStreak = () => {
@@ -75,10 +101,46 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageHeader title="Control Panel" subtitle="Admin tools & management" showBack />
+      <PageHeader title="Command Bridge" subtitle="Master your free will" showBack />
 
       {/* Main Content */}
       <main className="px-4 py-4 space-y-4 pb-24">
+        {/* Mission Briefing Greeting */}
+        <div className="px-1 py-2">
+          <h2 className="text-xl font-bold">
+            {greeting}, Captain.
+          </h2>
+          {destinyScore?.score !== null && destinyScore?.score !== undefined ? (
+            <p className="text-sm text-muted-foreground mt-1">
+              Your Free Will is operating at <strong className="text-primary">{destinyScore.score}%</strong>.
+              {streak > 0 && <> Day <strong className="text-primary">{streak}</strong> of your streak.</>}
+              {lowestAxis && <> Your lowest axis today is {(lowestAxis as any).emoji} <strong>{(lowestAxis as any).rightLabel}</strong> — what will you do about it?</>}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground mt-1">
+              Begin your journey to becoming the captain of your soul.
+            </p>
+          )}
+        </div>
+
+        {/* Reflection Prompt of the Day */}
+        {lowestAxis && (lowestAxis as any).reflectionPrompt && (
+          <Card className="border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-transparent">
+            <CardContent className="py-4">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{(lowestAxis as any).emoji}</span>
+                <div>
+                  <p className="text-sm italic text-foreground leading-relaxed">
+                    "{(lowestAxis as any).reflectionPrompt}"
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    — {(lowestAxis as any).name || `${(lowestAxis as any).leftLabel} ↔ ${(lowestAxis as any).rightLabel}`} · Score: {(lowestAxis as any).value}/100
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         {/* Check-In Prompt Banner */}
         {checkInStatus && !checkInStatus.isComplete && (
           <Card className="border-primary/30 bg-gradient-to-r from-primary/5 to-transparent">
@@ -147,7 +209,7 @@ export default function Dashboard() {
             summary={{
               weekStreak: streak,
               totalCalibrations: latestStates?.length || 0,
-              modulesCompleted: 0, // TODO: fetch from modules API
+              modulesCompleted: modulesCompleted,
               cyclesCompleted: recentCycles?.filter(c => c.isComplete).length || 0,
               topAxis: axes && axes.length > 0 ? `${axes[0].leftLabel} ↔ ${axes[0].rightLabel}` : undefined,
               improvement: streak >= 7 ? `${streak}-day streak maintained!` : undefined,
@@ -362,6 +424,20 @@ export default function Dashboard() {
             </Card>
           </Link>
 
+          <Link href="/monthly-report">
+            <Card className="hover:border-primary transition-colors cursor-pointer">
+              <CardHeader>
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </div>
+                <CardTitle className="text-base">Monthly Report</CardTitle>
+                <CardDescription className="text-xs">
+                  Before & after comparison
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
           <Link href="/settings">
             <Card className="hover:border-primary transition-colors cursor-pointer">
               <CardHeader>
@@ -413,6 +489,7 @@ export default function Dashboard() {
           </Card>
         )}
       </main>
+      <InvictusFooter />
     </div>
   );
 }

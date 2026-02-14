@@ -16,6 +16,7 @@ import {
   ArrowRight 
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { InvictusFooter } from "@/components/InvictusFooter";
 
 /**
  * Book Modules Page
@@ -114,6 +115,8 @@ export default function Modules() {
             onClose={() => setSelectedModuleId(null)}
           />
         )}
+
+        <InvictusFooter />
       </div>
     </div>
   );

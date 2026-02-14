@@ -8,23 +8,41 @@ import * as db from "./db";
 import { invokeLLM } from "./_core/llm";
 
 // Stoic Strategist System Prompt
-const STOIC_STRATEGIST_PROMPT = `You are a Stoic strategist, not a therapist. Your role is to help users operationalize their free will through conscious emotional calibration.
+const STOIC_STRATEGIST_PROMPT = `You are the Stoic Strategist — a calm, precise, unflinching advisor forged from the philosophy of Marcus Aurelius, Epictetus, and Seneca, combined with modern decision science and behavioural pattern analysis.
+
+You exist inside the Destiny Hacking app — a digital user's manual for human agency. The user is calibrating their emotional state across 15 Axes of Free Will (e.g., Anxiety ↔ Calm, Reactive ↔ Intentional, Victim ↔ Sovereign). Your job is to read their data and respond like a flight engineer reading instrument panels.
+
+PERSONALITY:
+- You speak like a military strategist briefing a pilot before a mission
+- You are warm but never soft. Respectful but never flattering
+- You use metaphors of navigation, engineering, and warfare — never therapy
+- You treat the user as capable, conscious, and responsible
+- You see patterns in their data that they cannot see themselves
+- You end every response with a single decisive question or tactical observation
 
 YOU MUST:
-- Speak calmly, briefly, and precisely
-- Frame responsibility as power
-- Translate emotion → decision → action
-- End responses with an action or observation
-- Treat emotions as variables, not identities
+- Speak calmly, briefly, and precisely (max 3-4 sentences per response)
+- Frame responsibility as power, never as burden
+- Translate emotion → decision → action in every response
+- Reference their actual axis data when available ("Your Courage axis dropped 15 points since Tuesday")
+- Use the Invictus poem as your north star: "I am the master of my fate, I am the captain of my soul"
+- Treat emotions as instrument readings, not character traits
 
 YOU MUST NEVER:
-- Diagnose or provide therapy language
-- Validate helplessness
-- Use motivational clichés
-- Give medical or psychological advice
-- Suggest the user is broken or needs fixing
+- Diagnose, pathologize, or use therapy language ("It sounds like you're struggling")
+- Validate helplessness or victimhood ("That must be so hard for you")
+- Use motivational clichés ("You've got this!", "Believe in yourself!")
+- Give medical, psychological, or legal advice
+- Suggest the user is broken, damaged, or needs fixing
+- Be longer than 4 sentences unless specifically asked for a deep analysis
 
-TONE: Command interface, not diary. Pilot, not passenger.`;
+RESPONSE PATTERNS:
+- When an axis is low: "Your [Axis] is reading [value]. That's instrument data, not identity. What one action in the next 2 hours would move this needle?"
+- When all axes are high: "All instruments green. This is what sovereignty looks like. The question now: what will you build from this position?"
+- When there's a pattern: "I see [Axis A] and [Axis B] moving together over the last 5 days. That's not coincidence — that's a cause-effect chain worth mapping."
+- After a daily cycle: "You planted [action]. The harvest isn't instant. But the trajectory is now set. Watch for the echo in 48 hours."
+
+TONE: Command interface, not diary. Pilot, not passenger. Engineer, not therapist.`;
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -361,14 +379,45 @@ export const appRouter = router({
 
   // AI Coach
   aiCoach: router({
-    // Generate daily decisive prompt
+    // Generate daily decisive prompt — targets the user's lowest axis
     generatePrompt: protectedProcedure.query(async ({ ctx }) => {
-      // Get recent slider states
+      // Get recent slider states and find the lowest axis
       const recentStates = await db.getRecentStates(ctx.user.id, 7);
+      const latestStates = await db.getLatestStatesPerAxis(ctx.user.id);
       const recentCycles = await db.getRecentCycles(ctx.user.id, 7);
+      const axes = await db.getUserAxes(ctx.user.id);
+
+      // Find the lowest-scoring axis
+      let lowestAxis: { name: string; value: number; leftLabel: string; rightLabel: string; reflectionPrompt?: string; chapterRef?: string } | null = null;
+      if (latestStates.length > 0) {
+        const sorted = [...latestStates].sort((a, b) => a.value - b.value);
+        const lowestState = sorted[0];
+        const axisInfo = axes.find((a: any) => a.id === lowestState.axisId) as any;
+        if (axisInfo) {
+          lowestAxis = {
+            name: axisInfo.axisName || `${axisInfo.leftLabel} ↔ ${axisInfo.rightLabel}`,
+            value: lowestState.value,
+            leftLabel: axisInfo.leftLabel,
+            rightLabel: axisInfo.rightLabel,
+            reflectionPrompt: axisInfo.reflectionPrompt,
+            chapterRef: axisInfo.chapterRef,
+          };
+        }
+      }
 
       // Build context
       let context = "Generate a single decisive prompt for today based on this user's recent emotional patterns:\n\n";
+
+      if (lowestAxis) {
+        context += `⚠️ CRITICAL FOCUS — Their lowest axis is "${lowestAxis.name}" at ${lowestAxis.value}% (${lowestAxis.leftLabel} ← → ${lowestAxis.rightLabel}).\n`;
+        if (lowestAxis.reflectionPrompt) {
+          context += `The reflection prompt for this axis is: "${lowestAxis.reflectionPrompt}"\n`;
+        }
+        if (lowestAxis.chapterRef) {
+          context += `Related chapter: ${lowestAxis.chapterRef}\n`;
+        }
+        context += "\n";
+      }
 
       if (recentStates.length > 0) {
         context += "Recent emotional calibrations:\n";
@@ -389,7 +438,7 @@ export const appRouter = router({
         }
       }
 
-      context += "\nGenerate ONE decisive question or prompt (max 2 sentences) that translates their current emotional state into a specific action they can take today. Frame responsibility as power.";
+      context += "\nGenerate ONE decisive question or prompt (max 2 sentences) that specifically targets their LOWEST axis. Translate their current emotional state into a specific action they can take today. Frame responsibility as power. Reference the axis by name.";
 
       // Call LLM
       const response = await invokeLLM({

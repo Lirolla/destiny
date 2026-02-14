@@ -10,6 +10,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { Link } from "wouter";
 import { DestinyRadarChart } from "@/components/DestinyRadarChart";
+import { InvictusMoment } from "@/components/InvictusMoment";
+import { AxisHistoryChart } from "@/components/AxisHistoryChart";
 
 // Destiny Score level config
 const LEVEL_CONFIG = {
@@ -43,6 +45,7 @@ function getScoreLabel(value: number): string {
 export default function Sliders() {
   const [expandedAxis, setExpandedAxis] = useState<number | null>(null);
   const [sliderValues, setSliderValues] = useState<Record<number, number>>({});
+  const [showInvictus, setShowInvictus] = useState(false);
 
   // Fetch data
   const { data: axes, isLoading: axesLoading } = trpc.sliders.listAxes.useQuery();
@@ -58,6 +61,17 @@ export default function Sliders() {
       utils.sliders.getDestinyScore.invalidate();
       toast.success("Calibration recorded");
       achievementCheck.onSuccess();
+      // Check if all 15 axes are now above 70 — trigger Invictus Moment
+      setTimeout(() => {
+        const allStates = utils.sliders.getLatestStates.getData();
+        if (allStates && allStates.length >= 15 && allStates.every(s => s.value >= 70)) {
+          const hasSeenInvictus = sessionStorage.getItem('invictus_shown_today');
+          if (!hasSeenInvictus) {
+            setShowInvictus(true);
+            sessionStorage.setItem('invictus_shown_today', 'true');
+          }
+        }
+      }, 500);
     },
     onError: (error) => {
       toast.error(`Failed to record: ${error.message}`);
@@ -100,6 +114,7 @@ export default function Sliders() {
   const levelConfig = destinyScore?.level ? LEVEL_CONFIG[destinyScore.level] : LEVEL_CONFIG.uncalibrated;
 
   return (
+    <>
     <PullToRefresh
       onRefresh={async () => {
         await Promise.all([
@@ -350,6 +365,16 @@ export default function Sliders() {
                           </div>
                         )}
 
+                        {/* Calibration History Chart */}
+                        <AxisHistoryInline
+                          axisId={axis.id}
+                          colorLow={colorLow}
+                          colorHigh={colorHigh}
+                          axisName={axisData.axisName || "Axis"}
+                          leftLabel={axis.leftLabel}
+                          rightLabel={axis.rightLabel}
+                        />
+
                         {/* Last calibration info */}
                         <div className="text-xs text-muted-foreground">
                           {latestState ? (
@@ -396,5 +421,50 @@ export default function Sliders() {
         </div>
       </main>
     </PullToRefresh>
+
+      {showInvictus && (
+        <InvictusMoment onComplete={() => setShowInvictus(false)} />
+      )}
+    </>
+  );
+}
+
+/** Inline wrapper that fetches history for a single axis */
+function AxisHistoryInline({
+  axisId,
+  colorLow,
+  colorHigh,
+  axisName,
+  leftLabel,
+  rightLabel,
+}: {
+  axisId: number;
+  colorLow: string;
+  colorHigh: string;
+  axisName: string;
+  leftLabel: string;
+  rightLabel: string;
+}) {
+  const { data: history } = trpc.sliders.getHistory.useQuery(
+    { axisId, days: 30 },
+    { staleTime: 60_000 }
+  );
+
+  if (!history || history.length === 0) return null;
+
+  return (
+    <div className="bg-muted/20 rounded-lg p-3">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+        30-Day History
+      </div>
+      <AxisHistoryChart
+        history={history}
+        colorLow={colorLow}
+        colorHigh={colorHigh}
+        axisName={axisName}
+        leftLabel={leftLabel}
+        rightLabel={rightLabel}
+      />
+    </div>
   );
 }

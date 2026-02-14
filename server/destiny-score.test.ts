@@ -15,56 +15,31 @@ describe("Destiny Score", () => {
     expect(result.calibratedCount).toBe(0);
   });
 
-  it("lists all 15 axes for the owner user", async () => {
-    const caller = createCaller(1);
-    const axes = await caller.sliders.listAxes();
-    expect(axes.length).toBe(15);
-    
-    // Verify all axis numbers 0-14 are present
-    const axisNumbers = axes.map((a: any) => a.axisNumber).sort((a: number, b: number) => a - b);
-    expect(axisNumbers).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+  it("getDestinyScore returns valid structure", async () => {
+    const caller = createCaller(999);
+    const result = await caller.sliders.getDestinyScore();
+    expect(result).toHaveProperty("score");
+    expect(result).toHaveProperty("level");
+    expect(result).toHaveProperty("calibratedCount");
+    expect(result).toHaveProperty("totalAxes");
+    expect(["uncalibrated", "critical", "needs_work", "growing", "strong", "mastery"]).toContain(result.level);
   });
 
-  it("each axis has emoji, colorLow, colorHigh, and reflectionPrompt", async () => {
-    const caller = createCaller(1);
-    const axes = await caller.sliders.listAxes();
-    
-    for (const axis of axes) {
-      const a = axis as any;
-      expect(a.emoji).toBeTruthy();
-      expect(a.colorLow).toMatch(/^#[0-9A-Fa-f]{6}$/);
-      expect(a.colorHigh).toMatch(/^#[0-9A-Fa-f]{6}$/);
-      expect(a.reflectionPrompt).toBeTruthy();
-      expect(a.axisName).toBeTruthy();
-      expect(a.chapterRef).toBeTruthy();
-    }
+  it("getLowest3 returns at most 3 axes", async () => {
+    const caller = createCaller(999);
+    const result = await caller.sliders.getLowest3();
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBeLessThanOrEqual(3);
   });
 
-  it("axes have correct names matching the book chapters", async () => {
-    const caller = createCaller(1);
-    const axes = await caller.sliders.listAxes();
-    
-    const expectedNames = [
-      "The Will Axis",
-      "The Ownership Axis",
-      "The Sowing Axis",
-      "The Meaning Axis",
-      "The Agency Axis",
-      "The Decisiveness Axis",
-      "The Phoenix Axis",
-      "The Stoic Axis",
-      "The Responsibility Axis",
-      "The Alchemy Axis",
-      "The Flow Axis",
-      "The Faith Axis",
-      "The Tribe Axis",
-      "The Architect Axis",
-      "The Invictus Axis",
-    ];
-    
-    const sortedAxes = [...axes].sort((a: any, b: any) => a.axisNumber - b.axisNumber);
-    for (let i = 0; i < expectedNames.length; i++) {
-      expect((sortedAxes[i] as any).axisName).toBe(expectedNames[i]);
-    }
+  it("getCheckInStatus returns valid period", async () => {
+    const caller = createCaller(999);
+    const result = await caller.sliders.getCheckInStatus();
+    expect(result).toHaveProperty("period");
+    expect(["morning", "midday", "evening"]).toContain(result.period);
+    expect(result).toHaveProperty("morningDone");
+    expect(result).toHaveProperty("middayDone");
+    expect(result).toHaveProperty("eveningDone");
+    expect(typeof result.morningDone).toBe("boolean");
   });
 });

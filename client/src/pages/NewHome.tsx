@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Onboarding } from "@/components/Onboarding";
 import { InitialCalibration } from "@/components/InitialCalibration";
+import { FirstImpression } from "@/components/FirstImpression";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getChapterTitle } from "@shared/chapterTranslations";
@@ -41,17 +42,30 @@ export default function NewHome() {
     ]);
   }, [utils]);
 
+  const [showFirstImpression, setShowFirstImpression] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showInitialCalibration, setShowInitialCalibration] = useState(false);
 
   useEffect(() => {
     if (user) {
+      const hasSeenFirstImpression = localStorage.getItem("first_impression_seen");
       const hasCompletedOnboarding = localStorage.getItem("onboarding_completed");
-      if (!hasCompletedOnboarding) {
+      if (!hasSeenFirstImpression) {
+        setShowFirstImpression(true);
+      } else if (!hasCompletedOnboarding) {
         setShowOnboarding(true);
       }
     }
   }, [user]);
+
+  const handleFirstImpressionComplete = () => {
+    localStorage.setItem("first_impression_seen", "true");
+    setShowFirstImpression(false);
+    const hasCompletedOnboarding = localStorage.getItem("onboarding_completed");
+    if (!hasCompletedOnboarding) {
+      setShowOnboarding(true);
+    }
+  };
 
   const handleOnboardingComplete = () => {
     localStorage.setItem("onboarding_completed", "true");
@@ -95,6 +109,10 @@ export default function NewHome() {
 
   return (
     <>
+      {showFirstImpression && (
+        <FirstImpression onBegin={handleFirstImpressionComplete} />
+      )}
+
       {showOnboarding && (
         <Onboarding
           onComplete={handleOnboardingComplete}

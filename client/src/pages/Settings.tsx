@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Bell, Clock, Save, Download, FileJson, FileSpreadsheet } from "lucide-react";
+import { ArrowLeft, Bell, Clock, Save, Download, FileJson, FileSpreadsheet, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { downloadCSV, downloadJSON, convertToCSV, formatCompleteDataForExport, formatSliderHistoryForExport } from "@/lib/export";
 import { requestNotificationPermission, areNotificationsEnabled, scheduleDailyReminder, sendLocalNotification } from "@/lib/pushNotifications";
@@ -283,6 +283,24 @@ export default function Settings() {
                 Export All Data (.json)
               </Button>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Privacy & Data */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              <CardTitle>Privacy & Data Sovereignty</CardTitle>
+            </div>
+            <CardDescription>
+              Your data belongs to you. Learn how we protect it.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button variant="outline" asChild>
+              <Link href="/privacy">View Privacy Policy</Link>
+            </Button>
           </CardContent>
         </Card>
       </main>

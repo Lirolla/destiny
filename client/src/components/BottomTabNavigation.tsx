@@ -1,16 +1,18 @@
 import { useLocation } from "wouter";
 import { Home, BookOpen, Headphones, GraduationCap, MoreHorizontal } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const tabs = [
-  { id: "home", label: "Home", icon: Home, path: "/" },
-  { id: "book", label: "Book", icon: BookOpen, path: "/book" },
-  { id: "audio", label: "Audio", icon: Headphones, path: "/audiobook" },
-  { id: "practice", label: "Practice", icon: GraduationCap, path: "/modules" },
-  { id: "more", label: "More", icon: MoreHorizontal, path: "/more" },
+  { id: "home", labelEn: "Home", labelPt: "Início", icon: Home, path: "/" },
+  { id: "book", labelEn: "Book", labelPt: "Livro", icon: BookOpen, path: "/book" },
+  { id: "audio", labelEn: "Audio", labelPt: "Áudio", icon: Headphones, path: "/audiobook" },
+  { id: "practice", labelEn: "Practice", labelPt: "Prática", icon: GraduationCap, path: "/modules" },
+  { id: "more", labelEn: "More", labelPt: "Mais", icon: MoreHorizontal, path: "/more" },
 ];
 
 export function BottomTabNavigation() {
   const [location, setLocation] = useLocation();
+  const { language } = useLanguage();
 
   const getActiveTab = () => {
     if (location === "/") return "home";
@@ -58,7 +60,7 @@ export function BottomTabNavigation() {
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               }`}
-              aria-label={tab.label}
+              aria-label={language === 'pt' ? tab.labelPt : tab.labelEn}
             >
               {/* Active indicator dot */}
               {isActive && (
@@ -75,7 +77,7 @@ export function BottomTabNavigation() {
                   isActive ? "opacity-100" : "opacity-70"
                 }`}
               >
-                {tab.label}
+                {language === 'pt' ? tab.labelPt : tab.labelEn}
               </span>
             </button>
           );

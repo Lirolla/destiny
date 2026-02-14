@@ -11,6 +11,7 @@ import { calculateGracePeriod, formatGracePeriodExpiry, getYesterdayDate } from 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PageHeader } from "@/components/PageHeader";
 import { useAutoAchievementCheck } from "@/hooks/useAchievements";
+import { InvictusFooter } from "@/components/InvictusFooter";
 
 function interpolateColor(colorLow: string, colorHigh: string, value: number): string {
   const hex = (c: string) => parseInt(c, 16);
@@ -638,12 +639,7 @@ export default function DailyCycle() {
             </Card>
           )}
 
-          {/* Invictus quote */}
-          <div className="text-center py-4">
-            <p className="text-xs italic text-muted-foreground/60">
-              "I am the master of my fate, I am the captain of my soul." — Invictus
-            </p>
-          </div>
+          <InvictusFooter />
         </div>
       </main>
     </div>

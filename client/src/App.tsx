@@ -35,6 +35,8 @@ import { GenerateAudiobook } from "./pages/GenerateAudiobook";
 import { ProgressDashboard } from "./pages/ProgressDashboard";
 import { Flashcards } from "./pages/Flashcards";
 import { OfflineIndicator } from "./components/OfflineIndicator";
+import Privacy from "./pages/Privacy";
+import MonthlyReportPage from "./pages/MonthlyReportPage";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 function Router() {
@@ -70,6 +72,8 @@ function Router() {
         <Route path="/batch-audiobook-generation" component={BatchAudiobookGeneration} />
         <Route path="/record-voice" component={RecordVoice} />
         <Route path="/generate-audiobook" component={GenerateAudiobook} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/monthly-report" component={MonthlyReportPage} />
         <Route path="/404" component={NotFound} />
         {/* Final fallback route */}
         <Route component={NotFound} />
@@ -82,7 +86,7 @@ function App() {
   return (
     <ErrorBoundary>
       <LanguageProvider>
-        <ThemeProvider defaultTheme="light" switchable>
+        <ThemeProvider defaultTheme="dark" switchable>
           <TooltipProvider>
           <Toaster />
           <SplashScreen />

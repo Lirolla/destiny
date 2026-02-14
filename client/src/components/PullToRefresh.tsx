@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, ReactNode } from "react";
+import { useState, useRef, useCallback, ReactNode, useMemo } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 
@@ -11,9 +11,20 @@ interface PullToRefreshProps {
 const PULL_THRESHOLD = 80;
 const MAX_PULL = 120;
 
+const INVICTUS_QUOTES = [
+  "I am the master of my fate, I am the captain of my soul.",
+  "My head is bloody, but unbowed.",
+  "Beyond this place of wrath and tears looms but the Horror of the shade.",
+  "In the fell clutch of circumstance I have not winced nor cried aloud.",
+  "It matters not how strait the gate, how charged with punishments the scroll.",
+  "Under the bludgeonings of chance my head is bloody, but unbowed.",
+  "Out of the night that covers me, black as the pit from pole to pole.",
+  "I thank whatever gods may be for my unconquerable soul.",
+];
+
 /**
- * PullToRefresh - Native-style pull-to-refresh for mobile pages.
- * Wraps content and shows a spinner when pulled down from the top.
+ * PullToRefresh - Native-style pull-to-refresh with Invictus quotes.
+ * Wraps content and shows a spinner + quote when pulled down from the top.
  */
 export function PullToRefresh({ children, onRefresh, className = "" }: PullToRefreshProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -21,6 +32,12 @@ export function PullToRefresh({ children, onRefresh, className = "" }: PullToRef
   const startY = useRef(0);
   const isPulling = useRef(false);
   const pullDistance = useMotionValue(0);
+
+  const quote = useMemo(
+    () => INVICTUS_QUOTES[Math.floor(Math.random() * INVICTUS_QUOTES.length)],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isRefreshing]
+  );
 
   const spinnerOpacity = useTransform(pullDistance, [0, PULL_THRESHOLD * 0.5, PULL_THRESHOLD], [0, 0.5, 1]);
   const spinnerScale = useTransform(pullDistance, [0, PULL_THRESHOLD], [0.5, 1]);
@@ -31,8 +48,6 @@ export function PullToRefresh({ children, onRefresh, className = "" }: PullToRef
     const container = containerRef.current;
     if (!container) return;
 
-    // Only activate if scrolled to top
-    // Check the container itself and its first scrollable child
     const scrollTop = container.scrollTop;
     if (scrollTop <= 0) {
       startY.current = e.touches[0].clientY;
@@ -47,7 +62,6 @@ export function PullToRefresh({ children, onRefresh, className = "" }: PullToRef
     const diff = currentY - startY.current;
 
     if (diff > 0) {
-      // Apply resistance - pull gets harder as you go further
       const dampedDiff = Math.min(diff * 0.5, MAX_PULL);
       pullDistance.set(dampedDiff);
     }
@@ -60,9 +74,8 @@ export function PullToRefresh({ children, onRefresh, className = "" }: PullToRef
     const currentPull = pullDistance.get();
 
     if (currentPull >= PULL_THRESHOLD && !isRefreshing) {
-      // Trigger refresh
       setIsRefreshing(true);
-      pullDistance.set(60); // Hold at spinner position
+      pullDistance.set(60);
 
       try {
         await onRefresh();
@@ -73,7 +86,6 @@ export function PullToRefresh({ children, onRefresh, className = "" }: PullToRef
         pullDistance.set(0);
       }
     } else {
-      // Snap back
       pullDistance.set(0);
     }
   }, [isRefreshing, onRefresh, pullDistance]);
@@ -86,9 +98,9 @@ export function PullToRefresh({ children, onRefresh, className = "" }: PullToRef
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Pull indicator */}
+      {/* Pull indicator with Invictus quote */}
       <motion.div
-        className="absolute left-0 right-0 flex items-center justify-center z-10 pointer-events-none"
+        className="absolute left-0 right-0 flex flex-col items-center justify-center z-10 pointer-events-none gap-2"
         style={{
           top: 0,
           height: pullDistance,
@@ -109,6 +121,15 @@ export function PullToRefresh({ children, onRefresh, className = "" }: PullToRef
             </motion.div>
           )}
         </motion.div>
+        {isRefreshing && (
+          <motion.p
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-xs text-muted-foreground italic text-center px-8 max-w-xs"
+          >
+            "{quote}"
+          </motion.p>
+        )}
       </motion.div>
 
       {/* Content with pull offset */}

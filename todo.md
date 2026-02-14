@@ -1145,7 +1145,7 @@
 - [x] Evening check-in: full review with daily summary and Destiny Score change
 - [x] Enhanced DailyCycle page with period-aware UI, Destiny Score display, Invictus quote
 - [x] Add check-in prompt banner on Dashboard (Morning/Midday/Evening context-aware)
-- [ ] Save checkpoint
+- [x] Save checkpoint
 
 ## Phase 47: Spider/Radar Chart for 15 Axes
 - [x] Install Chart.js + react-chartjs-2
@@ -1153,7 +1153,7 @@
 - [x] Display current values with green colour-coded fill and border
 - [x] Add to Sliders page above the axis list
 - [x] Add to Dashboard with Destiny Score header (84% shown)
-- [ ] Save checkpoint
+- [x] Save checkpoint
 
 ## Phase 48: Milestone Badges for Axis Scores
 - [x] Design badge system: 7-day, 30-day, 90-day streak per axis
@@ -1163,4 +1163,42 @@
 - [x] Integrated with existing achievements system in routers.ts
 - [x] Updated database enum with all new badge types
 - [x] All 7 vitest tests passing (destiny-features.test.ts)
-- [ ] Save checkpoint
+- [x] Save checkpoint
+
+## Phase 49: SUPER PROMPT — Critical Bug Fixes
+- [x] 1.1 Fix Onboarding to use Axis 0 (The Will Axis) instead of old "Anxiety ↔ Calm"
+- [x] 1.2 Fix Onboarding module names to use real chapter titles
+- [x] 1.3 Wire Dashboard modulesCompleted to actual module_progress table
+- [x] 1.5 Create .env.example with all required variables
+- [x] 1.6 ComponentShowcase does not exist in the codebase (N/A)
+
+## Phase 50: SUPER PROMPT — Wow Factor Features
+- [x] 2.1 "The Day I Lost My Will" first-time intro screen with slow fade-in (FirstImpression.tsx)
+- [x] 2.2 Invictus Moment full-screen animation (poem, gold crown, radar chart) (InvictusMoment.tsx)
+- [x] 2.3 Reflection Prompt of the Day on Dashboard (lowest axis prompt)
+- [x] 2.4 Morning Greeting with Destiny Score, streak, and lowest axis
+- [x] 2.5 Monthly Before/After Report with dual radar charts and AI narrative (MonthlyReport.tsx)
+- [x] 2.6 Chapter Bridge screen between slider red zone and audiobook (ChapterBridge.tsx)
+
+## Phase 51: SUPER PROMPT — UI/UX Polish
+- [x] 3.1 Slider haptic feedback (web vibrate API at thresholds)
+- [x] 3.2 Slider track colour gradient from colorLow to colorHigh (already in Sliders.tsx)
+- [x] 3.3 Dark mode as default with brand colours
+- [x] 3.4 FirstImpression screen serves as enhanced splash
+- [x] 3.5 Bottom nav labels updated with bilingual support
+- [x] 3.6 Pull-to-refresh with random Invictus quote
+
+## Phase 52: SUPER PROMPT — Incomplete Features
+- [x] 4.1 Calibration history timeline chart per axis (AxisHistoryChart.tsx, 30-day line chart)
+- [x] 4.2 Context Profiles already exist (Profiles.tsx page)
+- [ ] 4.3 Cause-Effect mapping visualisation in Weekly Review
+- [ ] 4.4 Client-side notification scheduling (morning/midday/evening reminders)
+- [ ] 4.5 Challenge Leaderboard stats completion
+
+## Phase 53: SUPER PROMPT — AI & Production
+- [x] 6.1 Upgrade Stoic Strategist system prompt with book philosophy (full rewrite with Marcus Aurelius tone)
+- [x] 6.2 Contextual AI prompts targeting lowest axis (generatePrompt now finds lowest axis, includes reflection prompt and chapter ref)
+- [x] 5.2 Privacy page created (Privacy.tsx with data philosophy)
+- [x] 7.4 Health check endpoint /api/health
+- [x] Invictus quote footer on Dashboard, DailyCycle, Modules, Sliders (InvictusFooter.tsx)
+- [x] British English used in new components and prompts
