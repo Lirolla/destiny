@@ -183,7 +183,7 @@ export function Onboarding({ onComplete, onSkip }: OnboardingProps) {
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full shadow-2xl">
+      <Card className="max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">

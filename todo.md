@@ -1308,3 +1308,10 @@
 - [x] Add Philosophy to Arsenal under Community & Tools
 - [x] Restore dark mode default in App.tsx
 - [x] Save checkpoint
+## Phase 64: Bug Fixes — Splash Screen + Onboarding Mobile
+- [x] BUG 1: Force dark background (#0A0A0A) on SplashScreen regardless of theme
+- [x] BUG 1: Fix text visibility (text-white for title, text-white/60 for subtitle)
+- [x] BUG 1: Fix logo/text overlap (vertically stacked: logo above, text below)
+- [x] BUG 2: Add max-h-[90vh] overflow-y-auto to Onboarding Card for mobile scroll
+- [x] Verify splash in light mode, onboarding buttons reachable on mobile
+- [x] Save checkpoint

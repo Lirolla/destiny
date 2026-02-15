@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 /**
  * SplashScreen - Native app-like loading screen shown on first app open.
  * Features:
+ * - ALWAYS dark background regardless of theme (cinematic moment)
  * - Animated logo with pulse effect
  * - Brand name with staggered letter animation
  * - Smooth fade-out transition
@@ -30,7 +31,8 @@ export function SplashScreen() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
+          style={{ backgroundColor: "#0A0A0A" }}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
@@ -68,10 +70,10 @@ export function SplashScreen() {
             />
           </motion.div>
 
-          {/* App name with staggered animation */}
+          {/* App name with staggered animation — positioned below logo, no overlap */}
           <motion.div className="relative z-10 flex flex-col items-center gap-2">
             <motion.h1
-              className="text-3xl font-bold tracking-tight text-foreground"
+              className="text-3xl font-bold tracking-tight text-white"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
@@ -79,7 +81,7 @@ export function SplashScreen() {
               Destiny Hacking
             </motion.h1>
             <motion.p
-              className="text-sm text-muted-foreground tracking-widest uppercase"
+              className="text-sm tracking-widest uppercase text-white/60"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.5 }}
@@ -90,13 +92,15 @@ export function SplashScreen() {
 
           {/* Loading bar */}
           <motion.div
-            className="absolute bottom-24 w-32 h-0.5 bg-muted rounded-full overflow-hidden"
+            className="absolute bottom-24 w-32 h-0.5 rounded-full overflow-hidden"
+            style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
             <motion.div
-              className="h-full bg-primary rounded-full"
+              className="h-full rounded-full"
+              style={{ backgroundColor: "#01D98D" }}
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
               transition={{ delay: 0.9, duration: 1.2, ease: "easeInOut" }}
