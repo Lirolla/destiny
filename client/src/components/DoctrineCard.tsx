@@ -25,25 +25,25 @@ export function DoctrineCard() {
       {/* Left accent bar */}
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#01D98D]/60" />
 
-      <CardContent className="py-4 pl-5">
-        <div className="flex items-start gap-3">
-          <span className="text-2xl mt-0.5 shrink-0">{currentDoctrine.emoji}</span>
-          <div className="space-y-2 min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-[#01D98D]/80">
+      <CardContent className="py-3 pl-5 pr-4">
+        <div className="flex items-start gap-2.5">
+          <span className="text-xl mt-0.5 shrink-0">{currentDoctrine.emoji}</span>
+          <div className="space-y-1 min-w-0">
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-[#01D98D]/80">
               {t("Doctrine of the Week", "Doutrina da Semana")}
             </p>
-            <p className="text-sm md:text-base italic text-foreground/90 leading-relaxed">
+            <p className="text-sm italic text-foreground/90 leading-snug line-clamp-2">
               "{language === 'pt' ? currentDoctrine.doctrinePt : currentDoctrine.doctrine}"
             </p>
             <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground truncate">
                 — {language === 'pt' ? currentDoctrine.sourcePt : currentDoctrine.source}
               </p>
               <Link
                 href="/philosophy"
-                className="text-xs text-[#01D98D] hover:text-[#01D98D]/80 transition-colors whitespace-nowrap ml-2"
+                className="text-[10px] text-[#01D98D] hover:text-[#01D98D]/80 transition-colors whitespace-nowrap ml-2"
               >
-                {t("Read the full Philosophy →", "Ler a Filosofia completa →")}
+                {t("Read Philosophy →", "Ler Filosofia →")}
               </Link>
             </div>
           </div>

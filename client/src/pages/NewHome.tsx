@@ -1,34 +1,31 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { Card, CardContent } from "@/components/ui/card";
 import { Onboarding } from "@/components/Onboarding";
 import { InitialCalibration } from "@/components/InitialCalibration";
 import { FirstImpression } from "@/components/FirstImpression";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { DoctrineCard } from "@/components/DoctrineCard";
-import { InvictusFooter } from "@/components/InvictusFooter";
+import { QuickCalibrate } from "@/components/QuickCalibrate";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getChapterTitle } from "@shared/chapterTranslations";
 import {
   Layers,
-  BookOpen,
-  Headphones,
-  GraduationCap,
-  Trophy,
-  TrendingUp,
-  Zap,
-  Brain,
-  Calendar,
-  BarChart3,
-  Sprout,
-  Shield,
-  Users,
-  Star,
   ScrollText,
-  Settings,
-  Play,
+  Brain,
+  TrendingUp,
+  Trophy,
+  Zap,
 } from "lucide-react";
+
+/* ── Quick Access Grid Items ────────────────────────────────── */
+const QUICK_ACCESS_ITEMS = [
+  { Icon: Layers, labelEn: "Sliders", labelPt: "Controles", path: "/sliders", bg: "bg-blue-500/10", color: "text-blue-500" },
+  { Icon: ScrollText, labelEn: "Philosophy", labelPt: "Filosofia", path: "/philosophy", bg: "bg-emerald-500/10", color: "text-emerald-500" },
+  { Icon: Brain, labelEn: "AI Coach", labelPt: "Coach IA", path: "/insights", bg: "bg-sky-500/10", color: "text-sky-500" },
+  { Icon: TrendingUp, labelEn: "Progress", labelPt: "Progresso", path: "/progress", bg: "bg-teal-500/10", color: "text-teal-500" },
+  { Icon: Trophy, labelEn: "Badges", labelPt: "Medalhas", path: "/achievements", bg: "bg-yellow-500/10", color: "text-yellow-500" },
+  { Icon: Zap, labelEn: "Flashcards", labelPt: "Cartões", path: "/flashcards", bg: "bg-orange-500/10", color: "text-orange-500" },
+];
 
 export default function NewHome() {
   const [, navigate] = useLocation();
@@ -37,8 +34,6 @@ export default function NewHome() {
   const { data: user } = trpc.auth.me.useQuery();
   const { data: todayCycle } = trpc.dailyCycle.getToday.useQuery();
   const { data: axes } = trpc.sliders.listAxes.useQuery();
-  const { data: lastListened } = trpc.audiobook.getLastListened.useQuery();
-  const { data: pdfProgress } = trpc.pdf.getProgress.useQuery();
   const { data: destinyScore } = trpc.sliders.getDestinyScore.useQuery();
   const { data: recentCycles } = trpc.dailyCycle.getHistory.useQuery({ days: 30 });
   const { data: lowest3 } = trpc.sliders.getLowest3.useQuery();
@@ -47,18 +42,17 @@ export default function NewHome() {
     await Promise.all([
       utils.dailyCycle.getToday.invalidate(),
       utils.sliders.listAxes.invalidate(),
-      utils.audiobook.getLastListened.invalidate(),
-      utils.pdf.getProgress.invalidate(),
       utils.sliders.getDestinyScore.invalidate(),
       utils.dailyCycle.getHistory.invalidate(),
       utils.sliders.getLowest3.invalidate(),
     ]);
   }, [utils]);
 
-  // First-time user flow
+  /* ── First-time user flow ─────────────────────────────────── */
   const [showFirstImpression, setShowFirstImpression] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showInitialCalibration, setShowInitialCalibration] = useState(false);
+  const [showQuickCalibrate, setShowQuickCalibrate] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -104,7 +98,7 @@ export default function NewHome() {
     setShowInitialCalibration(false);
   };
 
-  // Greeting
+  /* ── Derived data ─────────────────────────────────────────── */
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return t("Good Morning", "Bom Dia");
@@ -112,7 +106,6 @@ export default function NewHome() {
     return t("Good Evening", "Boa Noite");
   }, [t]);
 
-  // Streak calculation
   const streak = useMemo(() => {
     if (!recentCycles || recentCycles.length === 0) return 0;
     const sortedCycles = [...recentCycles]
@@ -136,230 +129,154 @@ export default function NewHome() {
     return count;
   }, [recentCycles]);
 
-  // Lowest axis for reflection prompt
-  const lowestAxis = useMemo(() => {
-    if (!lowest3 || lowest3.length === 0 || !axes) return null;
-    const lowestState = lowest3[0];
-    const axis = axes.find((a: any) => a.id === lowestState.axisId);
-    if (!axis) return null;
-    return { ...axis, value: lowestState.value };
-  }, [lowest3, axes]);
+  const axesCount = axes?.length ?? 15;
+  const score = destinyScore?.score ?? 0;
 
-  // Continue chips
-  const hasLastListened = lastListened && lastListened.currentPosition > 0 && !lastListened.completed;
-  const hasBookProgress = pdfProgress && pdfProgress.currentPage > 1;
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // 4×4 icon grid
-  const navItems = useMemo(() => [
-    // Row 1 — Core Practice
-    { icon: Layers, label: t("Sliders", "Controles"), path: "/sliders", bg: "bg-blue-500/15", color: "text-blue-400" },
-    { icon: BookOpen, label: t("Chapters", "Capítulos"), path: "/book", bg: "bg-emerald-500/15", color: "text-emerald-400" },
-    { icon: Headphones, label: t("Audio", "Áudio"), path: "/audiobook", bg: "bg-violet-500/15", color: "text-violet-400" },
-    { icon: GraduationCap, label: t("Modules", "Módulos"), path: "/modules", bg: "bg-amber-500/15", color: "text-amber-400" },
-    // Row 2 — Growth
-    { icon: Trophy, label: t("Badges", "Medalhas"), path: "/achievements", bg: "bg-yellow-500/15", color: "text-yellow-400" },
-    { icon: TrendingUp, label: t("Progress", "Progresso"), path: "/progress", bg: "bg-cyan-500/15", color: "text-cyan-400" },
-    { icon: Zap, label: "Flashcards", path: "/flashcards", bg: "bg-orange-500/15", color: "text-orange-400" },
-    { icon: Brain, label: t("AI Insights", "Insights IA"), path: "/insights", bg: "bg-sky-500/15", color: "text-sky-400" },
-    // Row 3 — Deeper Tools
-    { icon: Calendar, label: t("Week Review", "Revisão Sem."), path: "/weekly-review", bg: "bg-cyan-500/15", color: "text-cyan-400" },
-    { icon: BarChart3, label: t("Month Report", "Rel. Mensal"), path: "/monthly-report", bg: "bg-teal-500/15", color: "text-teal-400" },
-    { icon: Sprout, label: t("Sow & Reap", "Semear"), path: "/sowing-reaping", bg: "bg-green-500/15", color: "text-green-400" },
-    { icon: Shield, label: t("Bias Clear", "Limpar Viés"), path: "/bias-clearing", bg: "bg-purple-500/15", color: "text-purple-400" },
-    // Row 4 — Community & Philosophy
-    { icon: Users, label: t("Tribe", "Tribo"), path: "/inner-circle", bg: "bg-indigo-500/15", color: "text-indigo-400" },
-    { icon: Star, label: t("Challenges", "Desafios"), path: "/challenges", bg: "bg-pink-500/15", color: "text-pink-400" },
-    { icon: ScrollText, label: t("Philosophy", "Filosofia"), path: "/philosophy", bg: "bg-emerald-500/15", color: "text-emerald-400" },
-    { icon: Settings, label: t("Settings", "Config."), path: "/settings", bg: "bg-gray-500/15", color: "text-gray-400" },
-  ], [t]);
-
+  /* ── Render ───────────────────────────────────────────────── */
   return (
     <>
+      {/* Modals — unchanged */}
       {showFirstImpression && (
         <FirstImpression onBegin={handleFirstImpressionComplete} />
       )}
       {showOnboarding && (
         <Onboarding onComplete={handleOnboardingComplete} onSkip={handleOnboardingSkip} />
       )}
+      <QuickCalibrate open={showQuickCalibrate} onClose={() => setShowQuickCalibrate(false)} />
       {showInitialCalibration && (
         <InitialCalibration open={showInitialCalibration} onComplete={handleCalibrationComplete} />
       )}
 
       <PullToRefresh onRefresh={handleRefresh} className="min-h-screen bg-background">
-        {/* Section 1: Compact Hero Header */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background px-4 pt-5 pb-4">
-          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-primary/5 blur-3xl" />
-          <div className="relative">
-            <h1 className="text-lg font-bold">
-              {greeting}, {t("Captain", "Capitão")}.
-            </h1>
-            {destinyScore?.score !== null && destinyScore?.score !== undefined ? (
-              <div className="flex items-center gap-4 mt-1">
-                <span className="text-sm text-muted-foreground">
-                  ⚡ {t("Destiny Score", "Pontuação Destino")}: <strong className="text-primary">{destinyScore.score}%</strong>
+        <div className="flex flex-col" style={{ minHeight: "calc(100dvh - 64px)" }}>
+
+          {/* ═══ Section 1: HERO ═══ */}
+          <div
+            className="flex items-center gap-4 px-5 py-4"
+            style={{
+              background:
+                "linear-gradient(160deg, rgba(1,217,141,0.06) 0%, rgba(14,189,202,0.04) 60%, transparent 100%)",
+            }}
+          >
+            {/* Score Ring — 68px, tappable for Quick Calibrate */}
+            <button
+              onClick={() => setShowQuickCalibrate(true)}
+              className="relative w-[68px] h-[68px] flex-shrink-0 active:scale-95 transition-transform"
+              aria-label={t("Quick Calibrate", "Calibração Rápida")}
+            >
+              <svg width="68" height="68" className="-rotate-90">
+                <circle
+                  cx="34" cy="34" r="28"
+                  stroke="currentColor"
+                  className="text-muted-foreground/15"
+                  strokeWidth="5"
+                  fill="none"
+                />
+                <circle
+                  cx="34" cy="34" r="28"
+                  stroke="#01D98D"
+                  strokeWidth="5"
+                  fill="none"
+                  strokeDasharray={2 * Math.PI * 28}
+                  strokeDashoffset={2 * Math.PI * 28 * (1 - score / 100)}
+                  strokeLinecap="round"
+                  className="transition-all duration-700"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl font-bold text-foreground leading-none">{score}</span>
+                <span className="text-[7px] font-semibold text-muted-foreground mt-0.5 tracking-wide">
+                  DESTINY
                 </span>
+              </div>
+            </button>
+
+            {/* Greeting + Stats */}
+            <div className="flex-1 min-w-0">
+              <p className="text-[17px] font-bold text-foreground leading-tight truncate">
+                {greeting}, {t("Captain", "Capitão")}.
+              </p>
+              <div className="flex gap-3.5 mt-1.5">
                 {streak > 0 && (
-                  <span className="text-sm text-muted-foreground">
-                    🔥 {t("Day", "Dia")} <strong className="text-primary">{streak}</strong>
+                  <span className="text-[13px] text-muted-foreground">
+                    🔥 <strong className="text-foreground">{streak}</strong> {t("days", "dias")}
                   </span>
                 )}
+                <span className="text-[13px] text-muted-foreground">
+                  📊 <strong className="text-foreground">{axesCount}</strong> {t("axes", "eixos")}
+                </span>
               </div>
-            ) : (
-              <p className="text-sm text-muted-foreground mt-1">
-                {t("Begin your journey. Calibrate your 15 axes.", "Comece sua jornada. Calibre seus 15 eixos.")}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="px-3 py-3 space-y-3 pb-28">
-          {/* Section 2: Doctrine of the Week */}
-          <DoctrineCard />
-
-          {/* Section 3: Reflection Prompt of the Day */}
-          {lowestAxis && (lowestAxis as any).reflectionPrompt && (
-            <Card className="border-amber-500/30 bg-gradient-to-r from-amber-500/5 to-transparent">
-              <CardContent className="py-3 px-4">
-                <div className="flex items-start gap-2.5">
-                  <span className="text-xl flex-shrink-0">{(lowestAxis as any).emoji}</span>
-                  <div className="min-w-0">
-                    <p className="text-xs italic text-foreground leading-relaxed line-clamp-2">
-                      "{(lowestAxis as any).reflectionPrompt}"
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">
-                      — {(lowestAxis as any).name || `${(lowestAxis as any).leftLabel} ↔ ${(lowestAxis as any).rightLabel}`} · {(lowestAxis as any).value}/100
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Section 7: Today's Intention (compact single-line banner) */}
-          {todayCycle?.intendedAction && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card/50 border border-border/50">
-              <span className="text-sm flex-shrink-0">🎯</span>
-              <p className="text-xs text-foreground truncate">
-                {t("Today", "Hoje")}: "{todayCycle.intendedAction}"
-              </p>
             </div>
-          )}
+          </div>
 
-          {/* Section 4: Daily Cycle (kept as-is) */}
-          <div className="space-y-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1">
+          {/* ═══ Section 2: DOCTRINE OF THE WEEK ═══ */}
+          <div className="px-4 pt-1.5">
+            <DoctrineCard />
+          </div>
+
+          {/* ═══ Section 3: DAILY CYCLE ═══ */}
+          <div className="px-4 pt-3.5">
+            <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-muted-foreground/60 mb-2 ml-0.5">
               {t("Daily Cycle", "Ciclo Diário")}
-            </h2>
-            <div className="grid grid-cols-3 gap-2">
-              <Link href="/daily-cycle?phase=morning">
-                <Card className={`p-2.5 text-center hover:shadow-md active:scale-[0.97] transition-all duration-200 cursor-pointer ${todayCycle?.morningCompletedAt ? "bg-primary/10 border-primary/30" : "border-border/50"}`}>
-                  <div className="text-xl mb-0.5">🌅</div>
-                  <p className="text-[10px] font-medium">{t("Morning", "Manhã")}</p>
-                  {todayCycle?.morningCompletedAt && (
-                    <div className="w-3.5 h-3.5 rounded-full bg-primary mx-auto mt-0.5 flex items-center justify-center">
-                      <span className="text-[7px] text-primary-foreground">✓</span>
-                    </div>
-                  )}
-                </Card>
-              </Link>
-              <Link href="/daily-cycle?phase=midday">
-                <Card className={`p-2.5 text-center hover:shadow-md active:scale-[0.97] transition-all duration-200 cursor-pointer ${todayCycle?.middayCompletedAt ? "bg-primary/10 border-primary/30" : "border-border/50"}`}>
-                  <div className="text-xl mb-0.5">☀️</div>
-                  <p className="text-[10px] font-medium">{t("Midday", "Meio-dia")}</p>
-                  {todayCycle?.middayCompletedAt && (
-                    <div className="w-3.5 h-3.5 rounded-full bg-primary mx-auto mt-0.5 flex items-center justify-center">
-                      <span className="text-[7px] text-primary-foreground">✓</span>
-                    </div>
-                  )}
-                </Card>
-              </Link>
-              <Link href="/daily-cycle?phase=evening">
-                <Card className={`p-2.5 text-center hover:shadow-md active:scale-[0.97] transition-all duration-200 cursor-pointer ${todayCycle?.eveningCompletedAt ? "bg-primary/10 border-primary/30" : "border-border/50"}`}>
-                  <div className="text-xl mb-0.5">🌙</div>
-                  <p className="text-[10px] font-medium">{t("Evening", "Noite")}</p>
-                  {todayCycle?.eveningCompletedAt && (
-                    <div className="w-3.5 h-3.5 rounded-full bg-primary mx-auto mt-0.5 flex items-center justify-center">
-                      <span className="text-[7px] text-primary-foreground">✓</span>
-                    </div>
-                  )}
-                </Card>
-              </Link>
+            </p>
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                { emoji: "🌅", label: t("Morning", "Manhã"), phase: "morning", done: !!todayCycle?.morningCompletedAt },
+                { emoji: "☀️", label: t("Midday", "Meio-dia"), phase: "midday", done: !!todayCycle?.middayCompletedAt },
+                { emoji: "🌙", label: t("Evening", "Noite"), phase: "evening", done: !!todayCycle?.eveningCompletedAt },
+              ].map((p) => (
+                <Link key={p.phase} href={`/daily-cycle?phase=${p.phase}`}>
+                  <div
+                    className={`rounded-[14px] py-3 px-1.5 text-center cursor-pointer transition-all active:scale-95 ${
+                      p.done
+                        ? "bg-primary/10 border-2 border-primary"
+                        : "bg-card border border-border/50 shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
+                    }`}
+                  >
+                    <div className="text-[26px] mb-0.5">{p.emoji}</div>
+                    <p className="text-[13px] font-semibold text-foreground">{p.label}</p>
+                    {p.done ? (
+                      <p className="text-[10px] text-primary font-semibold mt-0.5">
+                        ✓ {t("Done", "Feito")}
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-muted-foreground/50 mt-0.5">
+                        {t("tap to start", "toque para iniciar")}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* Continue Where You Left Off — compact chips */}
-          {(hasLastListened || hasBookProgress) && (
-            <div className="grid grid-cols-2 gap-2">
-              {hasLastListened && lastListened && (
-                <div
-                  onClick={() => navigate(`/audiobook?chapter=${lastListened.chapterId}`)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-violet-500/10 border border-violet-500/20 cursor-pointer hover:bg-violet-500/15 active:scale-[0.97] transition-all"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-violet-500/20 flex items-center justify-center flex-shrink-0">
-                    <Play className="w-3.5 h-3.5 text-violet-400 ml-0.5" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-medium text-violet-300 truncate">
-                      🎧 {language === "pt" ? "Cap" : "Ch"}.{lastListened.chapterNumber}
-                    </p>
-                    <p className="text-[9px] text-muted-foreground">
-                      {formatTime(lastListened.currentPosition)}
-                      {lastListened.audioDuration ? `/${formatTime(lastListened.audioDuration)}` : ""}
+          {/* ═══ Section 4: QUICK ACCESS 2×3 GRID ═══ */}
+          <div className="px-4 pt-3.5">
+            <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-muted-foreground/60 mb-2 ml-0.5">
+              {t("Quick Access", "Acesso Rápido")}
+            </p>
+            <div className="grid grid-cols-3 gap-2.5">
+              {QUICK_ACCESS_ITEMS.map((item) => (
+                <Link key={item.path} href={item.path}>
+                  <div
+                    className={`${item.bg} rounded-[14px] py-4 px-1.5 text-center cursor-pointer border border-black/[0.04] shadow-[0_1px_2px_rgba(0,0,0,0.03)] active:scale-95 transition-transform`}
+                  >
+                    <item.Icon className={`w-7 h-7 mx-auto mb-1 ${item.color}`} />
+                    <p className="text-xs font-semibold text-foreground/80">
+                      {language === "pt" ? item.labelPt : item.labelEn}
                     </p>
                   </div>
-                </div>
-              )}
-              {hasBookProgress && pdfProgress && (
-                <div
-                  onClick={() => navigate("/book")}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 cursor-pointer hover:bg-emerald-500/15 active:scale-[0.97] transition-all"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                    <Play className="w-3.5 h-3.5 text-emerald-400 ml-0.5" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-medium text-emerald-300 truncate">
-                      📖 {t("Page", "Pág.")} {pdfProgress.currentPage}
-                    </p>
-                    <p className="text-[9px] text-muted-foreground">
-                      {t("of", "de")} {pdfProgress.totalPages}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Section 5: Quick Navigate Grid — 4×4 icon grid */}
-          <div className="space-y-2">
-            <h2 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1">
-              {t("Navigate", "Navegar")}
-            </h2>
-            <div className="grid grid-cols-4 gap-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link key={item.path} href={item.path}>
-                    <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-card border border-border/50 hover:shadow-md active:scale-95 transition-all">
-                      <div className={`w-9 h-9 rounded-xl ${item.bg} flex items-center justify-center mb-1`}>
-                        <Icon className={`w-4.5 h-4.5 ${item.color}`} />
-                      </div>
-                      <span className="text-[9px] font-medium text-center leading-tight text-muted-foreground">{item.label}</span>
-                    </div>
-                  </Link>
-                );
-              })}
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* Section 6: Invictus Footer */}
-          <InvictusFooter />
+          {/* ═══ Section 5: INVICTUS QUOTE (flex-1 fills remaining space) ═══ */}
+          <div className="flex-1 flex items-center justify-center px-6 py-4">
+            <p className="text-[11px] italic text-muted-foreground/30 text-center leading-relaxed">
+              "I am the master of my fate, I am the captain of my soul."
+            </p>
+          </div>
         </div>
       </PullToRefresh>
     </>

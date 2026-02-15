@@ -1335,3 +1335,17 @@
 - [x] Add Export PDF button to Dashboard Destiny Score card
 - [x] Write 9 vitest tests for new features (phase67-features.test.ts)
 - [x] Save checkpoint
+
+## Phase 68: Follow-ups + Bridge V2 Redesign
+- [x] Quick Calibrate overlay: tap Destiny Score on Bridge to open mini-slider for 3 lowest axes
+- [x] Daily push notification reminders via service worker (morning/midday/evening)
+- [x] Theme toggle in Settings (dark/light mode switch)
+- [x] Bridge V2: Rewrite NewHome.tsx per approved mockup (5 sections, no scroll, 2×3 grid)
+- [x] Remove large cards (Audiobook, Book, Modules, Continue, Quick Tools, Learn & Grow, Intention)
+- [x] Keep modals (FirstImpression, Onboarding, InitialCalibration) and PullToRefresh
+- [x] Verify all 12 checklist items from Bridge V2 prompt
+- [x] Language switcher (EN/PT) added to Settings
+- [x] Full bilingual support for Settings page labels
+- [x] DoctrineCard made more compact for zero-scroll Bridge
+- [x] Write 26 vitest tests for Phase 68 features (phase68-bridge-v2.test.ts)
+- [x] Save checkpoint
