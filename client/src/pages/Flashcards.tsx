@@ -15,6 +15,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -111,11 +122,7 @@ export function Flashcards() {
     }
   };
 
-  const handleDeleteCard = (id: number) => {
-    if (confirm("Delete this flashcard? This cannot be undone.")) {
-      deleteMutation.mutate({ flashcardId: id });
-    }
-  };
+
   
   return (
     <div className="min-h-screen bg-background">
@@ -312,12 +319,30 @@ export function Flashcards() {
                         </span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleDeleteCard(card.id)}
-                      className="text-muted-foreground/40 hover:text-red-500 transition-colors p-1 flex-shrink-0"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button className="text-muted-foreground/40 hover:text-red-500 transition-colors p-1 flex-shrink-0">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Flashcard</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete this flashcard? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteMutation.mutate({ flashcardId: card.id })}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </Card>
               ))}

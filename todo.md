@@ -1361,3 +1361,11 @@
 - [x] Database cleanup: remove test prayer entries, test challenges, invalid connections
 - [x] Write 13 vitest tests for all bug fixes (phase69-bugfixes.test.ts)
 - [x] Save checkpoint
+
+## Phase 70: PDF Test + AlertDialog Upgrade
+- [x] Test PDF export end-to-end (verify white background, dark text, readable output)
+- [x] Replace confirm() with AlertDialog in PrayerJournal.tsx
+- [x] Replace confirm() with AlertDialog in Flashcards.tsx
+- [x] Replace confirm() with AlertDialog in Challenges.tsx
+- [x] Write 21 vitest tests (phase70-alertdialog.test.ts)
+- [x] Save checkpoint
