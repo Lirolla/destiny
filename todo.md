@@ -1327,3 +1327,11 @@
 - [x] Confirmed: FirstImpression, SevenDayReveal, ChapterBridge, SplashScreen all use text-white
 - [x] Enhanced Philosophy page with parallax header, scroll indicator, staggered paragraph reveals, animated divider, and CTA subtitle
 - [x] Save checkpoint
+
+## Phase 67: Follow-ups — Progress Bar + Onboarding + PDF Export
+- [x] Add reading progress bar at top of Philosophy page (green bar fills as user scrolls)
+- [x] Enhance onboarding tutorial with Bridge step (3 steps: Bridge, 15 Axes, Daily Cycle), bilingual EN/PT
+- [x] Build Destiny Score PDF export with radar chart, axis table, color-coded values, streak, Invictus quote
+- [x] Add Export PDF button to Dashboard Destiny Score card
+- [x] Write 9 vitest tests for new features (phase67-features.test.ts)
+- [x] Save checkpoint

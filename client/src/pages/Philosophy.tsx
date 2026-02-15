@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { Link } from "wouter";
 import { ArrowRight, ArrowLeft, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -151,6 +151,10 @@ export default function Philosophy() {
   const headerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Reading progress bar
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
   // Parallax effect on header
   const { scrollY } = useScroll();
   const headerOpacity = useTransform(scrollY, [0, 300], [1, 0]);
@@ -162,6 +166,12 @@ export default function Philosophy() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Reading progress bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-[#01D98D] origin-left z-50"
+        style={{ scaleX: smoothProgress }}
+      />
+
       {/* Header with parallax */}
       <motion.div
         ref={headerRef}

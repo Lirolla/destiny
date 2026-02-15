@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { DestinyRadarChart } from "@/components/DestinyRadarChart";
 import { InvictusFooter } from "@/components/InvictusFooter";
 import { DoctrineCard } from "@/components/DoctrineCard";
+import { DestinyScoreExport } from "@/components/DestinyScoreExport";
 
 export default function Dashboard() {
   // Guest users are auto-created
@@ -202,6 +203,9 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <DestinyRadarChart axes={axes} currentStates={latestStates} height={280} />
+              <div className="flex justify-end mt-4">
+                <DestinyScoreExport />
+              </div>
             </CardContent>
           </Card>
         )}
