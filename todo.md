@@ -1394,3 +1394,7 @@
 - [x] Add "Company number 16920547" to TermsPage.tsx
 - [x] Add "Company number 16920547" to PrivacyPage.tsx
 - [x] Save checkpoint
+
+## Phase 74: Audiobook scroll to player on chapter click
+- [x] Add window.scrollTo({ top: 0, behavior: 'smooth' }) on chapter click in Audiobook.tsx
+- [x] Save checkpoint

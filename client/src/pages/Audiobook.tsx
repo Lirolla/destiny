@@ -240,7 +240,12 @@ export function Audiobook() {
                   className={`cursor-pointer transition-all active:scale-[0.98] ${
                     isSelected ? "ring-2 ring-primary bg-primary/5" : "border-border/50"
                   } ${isCompleted ? "opacity-80" : ""}`}
-                  onClick={() => hasAudio && setSelectedChapterId(chapter.id)}
+                  onClick={() => {
+                    if (hasAudio) {
+                      setSelectedChapterId(chapter.id);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
                 >
                   <div className="flex items-center gap-3 p-3">
                     {/* Chapter Number / Status Icon */}
