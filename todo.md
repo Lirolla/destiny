@@ -1321,3 +1321,9 @@
 - [x] Fix subtitle: text-muted-foreground → text-white/60
 - [x] Fix back button: text-muted-foreground → text-white/50, hover:text-foreground → hover:text-white
 - [x] Save checkpoint
+
+## Phase 66: Follow-ups — Dark Gradient Audit + Philosophy Animation
+- [x] Audit all pages with dark gradient headers — all components already use explicit white text (no issues found)
+- [x] Confirmed: FirstImpression, SevenDayReveal, ChapterBridge, SplashScreen all use text-white
+- [x] Enhanced Philosophy page with parallax header, scroll indicator, staggered paragraph reveals, animated divider, and CTA subtitle
+- [x] Save checkpoint
