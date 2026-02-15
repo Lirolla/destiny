@@ -1389,3 +1389,8 @@
 - [x] Replace [Your registered address] with "128 City Road, London, United Kingdom, EC1V 2NX" in TermsPage.tsx
 - [x] Replace [Your registered address] with "128 City Road, London, United Kingdom, EC1V 2NX" in PrivacyPage.tsx
 - [x] Save checkpoint
+
+## Phase 73: Add Company Registration Number
+- [x] Add "Company number 16920547" to TermsPage.tsx
+- [x] Add "Company number 16920547" to PrivacyPage.tsx
+- [x] Save checkpoint

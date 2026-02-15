@@ -38,6 +38,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             <strong>{t("Data Controller:", "Controlador de Dados:")}</strong> Merx Digital Solutions Ltd<br />
+             <strong>{t("Company Number:", "Número da Empresa:")}</strong> 16920547<br />
              <strong>{t("Registered Address:", "Endereço Registrado:")}</strong> 128 City Road, London, United Kingdom, EC1V 2NX<br />
              <strong>{t("Contact Email:", "E-mail de Contato:")}</strong> privacy@destinyhacking.app
           </p>
@@ -187,6 +188,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             <strong>Merx Digital Solutions Ltd</strong><br />
+             Company number: 16920547<br />
              128 City Road, London, United Kingdom, EC1V 2NX<br />
              Email: privacy@destinyhacking.app
           </p>

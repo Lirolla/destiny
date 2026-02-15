@@ -171,6 +171,7 @@ export default function TermsPage() {
           </p>
           <p>
             <strong>Merx Digital Solutions Ltd</strong><br />
+             Company number: 16920547<br />
              128 City Road, London, United Kingdom, EC1V 2NX<br />
              Email: support@destinyhacking.app
           </p>
