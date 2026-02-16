@@ -1432,3 +1432,13 @@
 - [x] FIX 5D: Update phase75-followups.test.ts email type check
 - [x] Run all tests and verify — 157 tests pass across 5 updated test files
 - [x] Save checkpoint
+
+## Phase 78: Cookie Consent Banner + Arsenal Page Cleanup
+- [x] TASK 1: Create CookieConsent.tsx (dismissible, trilingual, dark, above bottom nav)
+- [x] TASK 1: Integrate CookieConsent into App.tsx (inside LanguageProvider, outside auth check)
+- [x] TASK 2A: Remove 7 duplicate features from Arsenal (Sliders, Progress, Command Bridge, Achievements, Flashcards, AI Insights, Philosophy)
+- [x] TASK 2B: Remove Privacy & Data from Arsenal (already in Settings)
+- [x] TASK 2C: Reorganize remaining 8 features into 2 groups (Daily Practice + Growth & Community)
+- [x] TASK 2D: Update Arsenal page header subtitle to "Tools not on your Bridge"
+- [x] Write 40 vitest tests (phase78-cookie-arsenal.test.ts)
+- [x] Save checkpoint

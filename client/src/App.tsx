@@ -43,6 +43,7 @@ import AuthPage from "./pages/AuthPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { CookieConsent } from "./components/CookieConsent";
 
 /**
  * Public routes — accessible without authentication.
@@ -148,6 +149,7 @@ function App() {
           <SplashScreen />
           <RootRouter />
           <OfflineIndicator />
+          <CookieConsent />
           </TooltipProvider>
         </ThemeProvider>
       </LanguageProvider>

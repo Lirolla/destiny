@@ -1,25 +1,18 @@
 import { Link } from "wouter";
 import {
-  BarChart3,
   Brain,
   Calendar,
   ChevronRight,
   Compass,
   Globe,
   Heart,
-  Layers,
-  Lightbulb,
   Moon,
-  ScrollText,
   Settings,
-  Shield,
   Sprout,
   Star,
   Sun,
   TrendingUp,
-  Trophy,
   Users,
-  Zap,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -41,14 +34,6 @@ export default function More() {
           bg: "bg-amber-500/10",
         },
         {
-          icon: Layers,
-          label: t({ en: "Emotional Sliders", pt: "Controles Emocionais", es: "Controles Emocionales" }),
-          description: t({ en: "Calibrate your inner state", pt: "Calibre seu estado interior", es: "Calibra tu estado interior" }),
-          path: "/sliders",
-          color: "text-blue-500",
-          bg: "bg-blue-500/10",
-        },
-        {
           icon: Brain,
           label: t({ en: "Bias Clearing", pt: "Limpeza de Vieses", es: "Limpieza de Sesgos" }),
           description: t({ en: "Clear mental fog & biases", pt: "Limpe a névoa mental e vieses", es: "Despeja la niebla mental y los sesgos" }),
@@ -67,40 +52,8 @@ export default function More() {
       ],
     },
     {
-      title: t({ en: "Growth & Tracking", pt: "Crescimento e Acompanhamento", es: "Crecimiento y Seguimiento" }),
+      title: t({ en: "Growth & Community", pt: "Crescimento e Comunidade", es: "Crecimiento y Comunidad" }),
       items: [
-        {
-          icon: BarChart3,
-          label: t({ en: "Progress Dashboard", pt: "Painel de Progresso", es: "Panel de Progreso" }),
-          description: t({ en: "Your learning journey overview", pt: "Visão geral da sua jornada", es: "Resumen de tu viaje de aprendizaje" }),
-          path: "/progress",
-          color: "text-emerald-500",
-          bg: "bg-emerald-500/10",
-        },
-        {
-          icon: Compass,
-          label: t({ en: "Command Bridge", pt: "Ponte de Comando", es: "Puente de Mando" }),
-          description: t({ en: "Destiny Score, radar chart & AI greeting", pt: "Pontuação Destino, gráfico radar e saudação IA", es: "Puntuación de Destino, gráfico de radar y saludo de IA" }),
-          path: "/dashboard",
-          color: "text-primary",
-          bg: "bg-primary/10",
-        },
-        {
-          icon: Trophy,
-          label: t({ en: "Achievements", pt: "Conquistas", es: "Logros" }),
-          description: t({ en: "Badges & milestones earned", pt: "Medalhas e marcos alcançados", es: "Insignias e hitos ganados" }),
-          path: "/achievements",
-          color: "text-yellow-500",
-          bg: "bg-yellow-500/10",
-        },
-        {
-          icon: Zap,
-          label: t({ en: "Flashcards", pt: "Cartões de Estudo", es: "Tarjetas de Estudio" }),
-          description: t({ en: "Review key concepts", pt: "Revise conceitos-chave", es: "Repasa conceptos clave" }),
-          path: "/flashcards",
-          color: "text-orange-500",
-          bg: "bg-orange-500/10",
-        },
         {
           icon: Calendar,
           label: t({ en: "Weekly Review", pt: "Revisão Semanal", es: "Revisión Semanal" }),
@@ -112,23 +65,10 @@ export default function More() {
         {
           icon: TrendingUp,
           label: t({ en: "Monthly Report", pt: "Relatório Mensal", es: "Informe Mensual" }),
-          description: t({ en: "Before & after comparison", pt: "Comparação antes e depois", es: "Comparación de antes y después" }),
+          description: t({ en: "Monthly progress summary", pt: "Resumo mensal de progresso", es: "Resumen mensual de progreso" }),
           path: "/monthly-report",
           color: "text-teal-500",
           bg: "bg-teal-500/10",
-        },
-      ],
-    },
-    {
-      title: t({ en: "Community & Tools", pt: "Comunidade e Ferramentas", es: "Comunidad y Herramientas" }),
-      items: [
-        {
-          icon: Users,
-          label: t({ en: "Inner Circle", pt: "Círculo Interno", es: "Círculo Íntimo" }),
-          description: t({ en: "Connect with accountability partners", pt: "Conecte-se com parceiros de responsabilidade", es: "Conecta con compañeros de responsabilidad" }),
-          path: "/inner-circle",
-          color: "text-indigo-500",
-          bg: "bg-indigo-500/10",
         },
         {
           icon: Sprout,
@@ -139,12 +79,12 @@ export default function More() {
           bg: "bg-green-500/10",
         },
         {
-          icon: Lightbulb,
-          label: t({ en: "AI Insights", pt: "Insights de IA", es: "Perspectivas de IA" }),
-          description: t({ en: "Pattern analysis & recommendations", pt: "Análise de padrões e recomendações", es: "Análisis de patrones y recomendaciones" }),
-          path: "/insights",
-          color: "text-sky-500",
-          bg: "bg-sky-500/10",
+          icon: Users,
+          label: t({ en: "Inner Circle", pt: "Círculo Interno", es: "Círculo Íntimo" }),
+          description: t({ en: "Connect with accountability partners", pt: "Conecte-se com parceiros de responsabilidade", es: "Conecta con compañeros de responsabilidad" }),
+          path: "/inner-circle",
+          color: "text-indigo-500",
+          bg: "bg-indigo-500/10",
         },
         {
           icon: Star,
@@ -153,22 +93,6 @@ export default function More() {
           path: "/challenges",
           color: "text-pink-500",
           bg: "bg-pink-500/10",
-        },
-        {
-          icon: ScrollText,
-          label: t({ en: "Philosophy", pt: "Filosofia", es: "Filosofía" }),
-          description: t({ en: "The Prologue — why this app exists", pt: "O Prólogo — porque esta app existe", es: "El Prólogo — por qué existe esta aplicación" }),
-          path: "/philosophy",
-          color: "text-emerald-500",
-          bg: "bg-emerald-500/10",
-        },
-        {
-          icon: Shield,
-          label: t({ en: "Privacy & Data", pt: "Privacidade e Dados", es: "Privacidad y Datos" }),
-          description: t({ en: "Your data sovereignty", pt: "Sua soberania de dados", es: "Tu soberanía de datos" }),
-          path: "/privacy",
-          color: "text-slate-500",
-          bg: "bg-slate-500/10",
         },
       ],
     },
@@ -180,9 +104,9 @@ export default function More() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border">
         <div className="px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{t({ en: "More", pt: "Mais", es: "Más" })}</h1>
+            <h1 className="text-2xl font-bold">{t({ en: "Arsenal", pt: "Arsenal", es: "Arsenal" })}</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              {t({ en: "All features & tools", pt: "Todos os recursos e ferramentas", es: "Todas las funciones y herramientas" })}
+              {t({ en: "Tools not on your Bridge", pt: "Ferramentas fora da sua Ponte", es: "Herramientas fuera de tu Puente" })}
             </p>
           </div>
           {/* Theme Toggle */}
@@ -256,7 +180,7 @@ export default function More() {
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm">{t({ en: "Language", pt: "Idioma", es: "Idioma" })}</div>
                 <div className="text-xs text-muted-foreground">
-                  {language === "en" ? "English" : "Português"}
+                  {language === "en" ? "English" : language === "pt" ? "Português" : "Español"}
                 </div>
               </div>
               <div className="inline-flex items-center bg-muted/60 rounded-full p-0.5 gap-0.5">
@@ -281,6 +205,17 @@ export default function More() {
                 >
                   <span className="text-sm leading-none">🇧🇷</span>
                   <span>PT</span>
+                </button>
+                <button
+                  onClick={() => setLanguage("es")}
+                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                    language === "es"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  <span className="text-sm leading-none">🇪🇸</span>
+                  <span>ES</span>
                 </button>
               </div>
             </div>
@@ -339,4 +274,3 @@ export default function More() {
     </div>
   );
 }
-
