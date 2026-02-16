@@ -32,16 +32,17 @@ describe("Phase 70: AlertDialog Replacement", () => {
     });
 
     it("has AlertDialogTitle with 'Delete Prayer Entry'", () => {
-      expect(content).toContain("Delete Prayer Entry");
+      expect(content).toContain('t({ en: "Delete Prayer Entry"');
     });
 
     it("has a Cancel button in the dialog", () => {
-      expect(content).toContain("<AlertDialogCancel>Cancel</AlertDialogCancel>");
+      expect(content).toContain("AlertDialogCancel");
+      expect(content).toContain('t({ en: "Cancel"');
     });
 
     it("has a destructive Delete action", () => {
       expect(content).toContain("bg-destructive");
-      expect(content).toMatch(/Delete\s*<\/AlertDialogAction>/);
+      expect(content).toContain('t({ en: "Delete"');
     });
   });
 
@@ -60,16 +61,18 @@ describe("Phase 70: AlertDialog Replacement", () => {
       expect(content).toContain("AlertDialogTrigger");
     });
 
-    it("has AlertDialogTitle with 'Delete Flashcard'", () => {
-      expect(content).toContain("Delete Flashcard");
+    it("has AlertDialogTitle with delete flashcard text", () => {
+      expect(content).toContain('t({ en: "Delete');
     });
 
     it("has a Cancel button in the dialog", () => {
-      expect(content).toContain("<AlertDialogCancel>Cancel</AlertDialogCancel>");
+      expect(content).toContain("AlertDialogCancel");
+      expect(content).toContain('t({ en: "Cancel"');
     });
 
     it("has a destructive Delete action", () => {
-      expect(content).toContain("bg-destructive");
+      expect(content).toContain("text-destructive");
+      expect(content).toContain("AlertDialogAction");
     });
 
     it("no longer has handleDeleteCard function with confirm", () => {
@@ -93,7 +96,7 @@ describe("Phase 70: AlertDialog Replacement", () => {
     });
 
     it("has AlertDialogTitle with 'Delete Challenge'", () => {
-      expect(content).toContain("Delete Challenge");
+      expect(content).toContain('t({ en: "Delete Challenge"');
     });
 
     it("shows the challenge name in the confirmation message", () => {

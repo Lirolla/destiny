@@ -1420,3 +1420,15 @@
 - [x] PrayerJournal.tsx fully translated (was missed by parallel batch)
 - [x] Write 40 vitest tests (phase76-multilang.test.ts)
 - [x] Save checkpoint
+
+## Phase 77: Translation Quick Fixes (5 surgical fixes)
+- [x] FIX 1: AudiobookMiniPlayer Spanish chapter label "Ch." → t({ en, pt, es })
+- [x] FIX 2: NotFound.tsx — add trilingual translations
+- [x] FIX 3: OfflineIndicator.tsx — add trilingual translations
+- [x] FIX 4: AIChatBox.tsx — translate default props in render
+- [x] FIX 5A: Update phase68-bridge-v2.test.ts stale t() patterns
+- [x] FIX 5B: Update phase70-alertdialog.test.ts stale string patterns
+- [x] FIX 5C: Update phase71-launch-prep.test.ts stale t() patterns
+- [x] FIX 5D: Update phase75-followups.test.ts email type check
+- [x] Run all tests and verify — 157 tests pass across 5 updated test files
+- [x] Save checkpoint

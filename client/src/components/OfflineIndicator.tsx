@@ -3,9 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { WifiOff, Wifi, RefreshCw, Database } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function OfflineIndicator() {
   const { isOnline, queueSize, isSyncing, syncQueue } = useOfflineSync();
+  const { t } = useLanguage();
 
   // Don't show anything if online and queue is empty
   if (isOnline && queueSize === 0) {
@@ -24,7 +26,7 @@ export function OfflineIndicator() {
                 <WifiOff className="h-4 w-4 text-orange-500" />
               )}
               <CardTitle className="text-sm">
-                {isOnline ? "Online" : "Offline Mode"}
+                {isOnline ? t({ en: "Online", pt: "Online", es: "En línea" }) : t({ en: "Offline Mode", pt: "Modo Offline", es: "Modo Sin Conexión" })}
               </CardTitle>
             </div>
             {queueSize > 0 && (
@@ -37,9 +39,9 @@ export function OfflineIndicator() {
           <CardDescription className="text-xs">
             {isOnline
               ? queueSize > 0
-                ? `${queueSize} ${queueSize === 1 ? "change" : "changes"} pending sync`
-                : "All changes synced"
-              : "Changes saved locally"}
+                ? `${queueSize} ${t({ en: queueSize === 1 ? "change" : "changes", pt: queueSize === 1 ? "alteração" : "alterações", es: queueSize === 1 ? "cambio" : "cambios" })} ${t({ en: "pending sync", pt: "pendente de sincronização", es: "pendiente de sincronización" })}`
+                : t({ en: "All changes synced", pt: "Todas as alterações sincronizadas", es: "Todos los cambios sincronizados" })
+              : t({ en: "Changes saved locally", pt: "Alterações salvas localmente", es: "Cambios guardados localmente" })}
           </CardDescription>
         </CardHeader>
         {queueSize > 0 && isOnline && (
@@ -54,12 +56,12 @@ export function OfflineIndicator() {
               {isSyncing ? (
                 <>
                   <RefreshCw className="h-3 w-3 mr-2 animate-spin" />
-                  Syncing...
+                  {t({ en: "Syncing...", pt: "Sincronizando...", es: "Sincronizando..." })}
                 </>
               ) : (
                 <>
                   <RefreshCw className="h-3 w-3 mr-2" />
-                  Sync Now
+                  {t({ en: "Sync Now", pt: "Sincronizar Agora", es: "Sincronizar Ahora" })}
                 </>
               )}
             </Button>

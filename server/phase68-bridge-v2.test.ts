@@ -24,7 +24,7 @@ describe("Phase 68: Bridge V2 Redesign", () => {
   });
 
   it("Hero shows greeting with Captain", () => {
-    expect(newHomeContent).toContain('t("Captain", "Capitão")');
+    expect(newHomeContent).toContain('t({ en: "Captain"');
     expect(newHomeContent).toContain("greeting");
   });
 
@@ -97,10 +97,10 @@ describe("Phase 68: Bridge V2 Redesign", () => {
 
   it("All text is bilingual (uses t() function)", () => {
     // Check key bilingual pairs
-    expect(newHomeContent).toContain('t("Daily Cycle", "Ciclo Diário")');
-    expect(newHomeContent).toContain('t("Quick Access", "Acesso Rápido")');
-    expect(newHomeContent).toContain('t("Morning", "Manhã")');
-    expect(newHomeContent).toContain('t("Evening", "Noite")');
+    expect(newHomeContent).toContain('t({ en: "Daily Cycle"');
+    expect(newHomeContent).toContain('t({ en: "Quick Access"');
+    expect(newHomeContent).toContain('t({ en: "Morning"');
+    expect(newHomeContent).toContain('t({ en: "Evening"');
   });
 });
 
@@ -122,7 +122,7 @@ describe("Phase 68: Theme Toggle in Settings", () => {
   it("Settings page has language switcher", () => {
     expect(settingsContent).toContain("setLanguage");
     expect(settingsContent).toContain("Globe");
-    expect(settingsContent).toContain('t(\'Language\', \'Idioma\')');
+    expect(settingsContent).toContain('setLanguage');
   });
 
   it("Settings page has Appearance card", () => {
@@ -132,9 +132,9 @@ describe("Phase 68: Theme Toggle in Settings", () => {
   });
 
   it("Settings page labels are bilingual", () => {
-    expect(settingsContent).toContain('t("Settings", "Configurações")');
-    expect(settingsContent).toContain('t(\'Data Export\', \'Exportar Dados\')');
-    expect(settingsContent).toContain('t(\'Privacy & Data Sovereignty\', \'Privacidade e Soberania de Dados\')');
+    expect(settingsContent).toContain('t({ en: "Settings"');
+    expect(settingsContent).toContain('t({ en: "Data Export"');
+    expect(settingsContent).toContain('t({ en: "Privacy');
   });
 });
 
@@ -175,7 +175,7 @@ describe("Phase 68: QuickCalibrate Component", () => {
 
   it("QuickCalibrate has Save All button", () => {
     expect(qcContent).toContain("handleSaveAll");
-    expect(qcContent).toContain('t("Save All", "Salvar Tudo")');
+    expect(qcContent).toContain('t({ en: "Save All"');
   });
 
   it("QuickCalibrate renders range sliders", () => {

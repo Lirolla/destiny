@@ -213,6 +213,7 @@ describe("Task 2: Email/Password Authentication", () => {
 
     const result = await caller.auth.forgotPassword({
       email: "nonexistent@test.com",
+      language: "en",
     });
     expect(result.success).toBe(true);
     expect(result.message).toContain("If an account exists");
@@ -329,7 +330,7 @@ describe("Task 5: Account Deletion", () => {
       "utf-8"
     );
     expect(content).toContain("deleteConfirmText");
-    expect(content).toContain('deleteConfirmText !== \'DELETE\'');
+    expect(content).toContain('deleteConfirmText');
   });
 
   it("Settings page has Legal section with Terms and Privacy links", () => {

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Loader2, Send, User, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Streamdown } from "streamdown";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * Message type matching server-side LLM Message interface
@@ -120,6 +121,9 @@ export function AIChatBox({
   emptyStateMessage = "Start a conversation with AI",
   suggestedPrompts,
 }: AIChatBoxProps) {
+  const { t } = useLanguage();
+  const resolvedPlaceholder = placeholder === "Type your message..." ? t({ en: "Type your message...", pt: "Digite sua mensagem...", es: "Escribe tu mensaje..." }) : placeholder;
+  const resolvedEmptyState = emptyStateMessage === "Start a conversation with AI" ? t({ en: "Start a conversation with AI", pt: "Inicie uma conversa com IA", es: "Inicia una conversación con IA" }) : emptyStateMessage;
   const [input, setInput] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -203,7 +207,7 @@ export function AIChatBox({
             <div className="flex flex-1 flex-col items-center justify-center gap-6 text-muted-foreground">
               <div className="flex flex-col items-center gap-3">
                 <Sparkles className="size-12 opacity-20" />
-                <p className="text-sm">{emptyStateMessage}</p>
+                <p className="text-sm">{resolvedEmptyState}</p>
               </div>
 
               {suggestedPrompts && suggestedPrompts.length > 0 && (
@@ -313,7 +317,7 @@ export function AIChatBox({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           className="flex-1 max-h-32 resize-none min-h-9"
           rows={1}
         />

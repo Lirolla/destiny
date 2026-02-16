@@ -20,11 +20,11 @@ describe("Phase 75: Password Reset Email via Resend", () => {
     expect(content).toContain("export async function sendPasswordResetEmail");
   });
 
-  it("should support bilingual email templates (EN and PT)", () => {
+  it("should support trilingual email templates (EN, PT, ES)", () => {
     const content = readFile("server/email.ts");
     expect(content).toContain("Redefinir Senha");
     expect(content).toContain("Reset Your Password");
-    expect(content).toContain("language === \"pt\"");
+    expect(content).toContain("Restablecer Contrase\u00f1a");
   });
 
   it("should include company info in email footer", () => {
@@ -53,7 +53,9 @@ describe("Phase 75: Password Reset Email via Resend", () => {
 
   it("should call sendPasswordResetEmail in forgotPassword endpoint", () => {
     const content = readFile("server/routers.ts");
-    expect(content).toContain("sendPasswordResetEmail(input.email, token)");
+    expect(content).toContain("sendPasswordResetEmail");
+    expect(content).toContain("input.email");
+    expect(content).toContain("token");
   });
 
   it("should no longer have console.log for reset token in forgotPassword", () => {

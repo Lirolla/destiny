@@ -186,7 +186,7 @@ export function AudiobookMiniPlayer() {
               className="flex-1 min-w-0 text-left"
             >
               <p className="text-xs font-medium truncate text-foreground">
-                {language === "pt" ? "Cap." : "Ch."} {nowPlaying.chapterNumber}: {getChapterTitle(nowPlaying.chapterNumber, language, nowPlaying.chapterTitle)}
+                {t({ en: "Ch.", pt: "Cap.", es: "Cap." })} {nowPlaying.chapterNumber}: {getChapterTitle(nowPlaying.chapterNumber, language, nowPlaying.chapterTitle)}
               </p>
               <p className="text-[10px] text-muted-foreground">
                 {formatTime(currentTime)} / {formatTime(duration)}
