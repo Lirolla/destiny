@@ -1398,3 +1398,10 @@
 ## Phase 74: Audiobook scroll to player on chapter click
 - [x] Add window.scrollTo({ top: 0, behavior: 'smooth' }) on chapter click in Audiobook.tsx
 - [x] Save checkpoint
+
+## Phase 75: Follow-ups (Password Reset Email, App Store URLs, Mini-Player)
+- [x] Wire password reset emails using Resend (server/email.ts, bilingual templates)
+- [x] Update AppStoreBadges to read VITE_APPLE_APP_STORE_URL and VITE_GOOGLE_PLAY_URL from env
+- [x] Build persistent "Now Playing" mini-player bar (AudiobookMiniPlayer.tsx, integrated in AppShell)
+- [x] Write 27 vitest tests (phase75-followups.test.ts)
+- [x] Save checkpoint

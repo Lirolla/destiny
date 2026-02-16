@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { BottomTabNavigation } from "./BottomTabNavigation";
+import { AudiobookMiniPlayer } from "./AudiobookMiniPlayer";
 
 interface AppShellProps {
   children: ReactNode;
@@ -19,6 +20,9 @@ export function AppShell({ children }: AppShellProps) {
       <main className="flex-1 pb-20 overflow-y-auto overscroll-contain">
         {children}
       </main>
+
+      {/* Now Playing mini-player */}
+      <AudiobookMiniPlayer />
 
       {/* Bottom tab navigation */}
       <BottomTabNavigation />

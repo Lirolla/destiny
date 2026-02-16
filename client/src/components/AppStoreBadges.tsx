@@ -8,6 +8,9 @@ interface AppStoreBadgesProps {
 }
 
 export default function AppStoreBadges({ appleUrl, googleUrl, className = "" }: AppStoreBadgesProps) {
+  // Read from env vars if not passed as props
+  const resolvedAppleUrl = appleUrl || import.meta.env.VITE_APPLE_APP_STORE_URL || "";
+  const resolvedGoogleUrl = googleUrl || import.meta.env.VITE_GOOGLE_PLAY_URL || "";
   const { t } = useLanguage();
 
   const handleClick = (store: string, url?: string) => {
@@ -22,7 +25,7 @@ export default function AppStoreBadges({ appleUrl, googleUrl, className = "" }: 
     <div className={`flex flex-wrap items-center justify-center gap-4 ${className}`}>
       {/* Apple App Store Badge */}
       <button
-        onClick={() => handleClick("App Store", appleUrl)}
+        onClick={() => handleClick("App Store", resolvedAppleUrl || undefined)}
         className="inline-flex items-center gap-2.5 bg-black border border-white/20 rounded-xl px-5 py-3 hover:bg-white/10 transition-colors group"
         aria-label="Download on the App Store"
       >
@@ -39,7 +42,7 @@ export default function AppStoreBadges({ appleUrl, googleUrl, className = "" }: 
 
       {/* Google Play Badge */}
       <button
-        onClick={() => handleClick("Google Play", googleUrl)}
+        onClick={() => handleClick("Google Play", resolvedGoogleUrl || undefined)}
         className="inline-flex items-center gap-2.5 bg-black border border-white/20 rounded-xl px-5 py-3 hover:bg-white/10 transition-colors group"
         aria-label="Get it on Google Play"
       >

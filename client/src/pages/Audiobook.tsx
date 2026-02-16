@@ -72,6 +72,34 @@ export function Audiobook() {
     return `${mins}m`;
   };
 
+  // Broadcast now-playing state for the mini-player
+  const broadcastNowPlaying = (chapter: any, playing: boolean) => {
+    const audioUrl = language === "pt"
+      ? (chapter.audioUrlPt || chapter.audioUrl)
+      : chapter.audioUrl;
+    const state = {
+      chapterId: chapter.id,
+      chapterNumber: chapter.chapterNumber,
+      chapterTitle: chapter.title,
+      audioUrl: audioUrl || "",
+      isPlaying: playing,
+      currentTime: 0,
+      duration: chapter.audioDuration || 0,
+    };
+    localStorage.setItem("audiobook-now-playing", JSON.stringify(state));
+    window.dispatchEvent(new CustomEvent("audiobook-now-playing", { detail: state }));
+  };
+
+  // Broadcast when chapter selection changes
+  useEffect(() => {
+    if (selectedChapterId && chapters) {
+      const chapter = chapters.find(c => c.id === selectedChapterId);
+      if (chapter) {
+        broadcastNowPlaying(chapter, true);
+      }
+    }
+  }, [selectedChapterId, chapters, language]);
+
   // Handle chapter change from player (prev/next buttons)
   const handleChapterChange = (newId: number) => {
     const validChapter = chapters?.find(c => c.id === newId);

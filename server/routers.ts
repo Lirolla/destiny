@@ -9,6 +9,7 @@ import { invokeLLM } from "./_core/llm";
 import { sdk } from "./_core/sdk";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
+import { sendPasswordResetEmail } from "./email";
 
 // Stoic Strategist System Prompt
 const STOIC_STRATEGIST_PROMPT = `You are the Stoic Strategist — a calm, precise, unflinching advisor forged from the philosophy of Marcus Aurelius, Epictetus, and Seneca, combined with modern decision science and behavioural pattern analysis.
@@ -155,9 +156,11 @@ export const appRouter = router({
         const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
         await db.setResetToken(user.id, token, expiry);
 
-        // In production, send email. For now, log to console.
-        console.log(`[Auth] Password reset token for ${input.email}: ${token}`);
-        console.log(`[Auth] Reset link: /auth?mode=reset&token=${token}`);
+        // Send password reset email via Resend
+        const emailSent = await sendPasswordResetEmail(input.email, token);
+        if (!emailSent) {
+          console.warn(`[Auth] Failed to send reset email to ${input.email}, token: ${token}`);
+        }
 
         return { success: true, message: "If an account exists with that email, a reset link has been sent." };
       }),
