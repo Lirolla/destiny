@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 function interpolateColor(colorLow: string, colorHigh: string, value: number): string {
   const hex = (c: string) => parseInt(c, 16);
@@ -23,6 +24,7 @@ interface InitialCalibrationProps {
 }
 
 export function InitialCalibration({ open, onComplete }: InitialCalibrationProps) {
+  const { t } = useLanguage();
   const { data: axes } = trpc.sliders.listAxes.useQuery();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [calibrations, setCalibrations] = useState<Record<number, number>>({});
@@ -66,11 +68,11 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
       if (currentIndex < totalAxes - 1) {
         setCurrentIndex(prev => prev + 1);
       } else {
-        toast.success("Initial calibration complete! Your Destiny Score has been calculated.");
+        toast.success(t({ en: "Initial calibration complete! Your Destiny Score has been calculated.", pt: "Calibração inicial completa! Sua Pontuação de Destino foi calculada.", es: "¡Calibración inicial completa! Tu Puntuación de Destino ha sido calculada." }));
         onComplete();
       }
     } catch (error) {
-      toast.error("Failed to save calibration");
+      toast.error(t({ en: "Failed to save calibration", pt: "Falha ao salvar calibração", es: "Error al guardar la calibración" }));
     }
   };
 
@@ -92,10 +94,10 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
         <DialogHeader>
           <DialogTitle className="text-center">
             {axisData?.emoji && <span className="text-2xl mr-2">{axisData.emoji}</span>}
-            Initial Calibration
+            {t({ en: "Initial Calibration", pt: "Calibração Inicial", es: "Calibración Inicial" })}
           </DialogTitle>
           <DialogDescription className="text-center">
-            Calibrate your free will across all 15 dimensions of the Destiny Hacking system
+            {t({ en: "Calibrate your free will across all 15 dimensions of the Destiny Hacking system", pt: "Calibre seu livre arbítrio em todas as 15 dimensões do sistema Destiny Hacking", es: "Calibra tu libre albedrío en las 15 dimensiones del sistema Destiny Hacking" })}
           </DialogDescription>
         </DialogHeader>
 
@@ -104,7 +106,7 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                Axis {currentIndex + 1} of {totalAxes}
+                {t({ en: `Axis ${currentIndex + 1} of ${totalAxes}`, pt: `Eixo ${currentIndex + 1} de ${totalAxes}`, es: `Eje ${currentIndex + 1} de ${totalAxes}` })}
               </span>
               <span className="font-medium">{Math.round(progress)}%</span>
             </div>
@@ -122,7 +124,7 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
                 </h3>
                 {axisData?.subtitle && (
                   <p className="text-sm text-muted-foreground italic">
-                    "{axisData.subtitle}"
+                    `"{axisData.subtitle}"`
                   </p>
                 )}
               </div>
@@ -170,19 +172,22 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
               {axisData?.reflectionPrompt && (
                 <div className="bg-muted/30 rounded-lg p-3">
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-                    Reflect
+                    {t({ en: "Reflect", pt: "Reflita", es: "Reflexiona" })}
                   </div>
                   <p className="text-sm italic text-foreground/80">
-                    "{axisData.reflectionPrompt}"
+                    `"{axisData.reflectionPrompt}"`
                   </p>
                 </div>
               )}
 
               {/* Guidance */}
-              <p className="text-[11px] text-muted-foreground text-center">
-                Move the slider to where you honestly are <strong>right now</strong>. 
-                There are no good or bad positions — only accurate or inaccurate measurements.
-              </p>
+              <p className="text-[11px] text-muted-foreground text-center" dangerouslySetInnerHTML={{
+                __html: t({
+                  en: "Move the slider to where you honestly are <strong>right now</strong>. There are no good or bad positions — only accurate or inaccurate measurements.",
+                  pt: "Mova o controle deslizante para onde você honestamente está <strong>agora</strong>. Não existem posições boas ou ruins — apenas medições precisas ou imprecisas.",
+                  es: "Mueve el control deslizante a donde honestamente estás <strong>ahora mismo</strong>. No hay posiciones buenas o malas, solo mediciones precisas o imprecisas."
+                })
+              }} />
             </div>
           )}
 
@@ -193,7 +198,7 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
               size="sm"
               onClick={handleSkip}
             >
-              Skip
+              {t({ en: "Skip", pt: "Pular", es: "Saltar" })}
             </Button>
             <Button
               onClick={handleNext}
@@ -204,10 +209,10 @@ export function InitialCalibration({ open, onComplete }: InitialCalibrationProps
               }}
             >
               {recordStateMutation.isPending
-                ? "Saving..."
+                ? t({ en: "Saving...", pt: "Salvando...", es: "Guardando..." })
                 : currentIndex < totalAxes - 1
-                ? "Next Axis →"
-                : "Complete Calibration ✓"}
+                ? t({ en: "Next Axis →", pt: "Próximo Eixo →", es: "Siguiente Eje →" })
+                : t({ en: "Complete Calibration ✓", pt: "Concluir Calibração ✓", es: "Completar Calibración ✓" })}
             </Button>
           </div>
         </div>

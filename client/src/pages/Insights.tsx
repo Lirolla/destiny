@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Brain, TrendingUp, CheckCircle2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Insights() {
+  const { t } = useLanguage();
   const [selectedInsightId, setSelectedInsightId] = useState<number | null>(null);
 
   // Fetch insights
@@ -28,7 +30,7 @@ export default function Insights() {
   const rateMutation = trpc.insights.rate.useMutation({
     onSuccess: () => {
       utils.insights.list.invalidate();
-      toast.success("Rating saved");
+      toast.success(t({ en: "Rating saved", pt: "Avaliação salva", es: "Calificación guardada" }));
     },
   });
 
@@ -42,14 +44,14 @@ export default function Insights() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageHeader title="AI Insights" subtitle="Pattern analysis & recommendations" showBack />
+      <PageHeader title={t({ en: "AI Insights", pt: "Insights de IA", es: "Perspectivas de IA" })} subtitle={t({ en: "Pattern analysis & recommendations", pt: "Análise de padrões e recomendações", es: "Análisis de patrones y recomendaciones" })} showBack />
 
       {/* Main Content */}
       <main className="px-4 py-4 pb-24">
         {insightsLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading insights...</p>
+            <p className="text-muted-foreground">{t({ en: "Loading insights...", pt: "Carregando insights...", es: "Cargando perspectivas..." })}</p>
           </div>
         ) : !insights || insights.length === 0 ? (
           <Card className="max-w-2xl mx-auto">
@@ -57,26 +59,24 @@ export default function Insights() {
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Brain className="h-6 w-6 text-primary" />
               </div>
-              <CardTitle>No Insights Yet</CardTitle>
+              <CardTitle>{t({ en: "No Insights Yet", pt: "Nenhum Insight Ainda", es: "Aún no hay Perspectivas" })}</CardTitle>
               <CardDescription>
-                Complete daily cycles and calibrate your emotional state to generate AI insights
-                about your patterns and cause-effect relationships.
+                {t({ en: "Complete daily cycles and calibrate your emotional state to generate AI insights about your patterns and cause-effect relationships.", pt: "Complete ciclos diários e calibre seu estado emocional para gerar insights de IA sobre seus padrões e relações de causa e efeito.", es: "Completa ciclos diarios y calibra tu estado emocional para generar perspectivas de IA sobre tus patrones y relaciones de causa y efecto." })}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-2">
               <Button asChild>
-                <Link href="/daily-cycle">Start Daily Cycle</Link>
+                <Link href="/daily-cycle">{t({ en: "Start Daily Cycle", pt: "Iniciar Ciclo Diário", es: "Iniciar Ciclo Diario" })}</Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/sliders">Calibrate Emotions</Link>
+                <Link href="/sliders">{t({ en: "Calibrate Emotions", pt: "Calibrar Emoções", es: "Calibrar Emociones" })}</Link>
               </Button>
             </CardContent>
           </Card>
         ) : (
           <div className="max-w-4xl mx-auto space-y-6">
             <div className="text-sm text-muted-foreground">
-              <strong>Note:</strong> These are strategic observations, not therapy. They map
-              cause-effect relationships in your emotional patterns.
+              <strong>{t({ en: "Note:", pt: "Nota:", es: "Nota:" })}</strong> {t({ en: "These are strategic observations, not therapy. They map cause-effect relationships in your emotional patterns.", pt: "Estas são observações estratégicas, não terapia. Elas mapeiam relações de causa e efeito em seus padrões emocionais.", es: "Estas son observaciones estratégicas, no terapia. Mapean relaciones de causa y efecto en tus patrones emocionales." })}
             </div>
 
             {insights.map((insight) => (
@@ -93,7 +93,7 @@ export default function Insights() {
                         <CardTitle className="text-lg">{insight.title}</CardTitle>
                         {!insight.isRead && (
                           <Badge variant="default" className="text-xs">
-                            New
+                            {t({ en: "New", pt: "Novo", es: "Nuevo" })}
                           </Badge>
                         )}
                       </div>
@@ -101,13 +101,13 @@ export default function Insights() {
                         {insight.insightType === "cause_effect" && (
                           <Badge variant="outline" className="text-xs">
                             <TrendingUp className="h-3 w-3 mr-1" />
-                            Cause-Effect
+                            {t({ en: "Cause-Effect", pt: "Causa-Efeito", es: "Causa-Efecto" })}
                           </Badge>
                         )}
                         {insight.insightType === "pattern" && (
                           <Badge variant="outline" className="text-xs">
                             <Brain className="h-3 w-3 mr-1" />
-                            Pattern
+                            {t({ en: "Pattern", pt: "Padrão", es: "Patrón" })}
                           </Badge>
                         )}
 
@@ -132,7 +132,7 @@ export default function Insights() {
                   {/* Rating */}
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Rate this insight:</span>
+                      <span className="text-xs text-muted-foreground">{t({ en: "Rate this insight:", pt: "Avalie este insight:", es: "Califica esta perspectiva:" })}</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -166,7 +166,7 @@ export default function Insights() {
                         disabled={markReadMutation.isPending}
                       >
                         <CheckCircle2 className="h-4 w-4 mr-2" />
-                        Mark as Read
+                        {t({ en: "Mark as Read", pt: "Marcar como Lido", es: "Marcar como Leído" })}
                       </Button>
                     )}
                   </div>

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, CheckCircle2, Circle, ArrowLeft, Target } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * Module Detail Page
@@ -20,6 +21,7 @@ import { PageHeader } from "@/components/PageHeader";
  */
 
 export default function ModuleDetail() {
+  const { t } = useLanguage();
   const [, params] = useRoute("/modules/:id");
   const moduleId = params?.id ? parseInt(params.id) : 0;
 
@@ -78,7 +80,7 @@ export default function ModuleDetail() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Loading module...</p>
+          <p className="text-muted-foreground">{t({ en: "Loading module...", pt: "Carregando módulo...", es: "Cargando módulo..." })}</p>
         </div>
       </div>
     );
@@ -88,12 +90,12 @@ export default function ModuleDetail() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="p-12 text-center max-w-md">
-          <h2 className="text-2xl font-bold mb-4">Module Not Found</h2>
+          <h2 className="text-2xl font-bold mb-4">{t({ en: "Module Not Found", pt: "Módulo Não Encontrado", es: "Módulo No Encontrado" })}</h2>
           <p className="text-muted-foreground mb-6">
-            The module you're looking for doesn't exist.
+            {t({ en: "The module you're looking for doesn't exist.", pt: "O módulo que você está procurando não existe.", es: "El módulo que estás buscando no existe." })}
           </p>
           <Button asChild>
-            <Link href="/modules">← Back to Learning Path</Link>
+            <Link href="/modules">{t({ en: "← Back to Learning Path", pt: "← Voltar para a Trilha de Aprendizagem", es: "← Volver al Camino de Aprendizaje" })}</Link>
           </Button>
         </Card>
       </div>
@@ -106,13 +108,13 @@ export default function ModuleDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageHeader title="Module Detail" subtitle="Interactive learning" showBack />
+      <PageHeader title={t({ en: "Module Detail", pt: "Detalhe do Módulo", es: "Detalle del Módulo" })} subtitle={t({ en: "Interactive learning", pt: "Aprendizagem interativa", es: "Aprendizaje interactivo" })} showBack />
 
       <div className="px-4 py-4 space-y-4 pb-24">
         {/* Progress Overview */}
         <Card className="p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Your Progress</h2>
+            <h2 className="text-xl font-bold">{t({ en: "Your Progress", pt: "Seu Progresso", es: "Tu Progreso" })}</h2>
             <span className="text-2xl font-bold text-primary">
               {Math.round(completionPercentage)}%
             </span>
@@ -120,19 +122,19 @@ export default function ModuleDetail() {
           <Progress value={completionPercentage} className="mb-4" />
           <div className="grid md:grid-cols-3 gap-4">
             <div className="text-center p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Days Completed</p>
+              <p className="text-sm text-muted-foreground mb-1">{t({ en: "Days Completed", pt: "Dias Concluídos", es: "Días Completados" })}</p>
               <p className="text-2xl font-bold">
                 {progress.completedDays}/{totalDays}
               </p>
             </div>
             <div className="text-center p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Challenge</p>
+              <p className="text-sm text-muted-foreground mb-1">{t({ en: "Challenge", pt: "Desafio", es: "Desafío" })}</p>
               <p className="text-2xl font-bold">
                 {progress.challengeCompleted ? "✓" : "○"}
               </p>
             </div>
             <div className="text-center p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Reflections</p>
+              <p className="text-sm text-muted-foreground mb-1">{t({ en: "Reflections", pt: "Reflexões", es: "Reflexiones" })}</p>
               <p className="text-2xl font-bold">{(progress as any).reflections?.length || 0}</p>
             </div>
           </div>
@@ -142,20 +144,20 @@ export default function ModuleDetail() {
         <Card className="p-8 mb-8">
           <div className="flex items-center gap-3 mb-6">
             <BookOpen className="w-6 h-6 text-primary" />
-            <h2 className="text-2xl font-bold">Module Content</h2>
+            <h2 className="text-2xl font-bold">{t({ en: "Module Content", pt: "Conteúdo do Módulo", es: "Contenido del Módulo" })}</h2>
           </div>
           <div className="prose prose-slate dark:prose-invert max-w-none">
             <div className="space-y-4 text-foreground leading-relaxed">
               <div>
-                <h3 className="font-bold mb-2">Core Principle</h3>
+                <h3 className="font-bold mb-2">{t({ en: "Core Principle", pt: "Princípio Central", es: "Principio Básico" })}</h3>
                 <p>{(module as any).corePrinciple}</p>
               </div>
               <div>
-                <h3 className="font-bold mb-2">Mental Model</h3>
+                <h3 className="font-bold mb-2">{t({ en: "Mental Model", pt: "Modelo Mental", es: "Modelo Mental" })}</h3>
                 <p>{(module as any).mentalModel}</p>
               </div>
               <div>
-                <h3 className="font-bold mb-2">Daily Practice</h3>
+                <h3 className="font-bold mb-2">{t({ en: "Daily Practice", pt: "Prática Diária", es: "Práctica Diaria" })}</h3>
                 <p>{(module as any).dailyPractice}</p>
               </div>
             </div>
@@ -164,9 +166,9 @@ export default function ModuleDetail() {
 
         {/* Practice Days */}
         <Card className="p-8 mb-8">
-          <h2 className="text-2xl font-bold mb-6">Practice Days</h2>
+          <h2 className="text-2xl font-bold mb-6">{t({ en: "Practice Days", pt: "Dias de Prática", es: "Días de Práctica" })}</h2>
           <p className="text-muted-foreground mb-6">
-            Complete one practice day each day for {totalDays} days to internalize this module's teachings.
+            {t({ en: `Complete one practice day each day for ${totalDays} days to internalize this module's teachings.`, pt: `Complete um dia de prática por dia durante ${totalDays} dias para internalizar os ensinamentos deste módulo.`, es: `Completa un día de práctica cada día durante ${totalDays} días para internalizar las enseñanzas de este módulo.` })}
           </p>
           <div className="space-y-3">
             {Array.from({ length: totalDays }, (_, i) => i + 1).map((dayNumber) => {
@@ -187,9 +189,9 @@ export default function ModuleDetail() {
                       <Circle className="w-6 h-6 text-muted-foreground" />
                     )}
                     <div>
-                      <p className="font-semibold">Day {dayNumber}</p>
+                      <p className="font-semibold">{t({ en: `Day ${dayNumber}`, pt: `Dia ${dayNumber}`, es: `Día ${dayNumber}` })}</p>
                       <p className="text-sm text-muted-foreground">
-                        {isCompleted ? "Completed" : "Not started"}
+                        {isCompleted ? t({ en: "Completed", pt: "Concluído", es: "Completado" }) : t({ en: "Not started", pt: "Não iniciado", es: "No empezado" })}
                       </p>
                     </div>
                   </div>
@@ -199,7 +201,7 @@ export default function ModuleDetail() {
                       disabled={completeDay.isPending}
                       size="sm"
                     >
-                      Complete Day {dayNumber}
+                      {t({ en: `Complete Day ${dayNumber}`, pt: `Concluir Dia ${dayNumber}`, es: `Completar Día ${dayNumber}` })}
                     </Button>
                   )}
                 </div>
@@ -213,7 +215,7 @@ export default function ModuleDetail() {
           <Card className="p-8 mb-8">
             <div className="flex items-center gap-3 mb-6">
               <Target className="w-6 h-6 text-primary" />
-              <h2 className="text-2xl font-bold">Module Challenge</h2>
+              <h2 className="text-2xl font-bold">{t({ en: "Module Challenge", pt: "Desafio do Módulo", es: "Desafío del Módulo" })}</h2>
             </div>
             <div className="bg-primary/10 p-6 rounded-lg border-l-4 border-primary mb-6">
               <p className="text-foreground leading-relaxed whitespace-pre-wrap">
@@ -227,13 +229,13 @@ export default function ModuleDetail() {
                 size="lg"
               >
                 {progress.completedDays < totalDays
-                  ? `Complete all ${totalDays} practice days first`
-                  : "Mark Challenge as Complete"}
+                  ? t({ en: `Complete all ${totalDays} practice days first`, pt: `Primeiro, conclua todos os ${totalDays} dias de prática`, es: `Completa primero los ${totalDays} días de práctica` })
+                  : t({ en: "Mark Challenge as Complete", pt: "Marcar Desafio como Concluído", es: "Marcar Desafío como Completado" })}
               </Button>
             ) : (
               <div className="flex items-center gap-3 text-green-600">
                 <CheckCircle2 className="w-6 h-6" />
-                <p className="font-semibold">Challenge Completed!</p>
+                <p className="font-semibold">{t({ en: "Challenge Completed!", pt: "Desafio Concluído!", es: "¡Desafío Completado!" })}</p>
               </div>
             )}
           </Card>
@@ -241,11 +243,11 @@ export default function ModuleDetail() {
 
         {/* Reflections */}
         <Card className="p-8">
-          <h2 className="text-2xl font-bold mb-6">Your Reflections</h2>
+          <h2 className="text-2xl font-bold mb-6">{t({ en: "Your Reflections", pt: "Suas Reflexões", es: "Tus Reflexiones" })}</h2>
           
           {!showReflection && (
             <Button onClick={() => setShowReflection(true)} className="mb-6">
-              Add Reflection
+              {t({ en: "Add Reflection", pt: "Adicionar Reflexão", es: "Añadir Reflexión" })}
             </Button>
           )}
 
@@ -254,13 +256,13 @@ export default function ModuleDetail() {
               <Textarea
                 value={reflectionText}
                 onChange={(e) => setReflectionText(e.target.value)}
-                placeholder="What insights did you gain from this module? How will you apply these teachings?"
+                placeholder={t({ en: "What insights did you gain from this module? How will you apply these teachings?", pt: "Que insights você obteve com este módulo? Como você aplicará esses ensinamentos?", es: "¿Qué ideas obtuviste de este módulo? ¿Cómo aplicarás estas enseñanzas?" })}
                 className="min-h-32"
                 required
               />
               <div className="flex gap-4">
                 <Button type="submit" disabled={addReflection.isPending}>
-                  {addReflection.isPending ? "Saving..." : "Save Reflection"}
+                  {addReflection.isPending ? t({ en: "Saving...", pt: "Salvando...", es: "Guardando..." }) : t({ en: "Save Reflection", pt: "Salvar Reflexão", es: "Guardar Reflexión" })}
                 </Button>
                 <Button
                   type="button"
@@ -270,7 +272,7 @@ export default function ModuleDetail() {
                     setReflectionText("");
                   }}
                 >
-                  Cancel
+                  {t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}
                 </Button>
               </div>
             </form>
@@ -290,7 +292,7 @@ export default function ModuleDetail() {
           ) : (
             !showReflection && (
               <p className="text-muted-foreground text-center py-8">
-                No reflections yet. Add your first reflection to track your insights.
+                {t({ en: "No reflections yet. Add your first reflection to track your insights.", pt: "Nenhuma reflexão ainda. Adicione sua primeira reflexão para acompanhar seus insights.", es: "Aún no hay reflexiones. Añade tu primera reflexión para hacer un seguimiento de tus ideas." })}
               </p>
             )
           )}

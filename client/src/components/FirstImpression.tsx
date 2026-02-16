@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * FirstImpression — "The Day I Lost My Will"
@@ -15,6 +16,7 @@ interface FirstImpressionProps {
 }
 
 export function FirstImpression({ onBegin }: FirstImpressionProps) {
+  const { t } = useLanguage();
   const [visibleParagraph, setVisibleParagraph] = useState(-1);
   const [showButton, setShowButton] = useState(false);
 
@@ -37,9 +39,9 @@ export function FirstImpression({ onBegin }: FirstImpressionProps) {
   }, []);
 
   const paragraphs = [
-    `"It was a Tuesday. I remember that because I had a client meeting at 9 a.m. that I was about to miss. I was sitting on the edge of my bed, fully dressed in a suit and tie, but I couldn't move. It wasn't a physical paralysis. It was something deeper, more terrifying. It was a paralysis of the will."`,
-    `This app was born from that moment. It exists because I believe the most powerful gift you have — your free will — deserves a user's manual.`,
-    `— Marco, Creator of Destiny Hacking`,
+    t({ en: `"It was a Tuesday. I remember that because I had a client meeting at 9 a.m. that I was about to miss. I was sitting on the edge of my bed, fully dressed in a suit and tie, but I couldn't move. It wasn't a physical paralysis. It was something deeper, more terrifying. It was a paralysis of the will."`, pt: `"Era uma terça-feira. Lembro-me disso porque tinha uma reunião com um cliente às 9h que estava prestes a perder. Estava sentado na beira da minha cama, totalmente vestido de terno e gravata, mas não conseguia me mover. Não era uma paralisia física. Era algo mais profundo, mais aterrorizante. Era uma paralisia da vontade."`, es: `"Era un martes. Lo recuerdo porque tenía una reunión con un cliente a las 9 a.m. a la que estaba a punto de faltar. Estaba sentado al borde de mi cama, completamente vestido con traje y corbata, pero no podía moverme. No era una parálisis física. Era algo más profundo, más aterrador. Era una parálisis de la voluntad."` }),
+    t({ en: `This app was born from that moment. It exists because I believe the most powerful gift you have — your free will — deserves a user's manual.`, pt: `Este aplicativo nasceu daquele momento. Ele existe porque acredito que o presente mais poderoso que você tem — seu livre arbítrio — merece um manual do usuário.`, es: `Esta aplicación nació de ese momento. Existe porque creo que el regalo más poderoso que tienes — tu libre albedrío — merece un manual de usuario.` }),
+    t({ en: `— Marco, Creator of Destiny Hacking`, pt: `— Marco, Criador do Destiny Hacking`, es: `— Marco, Creador de Destiny Hacking` }),
   ];
 
   return (
@@ -94,7 +96,7 @@ export function FirstImpression({ onBegin }: FirstImpressionProps) {
                 size="lg"
                 className="mt-8 bg-[#01D98D] hover:bg-[#01D98D]/90 text-[#0A0A0A] font-semibold text-lg px-12 py-6 rounded-full"
               >
-                Begin.
+                {t({ en: "Begin.", pt: "Começar.", es: "Empezar." })}
               </Button>
             </motion.div>
           )}

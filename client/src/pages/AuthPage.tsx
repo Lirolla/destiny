@@ -9,11 +9,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, ArrowLeft, Compass, Mail, Lock, User } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { GlobeLanguageDropdown } from "@/components/GlobeLanguageDropdown";
 
 type AuthMode = "login" | "signup" | "forgot" | "reset";
 
 export default function AuthPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [, navigate] = useLocation();
 
   // Check URL for reset token
@@ -38,7 +39,7 @@ export default function AuthPage() {
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: () => {
-      toast.success(t("Account created successfully!", "Conta criada com sucesso!"));
+      toast.success(t({ en: "Account created successfully!", pt: "Conta criada com sucesso!", es: "¡Cuenta creada con éxito!" }));
       utils.auth.me.invalidate();
       navigate("/");
     },
@@ -47,7 +48,7 @@ export default function AuthPage() {
 
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: () => {
-      toast.success(t("Welcome back!", "Bem-vindo de volta!"));
+      toast.success(t({ en: "Welcome back!", pt: "Bem-vindo de volta!", es: "¡Bienvenido de vuelta!" }));
       utils.auth.me.invalidate();
       navigate("/");
     },
@@ -56,14 +57,14 @@ export default function AuthPage() {
 
   const forgotMutation = trpc.auth.forgotPassword.useMutation({
     onSuccess: (data) => {
-      toast.success(t(data.message, "Se uma conta existir com esse e-mail, um link de redefinição foi enviado."));
+      toast.success(t({ en: data.message, pt: "Se uma conta existir com esse e-mail, um link de redefinição foi enviado.", es: "Si existe una cuenta con ese correo, se ha enviado un enlace de restablecimiento." }));
     },
     onError: (err) => toast.error(err.message),
   });
 
   const resetMutation = trpc.auth.resetPassword.useMutation({
     onSuccess: () => {
-      toast.success(t("Password reset successfully! Please log in.", "Senha redefinida com sucesso! Faça login."));
+      toast.success(t({ en: "Password reset successfully! Please log in.", pt: "Senha redefinida com sucesso! Faça login.", es: "¡Contraseña restablecida con éxito! Por favor, inicia sesión." }));
       setMode("login");
     },
     onError: (err) => toast.error(err.message),
@@ -74,21 +75,21 @@ export default function AuthPage() {
 
     if (mode === "signup") {
       if (password !== confirmPassword) {
-        toast.error(t("Passwords do not match", "As senhas não coincidem"));
+        toast.error(t({ en: "Passwords do not match", pt: "As senhas não coincidem", es: "Las contraseñas no coinciden" }));
         return;
       }
       if (!agreedToTerms) {
-        toast.error(t("You must agree to the Terms & Conditions and Privacy Policy", "Você deve concordar com os Termos e a Política de Privacidade"));
+        toast.error(t({ en: "You must agree to the Terms & Conditions and Privacy Policy", pt: "Você deve concordar com os Termos e a Política de Privacidade", es: "Debes aceptar los Términos y Condiciones y la Política de Privacidad" }));
         return;
       }
       registerMutation.mutate({ email, password, name });
     } else if (mode === "login") {
       loginMutation.mutate({ email, password });
     } else if (mode === "forgot") {
-      forgotMutation.mutate({ email });
+      forgotMutation.mutate({ email, language });
     } else if (mode === "reset") {
       if (newPassword.length < 8) {
-        toast.error(t("Password must be at least 8 characters", "A senha deve ter pelo menos 8 caracteres"));
+        toast.error(t({ en: "Password must be at least 8 characters", pt: "A senha deve ter pelo menos 8 caracteres", es: "La contraseña debe tener al menos 8 caracteres" }));
         return;
       }
       resetMutation.mutate({ token: resetToken || "", newPassword });
@@ -98,12 +99,17 @@ export default function AuthPage() {
   const isLoading = registerMutation.isPending || loginMutation.isPending || forgotMutation.isPending || resetMutation.isPending;
 
   return (
-    <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-8 bg-background">
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-8 bg-background relative">
+      {/* Globe language dropdown — top right */}
+      <div className="absolute top-4 right-4 z-20">
+        <GlobeLanguageDropdown />
+      </div>
+
       {/* Back to landing */}
       <div className="w-full max-w-md mb-6">
         <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          {t("Back", "Voltar")}
+          {t({ en: "Back", pt: "Voltar", es: "Volver" })}
         </Link>
       </div>
 
@@ -114,23 +120,23 @@ export default function AuthPage() {
         </div>
         <h1 className="text-xl font-bold text-foreground">Destiny Hacking</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          {t("Master Your Free Will", "Domine Seu Livre Arbítrio")}
+          {t({ en: "Master Your Free Will", pt: "Domine Seu Livre Arbítrio", es: "Domina tu Libre Albedrío" })}
         </p>
       </div>
 
       <Card className="w-full max-w-md border-border/50 bg-card">
         <CardHeader className="text-center pb-4">
           <CardTitle className="text-lg">
-            {mode === "login" && t("Welcome Back", "Bem-vindo de Volta")}
-            {mode === "signup" && t("Create Account", "Criar Conta")}
-            {mode === "forgot" && t("Reset Password", "Redefinir Senha")}
-            {mode === "reset" && t("New Password", "Nova Senha")}
+            {mode === "login" && t({ en: "Welcome Back", pt: "Bem-vindo de Volta", es: "Bienvenido de Vuelta" })}
+            {mode === "signup" && t({ en: "Create Account", pt: "Criar Conta", es: "Crear Cuenta" })}
+            {mode === "forgot" && t({ en: "Reset Password", pt: "Redefinir Senha", es: "Restablecer Contraseña" })}
+            {mode === "reset" && t({ en: "New Password", pt: "Nova Senha", es: "Nueva Contraseña" })}
           </CardTitle>
           <CardDescription>
-            {mode === "login" && t("Sign in to continue your journey", "Entre para continuar sua jornada")}
-            {mode === "signup" && t("Begin your path to self-mastery", "Comece seu caminho para o autodomínio")}
-            {mode === "forgot" && t("Enter your email to receive a reset link", "Digite seu e-mail para receber um link de redefinição")}
-            {mode === "reset" && t("Choose a new password for your account", "Escolha uma nova senha para sua conta")}
+            {mode === "login" && t({ en: "Sign in to continue your journey", pt: "Entre para continuar sua jornada", es: "Inicia sesión para continuar tu viaje" })}
+            {mode === "signup" && t({ en: "Begin your path to self-mastery", pt: "Comece seu caminho para o autodomínio", es: "Comienza tu camino hacia el autodominio" })}
+            {mode === "forgot" && t({ en: "Enter your email to receive a reset link", pt: "Digite seu e-mail para receber um link de redefinição", es: "Ingresa tu correo electrónico para recibir un enlace de restablecimiento" })}
+            {mode === "reset" && t({ en: "Choose a new password for your account", pt: "Escolha uma nova senha para sua conta", es: "Elige una nueva contraseña para tu cuenta" })}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -138,13 +144,13 @@ export default function AuthPage() {
             {/* Name (signup only) */}
             {mode === "signup" && (
               <div className="space-y-2">
-                <Label htmlFor="name">{t("Name", "Nome")}</Label>
+                <Label htmlFor="name">{t({ en: "Name", pt: "Nome", es: "Nombre" })}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="name"
                     type="text"
-                    placeholder={t("Your name", "Seu nome")}
+                    placeholder={t({ en: "Your name", pt: "Seu nome", es: "Tu nombre" })}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="pl-10"
@@ -157,7 +163,7 @@ export default function AuthPage() {
             {/* Email (not for reset) */}
             {mode !== "reset" && (
               <div className="space-y-2">
-                <Label htmlFor="email">{t("Email", "E-mail")}</Label>
+                <Label htmlFor="email">{t({ en: "Email", pt: "E-mail", es: "Correo Electrónico" })}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -176,13 +182,13 @@ export default function AuthPage() {
             {/* Password (login & signup) */}
             {(mode === "login" || mode === "signup") && (
               <div className="space-y-2">
-                <Label htmlFor="password">{t("Password", "Senha")}</Label>
+                <Label htmlFor="password">{t({ en: "Password", pt: "Senha", es: "Contraseña" })}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder={t("Min. 8 characters", "Mín. 8 caracteres")}
+                    placeholder={t({ en: "Min. 8 characters", pt: "Mín. 8 caracteres", es: "Mín. 8 caracteres" })}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10"
@@ -203,13 +209,13 @@ export default function AuthPage() {
             {/* Confirm Password (signup only) */}
             {mode === "signup" && (
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">{t("Confirm Password", "Confirmar Senha")}</Label>
+                <Label htmlFor="confirmPassword">{t({ en: "Confirm Password", pt: "Confirmar Senha", es: "Confirmar Contraseña" })}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="confirmPassword"
                     type={showPassword ? "text" : "password"}
-                    placeholder={t("Repeat password", "Repita a senha")}
+                    placeholder={t({ en: "Repeat password", pt: "Repita a senha", es: "Repite la contraseña" })}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="pl-10"
@@ -223,13 +229,13 @@ export default function AuthPage() {
             {/* New Password (reset only) */}
             {mode === "reset" && (
               <div className="space-y-2">
-                <Label htmlFor="newPassword">{t("New Password", "Nova Senha")}</Label>
+                <Label htmlFor="newPassword">{t({ en: "New Password", pt: "Nova Senha", es: "Nueva Contraseña" })}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="newPassword"
                     type={showPassword ? "text" : "password"}
-                    placeholder={t("Min. 8 characters", "Mín. 8 caracteres")}
+                    placeholder={t({ en: "Min. 8 characters", pt: "Mín. 8 caracteres", es: "Mín. 8 caracteres" })}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="pl-10 pr-10"
@@ -257,13 +263,13 @@ export default function AuthPage() {
                   className="mt-1"
                 />
                 <Label htmlFor="terms" className="text-sm text-muted-foreground leading-tight cursor-pointer">
-                  {t("I agree to the ", "Eu concordo com os ")}{" "}
+                  {t({ en: "I agree to the ", pt: "Eu concordo com os ", es: "Acepto los " })}{" "}
                   <Link href="/terms" className="text-emerald-400 hover:underline">
-                    {t("Terms & Conditions", "Termos e Condições")}
+                    {t({ en: "Terms & Conditions", pt: "Termos e Condições", es: "Términos y Condiciones" })}
                   </Link>{" "}
-                  {t("and ", "e ")}{" "}
+                  {t({ en: "and ", pt: "e ", es: "y la " })}{" "}
                   <Link href="/privacy" className="text-emerald-400 hover:underline">
-                    {t("Privacy Policy", "Política de Privacidade")}
+                    {t({ en: "Privacy Policy", pt: "Política de Privacidade", es: "Política de Privacidad" })}
                   </Link>
                 </Label>
               </div>
@@ -277,7 +283,7 @@ export default function AuthPage() {
                   onClick={() => setMode("forgot")}
                   className="text-sm text-emerald-400 hover:underline"
                 >
-                  {t("Forgot password?", "Esqueceu a senha?")}
+                  {t({ en: "Forgot password?", pt: "Esqueceu a senha?", es: "¿Olvidaste tu contraseña?" })}
                 </button>
               </div>
             )}
@@ -292,10 +298,10 @@ export default function AuthPage() {
                 <span className="animate-pulse">...</span>
               ) : (
                 <>
-                  {mode === "login" && t("Sign In", "Entrar")}
-                  {mode === "signup" && t("Create Account", "Criar Conta")}
-                  {mode === "forgot" && t("Send Reset Link", "Enviar Link de Redefinição")}
-                  {mode === "reset" && t("Reset Password", "Redefinir Senha")}
+                  {mode === "login" && t({ en: "Sign In", pt: "Entrar", es: "Iniciar Sesión" })}
+                  {mode === "signup" && t({ en: "Create Account", pt: "Criar Conta", es: "Crear Cuenta" })}
+                  {mode === "forgot" && t({ en: "Send Reset Link", pt: "Enviar Link de Redefinição", es: "Enviar Enlace de Restablecimiento" })}
+                  {mode === "reset" && t({ en: "Reset Password", pt: "Redefinir Senha", es: "Restablecer Contraseña" })}
                 </>
               )}
             </Button>
@@ -305,31 +311,31 @@ export default function AuthPage() {
           <div className="mt-6 text-center text-sm text-muted-foreground">
             {mode === "login" && (
               <>
-                {t("Don't have an account? ", "Não tem uma conta? ")}
+                {t({ en: "Don't have an account? ", pt: "Não tem uma conta? ", es: "¿No tienes una cuenta? " })}
                 <button onClick={() => setMode("signup")} className="text-emerald-400 hover:underline">
-                  {t("Sign Up", "Cadastre-se")}
+                  {t({ en: "Sign Up", pt: "Cadastre-se", es: "Regístrate" })}
                 </button>
               </>
             )}
             {mode === "signup" && (
               <>
-                {t("Already have an account? ", "Já tem uma conta? ")}
+                {t({ en: "Already have an account? ", pt: "Já tem uma conta? ", es: "¿Ya tienes una cuenta? " })}
                 <button onClick={() => setMode("login")} className="text-emerald-400 hover:underline">
-                  {t("Sign In", "Entrar")}
+                  {t({ en: "Sign In", pt: "Entrar", es: "Iniciar Sesión" })}
                 </button>
               </>
             )}
             {mode === "forgot" && (
               <>
                 <button onClick={() => setMode("login")} className="text-emerald-400 hover:underline">
-                  {t("Back to Sign In", "Voltar para Login")}
+                  {t({ en: "Back to Sign In", pt: "Voltar para Login", es: "Volver a Iniciar Sesión" })}
                 </button>
               </>
             )}
             {mode === "reset" && (
               <>
                 <button onClick={() => setMode("login")} className="text-emerald-400 hover:underline">
-                  {t("Back to Sign In", "Voltar para Login")}
+                  {t({ en: "Back to Sign In", pt: "Voltar para Login", es: "Volver a Iniciar Sesión" })}
                 </button>
               </>
             )}
@@ -344,3 +350,4 @@ export default function AuthPage() {
     </div>
   );
 }
+

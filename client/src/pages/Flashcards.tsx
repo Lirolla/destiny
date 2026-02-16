@@ -28,8 +28,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Flashcards() {
+  const { t } = useLanguage();
   const [location] = useLocation();
   const [showAnswer, setShowAnswer] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,16 +58,16 @@ export function Flashcards() {
       utils.flashcards.getStats.invalidate();
       utils.flashcards.getDue.invalidate();
       refetchStats();
-      toast.success("Flashcard deleted");
+      toast.success(t({ en: "Flashcard deleted", pt: "Flashcard excluído", es: "Tarjeta eliminada" }));
     },
     onError: (error) => {
-      toast.error(`Failed to delete: ${error.message}`);
+      toast.error(`${t({ en: "Failed to delete:", pt: "Falha ao excluir:", es: "Error al eliminar:" })} ${error.message}`);
     },
   });
   
   const createMutation = trpc.flashcards.create.useMutation({
     onSuccess: () => {
-      toast.success("Flashcard created!");
+      toast.success(t({ en: "Flashcard created!", pt: "Flashcard criado!", es: "¡Tarjeta creada!" }));
       setShowCreateDialog(false);
       setNewCardFront("");
       setNewCardBack("");
@@ -76,7 +78,7 @@ export function Flashcards() {
       }
     },
     onError: (error) => {
-      toast.error(`Failed to create flashcard: ${error.message}`);
+      toast.error(`${t({ en: "Failed to create flashcard:", pt: "Falha ao criar flashcard:", es: "Error al crear la tarjeta:" })} ${error.message}`);
     },
   });
   
@@ -111,24 +113,23 @@ export function Flashcards() {
         setShowAnswer(false);
       } else {
         // Review session complete
-        toast.success("Review session complete!");
+        toast.success(t({ en: "Review session complete!", pt: "Sessão de revisão completa!", es: "¡Sesión de revisión completa!" }));
         refetchDue();
         refetchStats();
         setCurrentIndex(0);
         setShowAnswer(false);
       }
     } catch (error) {
-      toast.error("Failed to submit review");
+      toast.error(t({ en: "Failed to submit review", pt: "Falha ao enviar revisão", es: "Error al enviar la revisión" }));
     }
   };
-
 
   
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        title="Flashcards"
-        subtitle="Spaced repetition learning"
+        title={t({ en: "Flashcards", pt: "Flashcards", es: "Tarjetas" })}
+        subtitle={t({ en: "Spaced repetition learning", pt: "Aprendizado por repetição espaçada", es: "Aprendizaje por repetición espaciada" })}
         showBack
         rightAction={
           <div className="flex gap-1">
@@ -148,18 +149,18 @@ export function Flashcards() {
               {viewMode === "browse" ? (
                 <>
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  Review
+                  {t({ en: "Review", pt: "Revisar", es: "Revisar" })}
                 </>
               ) : (
                 <>
                   <List className="h-3.5 w-3.5" />
-                  Browse
+                  {t({ en: "Browse", pt: "Navegar", es: "Explorar" })}
                 </>
               )}
             </Button>
             <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-1 h-8">
               <PlusCircle className="h-3.5 w-3.5" />
-              New
+              {t({ en: "New", pt: "Novo", es: "Nuevo" })}
             </Button>
           </div>
         }
@@ -170,32 +171,32 @@ export function Flashcards() {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Flashcard</DialogTitle>
+            <DialogTitle>{t({ en: "Create New Flashcard", pt: "Criar Novo Flashcard", es: "Crear Nueva Tarjeta" })}</DialogTitle>
             <DialogDescription>
-              Add a new flashcard to your collection
+              {t({ en: "Add a new flashcard to your collection", pt: "Adicione um novo flashcard à sua coleção", es: "Añade una nueva tarjeta a tu colección" })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Front (Question)</label>
+              <label className="text-sm font-medium mb-2 block">{t({ en: "Front (Question)", pt: "Frente (Pergunta)", es: "Frente (Pregunta)" })}</label>
               <Textarea
                 value={newCardFront}
                 onChange={(e) => setNewCardFront(e.target.value)}
-                placeholder="What is the question?"
+                placeholder={t({ en: "What is the question?", pt: "Qual é a pergunta?", es: "¿Cuál es la pregunta?" })}
                 rows={3}
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Back (Answer)</label>
+              <label className="text-sm font-medium mb-2 block">{t({ en: "Back (Answer)", pt: "Verso (Resposta)", es: "Reverso (Respuesta)" })}</label>
               <Textarea
                 value={newCardBack}
                 onChange={(e) => setNewCardBack(e.target.value)}
-                placeholder="What is the answer?"
+                placeholder={t({ en: "What is the answer?", pt: "Qual é a resposta?", es: "¿Cuál es la respuesta?" })}
                 rows={3}
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Deck Name (Optional)</label>
+              <label className="text-sm font-medium mb-2 block">{t({ en: "Deck Name (Optional)", pt: "Nome do Baralho (Opcional)", es: "Nombre del Mazo (Opcional)" })}</label>
               <Input
                 value={newCardDeck}
                 onChange={(e) => setNewCardDeck(e.target.value)}
@@ -204,12 +205,12 @@ export function Flashcards() {
             </div>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-                Cancel
+                {t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}
               </Button>
               <Button
                 onClick={() => {
                   if (!newCardFront.trim() || !newCardBack.trim()) {
-                    toast.error("Please fill in both front and back");
+                    toast.error(t({ en: "Please fill in both front and back", pt: "Por favor, preencha a frente e o verso", es: "Por favor, rellena el anverso y el reverso" }));
                     return;
                   }
                   createMutation.mutate({
@@ -220,7 +221,7 @@ export function Flashcards() {
                 }}
                 disabled={createMutation.isPending}
               >
-                {createMutation.isPending ? "Creating..." : "Create Flashcard"}
+                {createMutation.isPending ? t({ en: "Creating...", pt: "Criando...", es: "Creando..." }) : t({ en: "Create Flashcard", pt: "Criar Flashcard", es: "Crear Tarjeta" })}
               </Button>
             </div>
           </div>
@@ -236,7 +237,7 @@ export function Flashcards() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">{stats?.totalCards || 0}</div>
-              <div className="text-sm text-muted-foreground">Total Cards</div>
+              <div className="text-sm text-muted-foreground">{t({ en: "Total Cards", pt: "Total de Cartões", es: "Total de Tarjetas" })}</div>
             </div>
           </CardContent>
         </Card>
@@ -248,7 +249,7 @@ export function Flashcards() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-orange-500">{stats?.dueCount || 0}</div>
-              <div className="text-sm text-muted-foreground">Due for Review</div>
+              <div className="text-sm text-muted-foreground">{t({ en: "Due for Review", pt: "Para Revisar", es: "Pendientes de Revisión" })}</div>
             </div>
           </CardContent>
         </Card>
@@ -260,7 +261,7 @@ export function Flashcards() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-green-500">{stats?.reviewedCount || 0}</div>
-              <div className="text-sm text-muted-foreground">Reviewed</div>
+              <div className="text-sm text-muted-foreground">{t({ en: "Reviewed", pt: "Revisados", es: "Revisadas" })}</div>
             </div>
           </CardContent>
         </Card>
@@ -269,7 +270,7 @@ export function Flashcards() {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-500">{stats?.avgEaseFactor.toFixed(1) || "2.5"}</div>
-              <div className="text-sm text-muted-foreground">Avg Ease Factor</div>
+              <div className="text-sm text-muted-foreground">{t({ en: "Avg Ease Factor", pt: "Fator de Facilidade Médio", es: "Factor de Facilidad Promedio" })}</div>
             </div>
           </CardContent>
         </Card>
@@ -280,252 +281,146 @@ export function Flashcards() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-lg">
-              {browseFilter === "all" ? "All Cards" : browseFilter === "due" ? "Due for Review" : "Reviewed Cards"}
+              {browseFilter === "all" ? t({ en: "All Cards", pt: "Todos os Cartões", es: "Todas las Tarjetas" }) : browseFilter === "due" ? t({ en: "Due for Review", pt: "Para Revisar", es: "Pendientes de Revisión" }) : t({ en: "Reviewed Cards", pt: "Cartões Revisados", es: "Tarjetas Revisadas" })}
             </h3>
             <div className="flex gap-2">
-              {(["all", "due", "reviewed"] as const).map((f) => (
+              {(['all', 'due', 'reviewed'] as const).map((f) => (
                 <Button
                   key={f}
                   size="sm"
                   variant={browseFilter === f ? "default" : "outline"}
                   onClick={() => setBrowseFilter(f)}
-                  className="h-7 text-xs"
+                  className="capitalize"
                 >
-                  {f === "all" ? "All" : f === "due" ? "Due" : "Reviewed"}
+                  {f === 'all' ? t({ en: "All", pt: "Todos", es: "Todos" }) : f === 'due' ? t({ en: "Due", pt: "Pendentes", es: "Pendientes" }) : t({ en: "Reviewed", pt: "Revisados", es: "Revisadas" })}
                 </Button>
               ))}
             </div>
           </div>
-
           {browseLoading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-              <p className="text-muted-foreground text-sm">Loading cards...</p>
-            </div>
+            <p>{t({ en: "Loading cards...", pt: "Carregando cartões...", es: "Cargando tarjetas..." })}</p>
           ) : allCards && allCards.length > 0 ? (
-            <div className="space-y-2">
+            <div className="border rounded-lg overflow-hidden">
+              <div className="grid grid-cols-[2fr_2fr_1fr_1fr_auto] items-center bg-muted/50 font-medium text-sm text-muted-foreground">
+                <div className="px-4 py-2">{t({ en: "Front", pt: "Frente", es: "Frente" })}</div>
+                <div className="px-4 py-2 border-l">{t({ en: "Back", pt: "Verso", es: "Reverso" })}</div>
+                <div className="px-4 py-2 border-l">{t({ en: "Deck", pt: "Baralho", es: "Mazo" })}</div>
+                <div className="px-4 py-2 border-l">{t({ en: "Next Review", pt: "Próxima Revisão", es: "Próxima Revisión" })}</div>
+                <div className="px-4 py-2 border-l"></div>
+              </div>
               {allCards.map((card) => (
-                <Card key={card.id} className="p-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{card.front}</p>
-                      <p className="text-xs text-muted-foreground mt-1 truncate">{card.back}</p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        {card.deckName && (
-                          <span className="text-xs bg-muted px-2 py-0.5 rounded">{card.deckName}</span>
-                        )}
-                        <span className="text-xs text-muted-foreground">
-                          EF: {card.easeFactor.toFixed(1)} · Int: {card.interval}d
-                        </span>
-                      </div>
-                    </div>
+                <div key={card.id} className="grid grid-cols-[2fr_2fr_1fr_1fr_auto] items-center border-t text-sm">
+                  <div className="px-4 py-2 truncate">{card.front}</div>
+                  <div className="px-4 py-2 truncate border-l">{card.back}</div>
+                  <div className="px-4 py-2 truncate border-l">{card.deckName}</div>
+                  <div className="px-4 py-2 truncate border-l">{card.nextReviewDate ? new Date(card.nextReviewDate).toLocaleDateString() : '-'}</div>
+                  <div className="px-4 py-2 border-l text-right">
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <button className="text-muted-foreground/40 hover:text-red-500 transition-colors p-1 flex-shrink-0">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Flashcard</AlertDialogTitle>
+                          <AlertDialogTitle>{t({ en: "Are you sure?", pt: "Você tem certeza?", es: "¿Estás seguro?" })}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to delete this flashcard? This action cannot be undone.
+                            {t({ en: "This will permanently delete the flashcard. This action cannot be undone.", pt: "Isso excluirá permanentemente o flashcard. Esta ação não pode ser desfeita.", es: "Esto eliminará permanentemente la tarjeta. Esta acción no se puede deshacer." })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => deleteMutation.mutate({ flashcardId: card.id })}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Delete
+                          <AlertDialogCancel>{t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => deleteMutation.mutate({ flashcardId: card.id })}>
+                            {t({ en: "Delete", pt: "Excluir", es: "Eliminar" })}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           ) : (
-            <Card className="p-8 text-center">
-              <p className="text-muted-foreground">
-                {browseFilter === "due" ? "No cards due for review." : browseFilter === "reviewed" ? "No reviewed cards yet." : "No flashcards yet."}
-              </p>
-            </Card>
+            <div className="text-center py-12 text-muted-foreground">
+              <p>{t({ en: "No cards to display.", pt: "Nenhum cartão para exibir.", es: "No hay tarjetas para mostrar." })}</p>
+            </div>
           )}
         </div>
       )}
-      
-      {/* Review Session — only show when in review mode */}
+
+      {/* Review View */}
       {viewMode === "review" && (
         <>
-          {totalDue > 0 ? (
+          {totalDue > 0 && currentCard ? (
             <div className="space-y-4">
-              {/* Progress */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    Card {currentIndex + 1} of {totalDue}
-                  </span>
-                  <span className="font-medium">{progress.toFixed(0)}% complete</span>
-                </div>
-                <Progress value={progress} className="h-2" />
-              </div>
-              
-              {/* Flashcard */}
-              <Card className="min-h-[400px]">
-                <CardContent className="p-12 flex flex-col items-center justify-center space-y-8">
-                  {/* Card Content */}
-                  <div className="text-center space-y-6 w-full max-w-2xl">
-                    <Badge variant="outline">
-                      {showAnswer ? "Answer" : "Question"}
-                    </Badge>
-                    
-                    <div className="text-2xl font-medium leading-relaxed">
-                      {showAnswer ? currentCard?.back : currentCard?.front}
-                    </div>
-                    
-                    {currentCard?.pageNumber && (
-                      <div className="text-sm text-muted-foreground">
-                        Page {currentCard.pageNumber}
-                      </div>
-                    )}
+              <Card className="min-h-[250px] flex flex-col">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>{t({ en: "Review Session", pt: "Sessão de Revisão", es: "Sesión de Revisión" })}</CardTitle>
+                    <Badge variant="outline">{currentIndex + 1} / {totalDue}</Badge>
                   </div>
-                  
-                  {/* Flip Button */}
-                  {!showAnswer && (
-                    <Button
-                      size="lg"
-                      onClick={() => setShowAnswer(true)}
-                      className="gap-2"
-                    >
-                      <RotateCcw className="h-5 w-5" />
-                      Show Answer
-                    </Button>
-                  )}
-                  
-                  {/* Rating Buttons */}
-                  {showAnswer && (
-                    <div className="space-y-4 w-full max-w-2xl">
-                      <div className="text-sm text-center text-muted-foreground">
-                        How well did you remember?
-                      </div>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <Button
-                          variant="outline"
-                          onClick={() => handleReview(0)}
-                          className="flex-col h-auto py-4 gap-2 hover:bg-red-500/10 hover:border-red-500"
-                        >
-                          <XCircle className="h-5 w-5 text-red-500" />
-                          <span className="font-semibold">Again</span>
-                          <span className="text-xs text-muted-foreground">Complete blackout</span>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          onClick={() => handleReview(2)}
-                          className="flex-col h-auto py-4 gap-2 hover:bg-orange-500/10 hover:border-orange-500"
-                        >
-                          <Minus className="h-5 w-5 text-orange-500" />
-                          <span className="font-semibold">Hard</span>
-                          <span className="text-xs text-muted-foreground">Difficult recall</span>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          onClick={() => handleReview(3)}
-                          className="flex-col h-auto py-4 gap-2 hover:bg-yellow-500/10 hover:border-yellow-500"
-                        >
-                          <CheckCircle2 className="h-5 w-5 text-yellow-500" />
-                          <span className="font-semibold">Good</span>
-                          <span className="text-xs text-muted-foreground">Some hesitation</span>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          onClick={() => handleReview(4)}
-                          className="flex-col h-auto py-4 gap-2 hover:bg-blue-500/10 hover:border-blue-500"
-                        >
-                          <Plus className="h-5 w-5 text-blue-500" />
-                          <span className="font-semibold">Easy</span>
-                          <span className="text-xs text-muted-foreground">Quick recall</span>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          onClick={() => handleReview(5)}
-                          className="flex-col h-auto py-4 gap-2 hover:bg-green-500/10 hover:border-green-500 md:col-span-2"
-                        >
-                          <CheckCircle2 className="h-5 w-5 text-green-500" />
-                          <span className="font-semibold">Perfect</span>
-                          <span className="text-xs text-muted-foreground">Instant recall</span>
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                  <Progress value={progress} className="mt-2" />
+                </CardHeader>
+                <CardContent className="flex-grow flex items-center justify-center text-center px-6">
+                  <p className="text-2xl font-semibold">{currentCard.front}</p>
                 </CardContent>
               </Card>
+
+              {showAnswer && (
+                <Card className="min-h-[150px] bg-muted/30">
+                  <CardContent className="flex items-center justify-center text-center p-6">
+                    <p className="text-xl">{currentCard.back}</p>
+                  </CardContent>
+                </Card>
+              )}
+
+              <div className="flex justify-center gap-2">
+                {showAnswer ? (
+                  <div className="grid grid-cols-4 gap-2 w-full max-w-md">
+                    <Button onClick={() => handleReview(1)} variant="destructive" className="gap-1">
+                      <XCircle className="h-4 w-4" /> {t({ en: "Again", pt: "De Novo", es: "Otra Vez" })}
+                    </Button>
+                    <Button onClick={() => handleReview(3)} className="bg-orange-500 hover:bg-orange-600 gap-1">
+                      <Minus className="h-4 w-4" /> {t({ en: "Hard", pt: "Difícil", es: "Difícil" })}
+                    </Button>
+                    <Button onClick={() => handleReview(5)} className="bg-green-500 hover:bg-green-600 gap-1">
+                      <Plus className="h-4 w-4" /> {t({ en: "Good", pt: "Bom", es: "Bien" })}
+                    </Button>
+                    <Button onClick={() => handleReview(7)} className="bg-blue-500 hover:bg-blue-600 gap-1">
+                      <CheckCircle2 className="h-4 w-4" /> {t({ en: "Easy", pt: "Fácil", es: "Fácil" })}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button onClick={() => setShowAnswer(true)} size="lg" className="w-full max-w-md">
+                    {t({ en: "Show Answer", pt: "Mostrar Resposta", es: "Mostrar Respuesta" })}
+                  </Button>
+                )}
+              </div>
             </div>
           ) : (
-            <Card>
-              <CardContent className="p-12 text-center space-y-4">
-                <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-                <div>
-                  <h3 className="text-2xl font-bold">All caught up!</h3>
-                  <p className="text-muted-foreground mt-2">
-                    No flashcards due for review right now. Great job!
-                  </p>
+            <Card className="text-center py-16">
+              <CardContent>
+                <Brain className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-semibold">{t({ en: "All Caught Up!", pt: "Tudo em Dia!", es: "¡Todo al Día!" })}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t({ en: "You have no flashcards due for review today.", pt: "Você não tem flashcards para revisar hoje.", es: "No tienes tarjetas para revisar hoy." })}
+                </p>
+                <div className="mt-6 flex justify-center gap-2">
+                  <Button onClick={() => refetchDue()}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    {t({ en: "Check Again", pt: "Verificar Novamente", es: "Comprobar de Nuevo" })}
+                  </Button>
+                  <Button onClick={() => { setViewMode("browse"); setBrowseFilter("all"); }} variant="secondary">
+                    <List className="mr-2 h-4 w-4" />
+                    {t({ en: "Browse All Cards", pt: "Navegar por Todos os Cartões", es: "Explorar Todas las Tarjetas" })}
+                  </Button>
                 </div>
-                <Button onClick={() => refetchDue()} variant="outline">
-                  Check Again
-                </Button>
               </CardContent>
             </Card>
           )}
-          
-          {/* Info Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>About Spaced Repetition</CardTitle>
-              <CardDescription>
-                This system uses the SM-2 algorithm to optimize your learning
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Flashcards are automatically scheduled for review at optimal intervals based on how well you remember them. 
-                The better you know a card, the longer the interval before you see it again.
-              </p>
-              
-              <div className="grid md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <h4 className="font-semibold mb-2">Rating Guide:</h4>
-                  <ul className="space-y-1 text-muted-foreground">
-                    <li>• <strong>Again:</strong> Couldn't remember at all</li>
-                    <li>• <strong>Hard:</strong> Remembered with difficulty</li>
-                    <li>• <strong>Good:</strong> Remembered correctly</li>
-                    <li>• <strong>Easy:</strong> Remembered easily</li>
-                    <li>• <strong>Perfect:</strong> Instant recall</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold mb-2">Review Intervals:</h4>
-                  <ul className="space-y-1 text-muted-foreground">
-                    <li>• First review: 1 day</li>
-                    <li>• Second review: 6 days</li>
-                    <li>• Subsequent: Multiplied by ease factor</li>
-                    <li>• Failed cards: Reset to 1 day</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </>
       )}
-    </div>
+      </div>
     </div>
   );
 }

@@ -30,36 +30,36 @@ export default function More() {
 
   const menuSections = [
     {
-      title: t("Daily Practice", "Prática Diária"),
+      title: t({ en: "Daily Practice", pt: "Prática Diária", es: "Práctica Diaria" }),
       items: [
         {
           icon: Compass,
-          label: t("Daily Cycle", "Ciclo Diário"),
-          description: t("Morning, midday & evening rituals", "Rituais da manhã, meio-dia e noite"),
+          label: t({ en: "Daily Cycle", pt: "Ciclo Diário", es: "Ciclo Diario" }),
+          description: t({ en: "Morning, midday & evening rituals", pt: "Rituais da manhã, meio-dia e noite", es: "Rituales de mañana, mediodía y noche" }),
           path: "/daily-cycle",
           color: "text-amber-500",
           bg: "bg-amber-500/10",
         },
         {
           icon: Layers,
-          label: t("Emotional Sliders", "Controles Emocionais"),
-          description: t("Calibrate your inner state", "Calibre seu estado interior"),
+          label: t({ en: "Emotional Sliders", pt: "Controles Emocionais", es: "Controles Emocionales" }),
+          description: t({ en: "Calibrate your inner state", pt: "Calibre seu estado interior", es: "Calibra tu estado interior" }),
           path: "/sliders",
           color: "text-blue-500",
           bg: "bg-blue-500/10",
         },
         {
           icon: Brain,
-          label: t("Bias Clearing", "Limpeza de Vieses"),
-          description: t("Clear mental fog & biases", "Limpe a névoa mental e vieses"),
+          label: t({ en: "Bias Clearing", pt: "Limpeza de Vieses", es: "Limpieza de Sesgos" }),
+          description: t({ en: "Clear mental fog & biases", pt: "Limpe a névoa mental e vieses", es: "Despeja la niebla mental y los sesgos" }),
           path: "/bias-clearing",
           color: "text-purple-500",
           bg: "bg-purple-500/10",
         },
         {
           icon: Heart,
-          label: t("Prayer Journal", "Diário de Oração"),
-          description: t("Four-part prayer protocol", "Protocolo de oração em quatro partes"),
+          label: t({ en: "Prayer Journal", pt: "Diário de Oração", es: "Diario de Oración" }),
+          description: t({ en: "Four-part prayer protocol", pt: "Protocolo de oração em quatro partes", es: "Protocolo de oración en cuatro partes" }),
           path: "/prayer-journal",
           color: "text-rose-500",
           bg: "bg-rose-500/10",
@@ -67,52 +67,52 @@ export default function More() {
       ],
     },
     {
-      title: t("Growth & Tracking", "Crescimento e Acompanhamento"),
+      title: t({ en: "Growth & Tracking", pt: "Crescimento e Acompanhamento", es: "Crecimiento y Seguimiento" }),
       items: [
         {
           icon: BarChart3,
-          label: t("Progress Dashboard", "Painel de Progresso"),
-          description: t("Your learning journey overview", "Visão geral da sua jornada"),
+          label: t({ en: "Progress Dashboard", pt: "Painel de Progresso", es: "Panel de Progreso" }),
+          description: t({ en: "Your learning journey overview", pt: "Visão geral da sua jornada", es: "Resumen de tu viaje de aprendizaje" }),
           path: "/progress",
           color: "text-emerald-500",
           bg: "bg-emerald-500/10",
         },
         {
           icon: Compass,
-          label: t("Command Bridge", "Ponte de Comando"),
-          description: t("Destiny Score, radar chart & AI greeting", "Pontuação Destino, gráfico radar e saudação IA"),
+          label: t({ en: "Command Bridge", pt: "Ponte de Comando", es: "Puente de Mando" }),
+          description: t({ en: "Destiny Score, radar chart & AI greeting", pt: "Pontuação Destino, gráfico radar e saudação IA", es: "Puntuación de Destino, gráfico de radar y saludo de IA" }),
           path: "/dashboard",
           color: "text-primary",
           bg: "bg-primary/10",
         },
         {
           icon: Trophy,
-          label: t("Achievements", "Conquistas"),
-          description: t("Badges & milestones earned", "Medalhas e marcos alcançados"),
+          label: t({ en: "Achievements", pt: "Conquistas", es: "Logros" }),
+          description: t({ en: "Badges & milestones earned", pt: "Medalhas e marcos alcançados", es: "Insignias e hitos ganados" }),
           path: "/achievements",
           color: "text-yellow-500",
           bg: "bg-yellow-500/10",
         },
         {
           icon: Zap,
-          label: t("Flashcards", "Cartões de Estudo"),
-          description: t("Review key concepts", "Revise conceitos-chave"),
+          label: t({ en: "Flashcards", pt: "Cartões de Estudo", es: "Tarjetas de Estudio" }),
+          description: t({ en: "Review key concepts", pt: "Revise conceitos-chave", es: "Repasa conceptos clave" }),
           path: "/flashcards",
           color: "text-orange-500",
           bg: "bg-orange-500/10",
         },
         {
           icon: Calendar,
-          label: t("Weekly Review", "Revisão Semanal"),
-          description: t("Reflect on your week", "Reflita sobre sua semana"),
+          label: t({ en: "Weekly Review", pt: "Revisão Semanal", es: "Revisión Semanal" }),
+          description: t({ en: "Reflect on your week", pt: "Reflita sobre sua semana", es: "Reflexiona sobre tu semana" }),
           path: "/weekly-review",
           color: "text-cyan-500",
           bg: "bg-cyan-500/10",
         },
         {
           icon: TrendingUp,
-          label: t("Monthly Report", "Relatório Mensal"),
-          description: t("Before & after comparison", "Comparação antes e depois"),
+          label: t({ en: "Monthly Report", pt: "Relatório Mensal", es: "Informe Mensual" }),
+          description: t({ en: "Before & after comparison", pt: "Comparação antes e depois", es: "Comparación de antes y después" }),
           path: "/monthly-report",
           color: "text-teal-500",
           bg: "bg-teal-500/10",
@@ -120,52 +120,52 @@ export default function More() {
       ],
     },
     {
-      title: t("Community & Tools", "Comunidade e Ferramentas"),
+      title: t({ en: "Community & Tools", pt: "Comunidade e Ferramentas", es: "Comunidad y Herramientas" }),
       items: [
         {
           icon: Users,
-          label: t("Inner Circle", "Círculo Interno"),
-          description: t("Connect with accountability partners", "Conecte-se com parceiros de responsabilidade"),
+          label: t({ en: "Inner Circle", pt: "Círculo Interno", es: "Círculo Íntimo" }),
+          description: t({ en: "Connect with accountability partners", pt: "Conecte-se com parceiros de responsabilidade", es: "Conecta con compañeros de responsabilidad" }),
           path: "/inner-circle",
           color: "text-indigo-500",
           bg: "bg-indigo-500/10",
         },
         {
           icon: Sprout,
-          label: t("Sowing & Reaping", "Semeadura e Colheita"),
-          description: t("Track cause-effect relationships", "Acompanhe relações de causa e efeito"),
+          label: t({ en: "Sowing & Reaping", pt: "Semeadura e Colheita", es: "Siembra y Cosecha" }),
+          description: t({ en: "Track cause-effect relationships", pt: "Acompanhe relações de causa e efeito", es: "Sigue las relaciones de causa y efecto" }),
           path: "/sowing-reaping",
           color: "text-green-500",
           bg: "bg-green-500/10",
         },
         {
           icon: Lightbulb,
-          label: t("AI Insights", "Insights de IA"),
-          description: t("Pattern analysis & recommendations", "Análise de padrões e recomendações"),
+          label: t({ en: "AI Insights", pt: "Insights de IA", es: "Perspectivas de IA" }),
+          description: t({ en: "Pattern analysis & recommendations", pt: "Análise de padrões e recomendações", es: "Análisis de patrones y recomendaciones" }),
           path: "/insights",
           color: "text-sky-500",
           bg: "bg-sky-500/10",
         },
         {
           icon: Star,
-          label: t("Challenges", "Desafios"),
-          description: t("Group challenges & competitions", "Desafios em grupo e competições"),
+          label: t({ en: "Challenges", pt: "Desafios", es: "Desafíos" }),
+          description: t({ en: "Group challenges & competitions", pt: "Desafios em grupo e competições", es: "Desafíos y competencias grupales" }),
           path: "/challenges",
           color: "text-pink-500",
           bg: "bg-pink-500/10",
         },
         {
           icon: ScrollText,
-          label: t("Philosophy", "Filosofia"),
-          description: t("The Prologue — why this app exists", "O Prólogo — porque esta app existe"),
+          label: t({ en: "Philosophy", pt: "Filosofia", es: "Filosofía" }),
+          description: t({ en: "The Prologue — why this app exists", pt: "O Prólogo — porque esta app existe", es: "El Prólogo — por qué existe esta aplicación" }),
           path: "/philosophy",
           color: "text-emerald-500",
           bg: "bg-emerald-500/10",
         },
         {
           icon: Shield,
-          label: t("Privacy & Data", "Privacidade e Dados"),
-          description: t("Your data sovereignty", "Sua soberania de dados"),
+          label: t({ en: "Privacy & Data", pt: "Privacidade e Dados", es: "Privacidad y Datos" }),
+          description: t({ en: "Your data sovereignty", pt: "Sua soberania de dados", es: "Tu soberanía de datos" }),
           path: "/privacy",
           color: "text-slate-500",
           bg: "bg-slate-500/10",
@@ -180,9 +180,9 @@ export default function More() {
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border">
         <div className="px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{t("More", "Mais")}</h1>
+            <h1 className="text-2xl font-bold">{t({ en: "More", pt: "Mais", es: "Más" })}</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              {t("All features & tools", "Todos os recursos e ferramentas")}
+              {t({ en: "All features & tools", pt: "Todos os recursos e ferramentas", es: "Todas las funciones y herramientas" })}
             </p>
           </div>
           {/* Theme Toggle */}
@@ -245,7 +245,7 @@ export default function More() {
         {/* Settings Section */}
         <div>
           <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">
-            {t("Settings", "Configurações")}
+            {t({ en: "Settings", pt: "Configurações", es: "Ajustes" })}
           </h2>
           <div className="bg-card rounded-xl border border-border overflow-hidden divide-y divide-border">
             {/* Language Toggle Row */}
@@ -254,7 +254,7 @@ export default function More() {
                 <Globe className="w-5 h-5 text-emerald-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">{t("Language", "Idioma")}</div>
+                <div className="font-medium text-sm">{t({ en: "Language", pt: "Idioma", es: "Idioma" })}</div>
                 <div className="text-xs text-muted-foreground">
                   {language === "en" ? "English" : "Português"}
                 </div>
@@ -295,9 +295,9 @@ export default function More() {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">{t("Appearance", "Aparência")}</div>
+                <div className="font-medium text-sm">{t({ en: "Appearance", pt: "Aparência", es: "Apariencia" })}</div>
                 <div className="text-xs text-muted-foreground">
-                  {theme === "dark" ? t("Dark mode", "Modo escuro") : t("Light mode", "Modo claro")}
+                  {theme === "dark" ? t({ en: "Dark mode", pt: "Modo escuro", es: "Modo oscuro" }) : t({ en: "Light mode", pt: "Modo claro", es: "Modo claro" })}
                 </div>
               </div>
               {toggleTheme && (
@@ -326,9 +326,9 @@ export default function More() {
                 <Settings className="w-5 h-5 text-gray-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">{t("Settings", "Configurações")}</div>
+                <div className="font-medium text-sm">{t({ en: "Settings", pt: "Configurações", es: "Ajustes" })}</div>
                 <div className="text-xs text-muted-foreground truncate">
-                  {t("Notifications, export & preferences", "Notificações, exportação e preferências")}
+                  {t({ en: "Notifications, export & preferences", pt: "Notificações, exportação e preferências", es: "Notificaciones, exportación y preferencias" })}
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -339,3 +339,4 @@ export default function More() {
     </div>
   );
 }
+

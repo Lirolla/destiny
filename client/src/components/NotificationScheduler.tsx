@@ -113,10 +113,7 @@ export function NotificationScheduler() {
 
   const requestPermission = useCallback(async () => {
     if (typeof Notification === "undefined") {
-      toast.error(t(
-        "Notifications are not supported in this browser.",
-        "Notificações não são suportadas neste navegador."
-      ));
+      toast.error(t({ en: "Notifications are not supported in this browser.", pt: "Notificações não são suportadas neste navegador.", es: "Las notificaciones no son compatibles con este navegador." }));
       return;
     }
 
@@ -125,12 +122,9 @@ export function NotificationScheduler() {
 
     if (result === "granted") {
       setPrefs(p => ({ ...p, enabled: true }));
-      toast.success(t("Notifications enabled!", "Notificações ativadas!"));
+      toast.success(t({ en: "Notifications enabled!", pt: "Notificações ativadas!", es: "¡Notificaciones activadas!" }));
     } else {
-      toast.error(t(
-        "Notification permission denied. Enable it in browser settings.",
-        "Permissão de notificação negada. Ative nas configurações do navegador."
-      ));
+      toast.error(t({ en: "Notification permission denied. Enable it in browser settings.", pt: "Permissão de notificação negada. Ative nas configurações do navegador.", es: "Permiso de notificación denegado. Habilítalo en la configuración del navegador." }));
     }
   }, [t]);
 
@@ -149,28 +143,22 @@ export function NotificationScheduler() {
           ) : (
             <BellOff className="w-4 h-4 text-muted-foreground" />
           )}
-          {t("Cycle Reminders", "Lembretes de Ciclo")}
+          {t({ en: "Cycle Reminders", pt: "Lembretes de Ciclo", es: "Recordatorios de Ciclo" })}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {!notificationsSupported ? (
           <p className="text-sm text-muted-foreground">
-            {t(
-              "Browser notifications are not supported. Try using a modern browser.",
-              "Notificações do navegador não são suportadas. Tente usar um navegador moderno."
-            )}
+            {t({ en: "Browser notifications are not supported. Try using a modern browser.", pt: "Notificações do navegador não são suportadas. Tente usar um navegador moderno.", es: "Las notificaciones del navegador no son compatibles. Intenta usar un navegador moderno." })}
           </p>
         ) : permission !== "granted" ? (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              {t(
-                "Enable browser notifications to receive daily cycle reminders.",
-                "Ative as notificações do navegador para receber lembretes de ciclo diário."
-              )}
+              {t({ en: "Enable browser notifications to receive daily cycle reminders.", pt: "Ative as notificações do navegador para receber lembretes de ciclo diário.", es: "Habilita las notificaciones del navegador para recibir recordatorios del ciclo diario." })}
             </p>
             <Button onClick={requestPermission} size="sm" variant="outline">
               <Bell className="w-3.5 h-3.5 mr-1.5" />
-              {t("Enable Notifications", "Ativar Notificações")}
+              {t({ en: "Enable Notifications", pt: "Ativar Notificações", es: "Activar Notificaciones" })}
             </Button>
           </div>
         ) : (
@@ -178,7 +166,7 @@ export function NotificationScheduler() {
             {/* Master toggle */}
             <div className="flex items-center justify-between">
               <Label htmlFor="notif-enabled" className="text-sm">
-                {t("Enable Reminders", "Ativar Lembretes")}
+                {t({ en: "Enable Reminders", pt: "Ativar Lembretes", es: "Activar Recordatorios" })}
               </Label>
               <Switch
                 id="notif-enabled"
@@ -196,7 +184,7 @@ export function NotificationScheduler() {
                       checked={prefs.morningEnabled}
                       onCheckedChange={(v) => updatePref("morningEnabled", v)}
                     />
-                    <span className="text-sm">☀️ {t("Morning", "Manhã")}</span>
+                    <span className="text-sm">☀️ {t({ en: "Morning", pt: "Manhã", es: "Mañana" })}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-3 h-3 text-muted-foreground" />
@@ -216,7 +204,7 @@ export function NotificationScheduler() {
                       checked={prefs.middayEnabled}
                       onCheckedChange={(v) => updatePref("middayEnabled", v)}
                     />
-                    <span className="text-sm">🎯 {t("Midday", "Meio-dia")}</span>
+                    <span className="text-sm">🎯 {t({ en: "Midday", pt: "Meio-dia", es: "Mediodía" })}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-3 h-3 text-muted-foreground" />
@@ -236,7 +224,7 @@ export function NotificationScheduler() {
                       checked={prefs.eveningEnabled}
                       onCheckedChange={(v) => updatePref("eveningEnabled", v)}
                     />
-                    <span className="text-sm">🌙 {t("Evening", "Noite")}</span>
+                    <span className="text-sm">🌙 {t({ en: "Evening", pt: "Noite", es: "Noche" })}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-3 h-3 text-muted-foreground" />
@@ -250,10 +238,7 @@ export function NotificationScheduler() {
                 </div>
 
                 <p className="text-[11px] text-muted-foreground pt-1">
-                  {t(
-                    "Reminders are scheduled in your browser. Keep the app open for them to fire.",
-                    "Lembretes são agendados no seu navegador. Mantenha o app aberto para que funcionem."
-                  )}
+                  {t({ en: "Reminders are scheduled in your browser. Keep the app open for them to fire.", pt: "Lembretes são agendados no seu navegador. Mantenha o app aberto para que funcionem.", es: "Los recordatorios se programan en tu navegador. Mantén la aplicación abierta para que se activen." })}
                 </p>
               </div>
             )}

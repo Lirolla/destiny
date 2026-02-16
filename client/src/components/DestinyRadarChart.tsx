@@ -9,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -40,6 +41,8 @@ export function DestinyRadarChart({
   previousStates,
   height = 300,
 }: DestinyRadarChartProps) {
+  const { t } = useLanguage();
+
   const chartData = useMemo(() => {
     const labels = axes.map((a) => {
       const name = (a as any).axisName || a.rightLabel;
@@ -54,7 +57,7 @@ export function DestinyRadarChart({
 
     const datasets: any[] = [
       {
-        label: "Current",
+        label: t({ en: "Current", pt: "Atual", es: "Actual" }),
         data: currentValues,
         backgroundColor: "rgba(16, 185, 129, 0.15)",
         borderColor: "rgba(16, 185, 129, 0.8)",
@@ -74,7 +77,7 @@ export function DestinyRadarChart({
       });
 
       datasets.push({
-        label: "Previous",
+        label: t({ en: "Previous", pt: "Anterior", es: "Anterior" }),
         data: prevValues,
         backgroundColor: "rgba(148, 163, 184, 0.08)",
         borderColor: "rgba(148, 163, 184, 0.4)",
@@ -89,7 +92,7 @@ export function DestinyRadarChart({
     }
 
     return { labels, datasets };
-  }, [axes, currentStates, previousStates]);
+  }, [axes, currentStates, previousStates, t]);
 
   const options = useMemo(
     () => ({
@@ -119,11 +122,11 @@ export function DestinyRadarChart({
             label: (context: any) => {
               const value = context.raw;
               let label = "";
-              if (value <= 30) label = "Clouded";
-              else if (value <= 50) label = "Transitional";
-              else if (value <= 70) label = "Awakening";
-              else if (value <= 85) label = "Clear";
-              else label = "Mastery";
+              if (value <= 30) label = t({ en: "Clouded", pt: "Nublado", es: "Nublado" });
+              else if (value <= 50) label = t({ en: "Transitional", pt: "Em Transição", es: "Transicional" });
+              else if (value <= 70) label = t({ en: "Awakening", pt: "Despertando", es: "Despertar" });
+              else if (value <= 85) label = t({ en: "Clear", pt: "Claro", es: "Claro" });
+              else label = t({ en: "Mastery", pt: "Maestria", es: "Maestría" });
               return `${context.dataset.label}: ${value} (${label})`;
             },
           },
@@ -154,7 +157,7 @@ export function DestinyRadarChart({
         },
       },
     }),
-    [previousStates]
+    [previousStates, t]
   );
 
   return (

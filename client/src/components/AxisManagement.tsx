@@ -26,6 +26,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SortableAxisItemProps {
   axis: {
@@ -88,6 +89,7 @@ function SortableAxisItem({ axis, onEdit, onDelete }: SortableAxisItemProps) {
 }
 
 export function AxisManagement() {
+  const { t } = useLanguage();
   const { data: axes } = trpc.sliders.listAxes.useQuery();
   const utils = trpc.useUtils();
 
@@ -116,7 +118,7 @@ export function AxisManagement() {
       utils.sliders.listAxes.invalidate();
       utils.sliders.getLatestStates.invalidate();
       setEditingAxis(null);
-      toast.success("Axis updated");
+      toast.success(t({ en: "Axis updated", pt: "Eixo atualizado", es: "Eje actualizado" }));
     },
     onError: (error) => {
       toast.error(error.message);
@@ -128,7 +130,7 @@ export function AxisManagement() {
       utils.sliders.listAxes.invalidate();
       utils.sliders.getLatestStates.invalidate();
       setDeletingAxis(null);
-      toast.success("Axis deleted");
+      toast.success(t({ en: "Axis deleted", pt: "Eixo excluído", es: "Eje eliminado" }));
     },
     onError: (error) => {
       toast.error(error.message);
@@ -140,7 +142,7 @@ export function AxisManagement() {
       utils.sliders.listAxes.invalidate();
       setShowCreateDialog(false);
       setFormData({ leftLabel: "", rightLabel: "", description: "" });
-      toast.success("Axis created");
+      toast.success(t({ en: "Axis created", pt: "Eixo criado", es: "Eje creado" }));
     },
     onError: (error) => {
       toast.error(error.message);
@@ -150,7 +152,7 @@ export function AxisManagement() {
   const reorderMutation = trpc.sliders.reorderAxes.useMutation({
     onSuccess: () => {
       utils.sliders.listAxes.invalidate();
-      toast.success("Axes reordered");
+      toast.success(t({ en: "Axes reordered", pt: "Eixos reordenados", es: "Ejes reordenados" }));
     },
     onError: (error) => {
       toast.error(error.message);
@@ -207,15 +209,15 @@ export function AxisManagement() {
   };
 
   if (!axes) {
-    return <div>Loading...</div>;
+    return <div>{t({ en: "Loading...", pt: "Carregando...", es: "Cargando..." })}</div>;
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Manage Emotional Axes</CardTitle>
+        <CardTitle>{t({ en: "Manage Emotional Axes", pt: "Gerenciar Eixos Emocionais", es: "Gestionar Ejes Emocionales" })}</CardTitle>
         <CardDescription>
-          Drag to reorder, edit labels, or create custom axes
+          {t({ en: "Drag to reorder, edit labels, or create custom axes", pt: "Arraste para reordenar, editar rótulos ou criar eixos personalizados", es: "Arrastra para reordenar, editar etiquetas o crear ejes personalizados" })}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -243,52 +245,52 @@ export function AxisManagement() {
 
         <Button onClick={() => setShowCreateDialog(true)} className="w-full">
           <Plus className="h-4 w-4 mr-2" />
-          Create Custom Axis
+          {t({ en: "Create Custom Axis", pt: "Criar Eixo Personalizado", es: "Crear Eje Personalizado" })}
         </Button>
 
         {/* Edit Dialog */}
         <Dialog open={editingAxis !== null} onOpenChange={(open) => !open && setEditingAxis(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Axis</DialogTitle>
+              <DialogTitle>{t({ en: "Edit Axis", pt: "Editar Eixo", es: "Editar Eje" })}</DialogTitle>
               <DialogDescription>
-                Update the labels and description for this emotional axis
+                {t({ en: "Update the labels and description for this emotional axis", pt: "Atualize os rótulos e a descrição para este eixo emocional", es: "Actualiza las etiquetas y la descripción de este eje emocional" })}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="leftLabel">Left Label</Label>
+                <Label htmlFor="leftLabel">{t({ en: "Left Label", pt: "Rótulo Esquerdo", es: "Etiqueta Izquierda" })}</Label>
                 <Input
                   id="leftLabel"
                   value={formData.leftLabel}
                   onChange={(e) => setFormData({ ...formData, leftLabel: e.target.value })}
-                  placeholder="e.g., Anxiety"
+                  placeholder={t({ en: "e.g., Anxiety", pt: "ex., Ansiedade", es: "p. ej., Ansiedad" })}
                 />
               </div>
               <div>
-                <Label htmlFor="rightLabel">Right Label</Label>
+                <Label htmlFor="rightLabel">{t({ en: "Right Label", pt: "Rótulo Direito", es: "Etiqueta Derecha" })}</Label>
                 <Input
                   id="rightLabel"
                   value={formData.rightLabel}
                   onChange={(e) => setFormData({ ...formData, rightLabel: e.target.value })}
-                  placeholder="e.g., Calm"
+                  placeholder={t({ en: "e.g., Calm", pt: "ex., Calma", es: "p. ej., Calma" })}
                 />
               </div>
               <div>
-                <Label htmlFor="description">Description (optional)</Label>
+                <Label htmlFor="description">{t({ en: "Description (optional)", pt: "Descrição (opcional)", es: "Descripción (opcional)" })}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="What does this axis measure?"
+                  placeholder={t({ en: "What does this axis measure?", pt: "O que este eixo mede?", es: "¿Qué mide este eje?" })}
                 />
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setEditingAxis(null)}>
-                Cancel
+                {t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}
               </Button>
-              <Button onClick={handleSaveEdit}>Save Changes</Button>
+              <Button onClick={handleSaveEdit}>{t({ en: "Save Changes", pt: "Salvar Alterações", es: "Guardar Cambios" })}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -297,45 +299,45 @@ export function AxisManagement() {
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create Custom Axis</DialogTitle>
+              <DialogTitle>{t({ en: "Create Custom Axis", pt: "Criar Eixo Personalizado", es: "Crear Eje Personalizado" })}</DialogTitle>
               <DialogDescription>
-                Define a new bipolar emotional dimension
+                {t({ en: "Define a new bipolar emotional dimension", pt: "Defina uma nova dimensão emocional bipolar", es: "Define una nueva dimensión emocional bipolar" })}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="newLeftLabel">Left Label</Label>
+                <Label htmlFor="newLeftLabel">{t({ en: "Left Label", pt: "Rótulo Esquerdo", es: "Etiqueta Izquierda" })}</Label>
                 <Input
                   id="newLeftLabel"
                   value={formData.leftLabel}
                   onChange={(e) => setFormData({ ...formData, leftLabel: e.target.value })}
-                  placeholder="e.g., Reactive"
+                  placeholder={t({ en: "e.g., Reactive", pt: "ex., Reativo", es: "p. ej., Reactivo" })}
                 />
               </div>
               <div>
-                <Label htmlFor="newRightLabel">Right Label</Label>
+                <Label htmlFor="newRightLabel">{t({ en: "Right Label", pt: "Rótulo Direito", es: "Etiqueta Derecha" })}</Label>
                 <Input
                   id="newRightLabel"
                   value={formData.rightLabel}
                   onChange={(e) => setFormData({ ...formData, rightLabel: e.target.value })}
-                  placeholder="e.g., Intentional"
+                  placeholder={t({ en: "e.g., Intentional", pt: "ex., Intencional", es: "p. ej., Intencional" })}
                 />
               </div>
               <div>
-                <Label htmlFor="newDescription">Description (optional)</Label>
+                <Label htmlFor="newDescription">{t({ en: "Description (optional)", pt: "Descrição (opcional)", es: "Descripción (opcional)" })}</Label>
                 <Textarea
                   id="newDescription"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="What does this axis measure?"
+                  placeholder={t({ en: "What does this axis measure?", pt: "O que este eixo mede?", es: "¿Qué mide este eje?" })}
                 />
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
-                Cancel
+                {t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}
               </Button>
-              <Button onClick={handleCreate}>Create Axis</Button>
+              <Button onClick={handleCreate}>{t({ en: "Create Axis", pt: "Criar Eixo", es: "Crear Eje" })}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -344,16 +346,15 @@ export function AxisManagement() {
         <AlertDialog open={deletingAxis !== null} onOpenChange={(open) => !open && setDeletingAxis(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Axis?</AlertDialogTitle>
+              <AlertDialogTitle>{t({ en: "Delete Axis?", pt: "Excluir Eixo?", es: "¿Eliminar Eje?" })}</AlertDialogTitle>
               <AlertDialogDescription>
-                This will permanently delete this emotional axis and all associated calibration history.
-                This action cannot be undone.
+                {t({ en: "This will permanently delete this emotional axis and all associated calibration history. This action cannot be undone.", pt: "Isso excluirá permanentemente este eixo emocional e todo o histórico de calibração associado. Esta ação não pode ser desfeita.", es: "Esto eliminará permanentemente este eje emocional y todo el historial de calibración asociado. Esta acción no se puede deshacer." })}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-                Delete
+                {t({ en: "Delete", pt: "Excluir", es: "Eliminar" })}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -362,3 +363,4 @@ export function AxisManagement() {
     </Card>
   );
 }
+

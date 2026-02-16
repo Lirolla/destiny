@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus, Calendar } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * MonthlyReport — Before/After comparison for all 15 axes
@@ -36,6 +37,7 @@ export function MonthlyReport({
   totalCalibrations,
   streakDays,
 }: MonthlyReportProps) {
+  const { t } = useLanguage();
   const destinyDelta = destinyScoreEnd - destinyScoreStart;
 
   const improved = axes.filter(a => a.latestValue > a.firstValue).length;
@@ -81,12 +83,12 @@ export function MonthlyReport({
             <Calendar className="w-4 h-4" />
             <span>{monthLabel}</span>
           </div>
-          <CardTitle className="text-xl">Monthly Progress Report</CardTitle>
+          <CardTitle className="text-xl">{t({ en: "Monthly Progress Report", pt: "Relatório de Progresso Mensal", es: "Informe de Progreso Mensual" })}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-3 bg-background/50 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">Destiny Score</p>
+              <p className="text-xs text-muted-foreground mb-1">{t({ en: "Destiny Score", pt: "Pontuação de Destino", es: "Puntuación de Destino" })}</p>
               <div className="flex items-center justify-center gap-2">
                 <span className={`text-2xl font-bold ${getScoreColor(destinyScoreEnd)}`}>
                   {destinyScoreEnd}%
@@ -96,21 +98,21 @@ export function MonthlyReport({
                 </span>
               </div>
               <p className="text-[10px] text-muted-foreground mt-1">
-                Started at {destinyScoreStart}%
+                {t({ en: `Started at ${destinyScoreStart}%`, pt: `Iniciou em ${destinyScoreStart}%`, es: `Comenzó en ${destinyScoreStart}%` })}
               </p>
             </div>
             <div className="text-center p-3 bg-background/50 rounded-lg">
-              <p className="text-xs text-muted-foreground mb-1">This Month</p>
+              <p className="text-xs text-muted-foreground mb-1">{t({ en: "This Month", pt: "Este Mês", es: "Este Mes" })}</p>
               <div className="text-sm space-y-1">
-                <p><strong className="text-green-400">{improved}</strong> axes improved</p>
-                <p><strong className="text-red-400">{declined}</strong> axes declined</p>
-                <p><strong className="text-muted-foreground">{stable}</strong> stable</p>
+                <p><strong className="text-green-400">{improved}</strong> {t({ en: "axes improved", pt: "eixos melhoraram", es: "ejes mejoraron" })}</p>
+                <p><strong className="text-red-400">{declined}</strong> {t({ en: "axes declined", pt: "eixos diminuíram", es: "ejes disminuyeron" })}</p>
+                <p><strong className="text-muted-foreground">{stable}</strong> {t({ en: "stable", pt: "estáveis", es: "estables" })}</p>
               </div>
             </div>
           </div>
           <div className="flex justify-between mt-3 text-xs text-muted-foreground">
-            <span>{totalCalibrations} calibrations</span>
-            <span>{streakDays}-day best streak</span>
+            <span>{totalCalibrations} {t({ en: "calibrations", pt: "calibrações", es: "calibraciones" })}</span>
+            <span>{streakDays}{t({ en: "-day best streak", pt: "-dias de melhor sequência", es: "-días de mejor racha" })}</span>
           </div>
         </CardContent>
       </Card>
@@ -118,7 +120,7 @@ export function MonthlyReport({
       {/* Axis-by-axis breakdown */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Axis-by-Axis Breakdown</CardTitle>
+          <CardTitle className="text-base">{t({ en: "Axis-by-Axis Breakdown", pt: "Análise Eixo por Eixo", es: "Desglose Eje por Eje" })}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           {sortedAxes.map((axis) => {

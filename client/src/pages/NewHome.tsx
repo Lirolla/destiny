@@ -19,13 +19,22 @@ import {
 
 /* ── Quick Access Grid Items ────────────────────────────────── */
 const QUICK_ACCESS_ITEMS = [
-  { Icon: Layers, labelEn: "Sliders", labelPt: "Controles", path: "/sliders", bg: "bg-blue-500/10", color: "text-blue-500" },
-  { Icon: ScrollText, labelEn: "Philosophy", labelPt: "Filosofia", path: "/philosophy", bg: "bg-emerald-500/10", color: "text-emerald-500" },
-  { Icon: Brain, labelEn: "AI Coach", labelPt: "Coach IA", path: "/insights", bg: "bg-sky-500/10", color: "text-sky-500" },
-  { Icon: TrendingUp, labelEn: "Progress", labelPt: "Progresso", path: "/progress", bg: "bg-teal-500/10", color: "text-teal-500" },
-  { Icon: Trophy, labelEn: "Badges", labelPt: "Medalhas", path: "/achievements", bg: "bg-yellow-500/10", color: "text-yellow-500" },
-  { Icon: Zap, labelEn: "Flashcards", labelPt: "Cartões", path: "/flashcards", bg: "bg-orange-500/10", color: "text-orange-500" },
+  { Icon: Layers, labelKey: "Sliders", path: "/sliders", bg: "bg-blue-500/10", color: "text-blue-500" },
+  { Icon: ScrollText, labelKey: "Philosophy", path: "/philosophy", bg: "bg-emerald-500/10", color: "text-emerald-500" },
+  { Icon: Brain, labelKey: "AI Coach", path: "/insights", bg: "bg-sky-500/10", color: "text-sky-500" },
+  { Icon: TrendingUp, labelKey: "Progress", path: "/progress", bg: "bg-teal-500/10", color: "text-teal-500" },
+  { Icon: Trophy, labelKey: "Badges", path: "/achievements", bg: "bg-yellow-500/10", color: "text-yellow-500" },
+  { Icon: Zap, labelKey: "Flashcards", path: "/flashcards", bg: "bg-orange-500/10", color: "text-orange-500" },
 ];
+
+const quickAccessTranslations: Record<string, { en: string; pt: string; es: string }> = {
+  Sliders: { en: "Sliders", pt: "Controles", es: "Controles" },
+  Philosophy: { en: "Philosophy", pt: "Filosofia", es: "Filosofía" },
+  "AI Coach": { en: "AI Coach", pt: "Coach IA", es: "Coach IA" },
+  Progress: { en: "Progress", pt: "Progresso", es: "Progreso" },
+  Badges: { en: "Badges", pt: "Medalhas", es: "Insignias" },
+  Flashcards: { en: "Flashcards", pt: "Cartões", es: "Tarjetas" },
+};
 
 export default function NewHome() {
   const [, navigate] = useLocation();
@@ -101,9 +110,9 @@ export default function NewHome() {
   /* ── Derived data ─────────────────────────────────────────── */
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
-    if (hour < 12) return t("Good Morning", "Bom Dia");
-    if (hour < 17) return t("Good Afternoon", "Boa Tarde");
-    return t("Good Evening", "Boa Noite");
+    if (hour < 12) return t({ en: "Good Morning", pt: "Bom Dia", es: "Buenos Días" });
+    if (hour < 17) return t({ en: "Good Afternoon", pt: "Boa Tarde", es: "Buenas Tardes" });
+    return t({ en: "Good Evening", pt: "Boa Noite", es: "Buenas Noches" });
   }, [t]);
 
   const streak = useMemo(() => {
@@ -162,7 +171,7 @@ export default function NewHome() {
             <button
               onClick={() => setShowQuickCalibrate(true)}
               className="relative w-[68px] h-[68px] flex-shrink-0 active:scale-95 transition-transform"
-              aria-label={t("Quick Calibrate", "Calibração Rápida")}
+              aria-label={t({ en: "Quick Calibrate", pt: "Calibração Rápida", es: "Calibración Rápida" })}
             >
               <svg width="68" height="68" className="-rotate-90">
                 <circle
@@ -194,16 +203,16 @@ export default function NewHome() {
             {/* Greeting + Stats */}
             <div className="flex-1 min-w-0">
               <p className="text-[17px] font-bold text-foreground leading-tight truncate">
-                {greeting}, {t("Captain", "Capitão")}.
+                {greeting}, {t({ en: "Captain", pt: "Capitão", es: "Capitán" })}.
               </p>
               <div className="flex gap-3.5 mt-1.5">
                 {streak > 0 && (
                   <span className="text-[13px] text-muted-foreground">
-                    🔥 <strong className="text-foreground">{streak}</strong> {t("days", "dias")}
+                    🔥 <strong className="text-foreground">{streak}</strong> {t({ en: "days", pt: "dias", es: "días" })}
                   </span>
                 )}
                 <span className="text-[13px] text-muted-foreground">
-                  📊 <strong className="text-foreground">{axesCount}</strong> {t("axes", "eixos")}
+                  📊 <strong className="text-foreground">{axesCount}</strong> {t({ en: "axes", pt: "eixos", es: "ejes" })}
                 </span>
               </div>
             </div>
@@ -217,13 +226,13 @@ export default function NewHome() {
           {/* ═══ Section 3: DAILY CYCLE ═══ */}
           <div className="px-4 pt-3.5">
             <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-muted-foreground/60 mb-2 ml-0.5">
-              {t("Daily Cycle", "Ciclo Diário")}
+              {t({ en: "Daily Cycle", pt: "Ciclo Diário", es: "Ciclo Diario" })}
             </p>
             <div className="grid grid-cols-3 gap-2.5">
               {[
-                { emoji: "🌅", label: t("Morning", "Manhã"), phase: "morning", done: !!todayCycle?.morningCompletedAt },
-                { emoji: "☀️", label: t("Midday", "Meio-dia"), phase: "midday", done: !!todayCycle?.middayCompletedAt },
-                { emoji: "🌙", label: t("Evening", "Noite"), phase: "evening", done: !!todayCycle?.eveningCompletedAt },
+                { emoji: "🌅", label: t({ en: "Morning", pt: "Manhã", es: "Mañana" }), phase: "morning", done: !!todayCycle?.morningCompletedAt },
+                { emoji: "☀️", label: t({ en: "Midday", pt: "Meio-dia", es: "Mediodía" }), phase: "midday", done: !!todayCycle?.middayCompletedAt },
+                { emoji: "🌙", label: t({ en: "Evening", pt: "Noite", es: "Noche" }), phase: "evening", done: !!todayCycle?.eveningCompletedAt },
               ].map((p) => (
                 <Link key={p.phase} href={`/daily-cycle?phase=${p.phase}`}>
                   <div
@@ -237,11 +246,11 @@ export default function NewHome() {
                     <p className="text-[13px] font-semibold text-foreground">{p.label}</p>
                     {p.done ? (
                       <p className="text-[10px] text-primary font-semibold mt-0.5">
-                        ✓ {t("Done", "Feito")}
+                        ✓ {t({ en: "Done", pt: "Feito", es: "Hecho" })}
                       </p>
                     ) : (
                       <p className="text-[10px] text-muted-foreground/50 mt-0.5">
-                        {t("tap to start", "toque para iniciar")}
+                        {t({ en: "tap to start", pt: "toque para iniciar", es: "toca para iniciar" })}
                       </p>
                     )}
                   </div>
@@ -253,7 +262,7 @@ export default function NewHome() {
           {/* ═══ Section 4: QUICK ACCESS 2×3 GRID ═══ */}
           <div className="px-4 pt-3.5">
             <p className="text-[10px] font-bold uppercase tracking-[1.5px] text-muted-foreground/60 mb-2 ml-0.5">
-              {t("Quick Access", "Acesso Rápido")}
+              {t({ en: "Quick Access", pt: "Acesso Rápido", es: "Acceso Rápido" })}
             </p>
             <div className="grid grid-cols-3 gap-2.5">
               {QUICK_ACCESS_ITEMS.map((item) => (
@@ -263,7 +272,7 @@ export default function NewHome() {
                   >
                     <item.Icon className={`w-7 h-7 mx-auto mb-1 ${item.color}`} />
                     <p className="text-xs font-semibold text-foreground/80">
-                      {language === "pt" ? item.labelPt : item.labelEn}
+                      {t(quickAccessTranslations[item.labelKey])}
                     </p>
                   </div>
                 </Link>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * InvictusMoment — Full-screen celebration animation
@@ -14,6 +15,7 @@ interface InvictusMomentProps {
 }
 
 export function InvictusMoment({ onComplete }: InvictusMomentProps) {
+  const { t } = useLanguage();
   const [phase, setPhase] = useState(0);
   // Phase 0: black screen
   // Phase 1-4: poem lines
@@ -152,7 +154,7 @@ export function InvictusMoment({ onComplete }: InvictusMomentProps) {
               transition={{ duration: 1.5, delay: 0.5 }}
               className="text-[#FFD700] text-xl font-semibold"
             >
-              You have reached your Invictus Moment.
+              {t({ en: "You have reached your Invictus Moment.", pt: "Você alcançou seu Momento Invictus.", es: "Has alcanzado tu Momento Invictus." })}
             </motion.p>
             <motion.p
               initial={{ opacity: 0 }}
@@ -160,7 +162,7 @@ export function InvictusMoment({ onComplete }: InvictusMomentProps) {
               transition={{ duration: 1, delay: 1.5 }}
               className="text-white/60 text-sm"
             >
-              All 15 axes of your free will are operating above 70%.
+              {t({ en: "All 15 axes of your free will are operating above 70%.", pt: "Todos os 15 eixos do seu livre arbítrio estão operando acima de 70%.", es: "Los 15 ejes de tu libre albedrío están operando por encima del 70%." })}
             </motion.p>
           </motion.div>
         )}
@@ -174,7 +176,7 @@ export function InvictusMoment({ onComplete }: InvictusMomentProps) {
             onClick={onComplete}
             className="mt-8 px-8 py-3 bg-[#FFD700]/20 border border-[#FFD700]/50 text-[#FFD700] rounded-full hover:bg-[#FFD700]/30 transition-colors font-medium"
           >
-            Continue Your Journey
+            {t({ en: "Continue Your Journey", pt: "Continue Sua Jornada", es: "Continúa Tu Viaje" })}
           </motion.button>
         )}
       </div>

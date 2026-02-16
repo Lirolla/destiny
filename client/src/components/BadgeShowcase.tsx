@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { getBadgeDefinition, getBadgeRarityColor, type BadgeType } from "@/lib/badges";
 import { Lock } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BadgeShowcaseProps {
   unlockedBadges: BadgeType[];
@@ -60,6 +61,7 @@ interface BadgeNotificationProps {
 }
 
 export function BadgeNotification({ badgeType, onClose }: BadgeNotificationProps) {
+  const { t } = useLanguage();
   const badge = getBadgeDefinition(badgeType);
   const rarityColor = getBadgeRarityColor(badge.rarity);
 
@@ -70,7 +72,7 @@ export function BadgeNotification({ badgeType, onClose }: BadgeNotificationProps
           <div className="flex items-center gap-3">
             <div className="text-4xl">{badge.icon}</div>
             <div>
-              <CardTitle className="text-lg">Badge Unlocked!</CardTitle>
+              <CardTitle className="text-lg">{t({ en: "Badge Unlocked!", pt: "Emblema Desbloqueado!", es: "¡Insignia Desbloqueada!" })}</CardTitle>
               <CardDescription className="text-sm">{badge.name}</CardDescription>
             </div>
           </div>

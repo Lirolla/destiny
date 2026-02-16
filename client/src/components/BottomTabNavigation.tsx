@@ -2,17 +2,17 @@ import { useLocation } from "wouter";
 import { Home, BookOpen, Headphones, GraduationCap, MoreHorizontal } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const tabs = [
-  { id: "home", labelEn: "Bridge", labelPt: "Ponte", icon: Home, path: "/" },
-  { id: "book", labelEn: "Chapters", labelPt: "Capítulos", icon: BookOpen, path: "/book" },
-  { id: "audio", labelEn: "Listen", labelPt: "Ouvir", icon: Headphones, path: "/audiobook" },
-  { id: "practice", labelEn: "Calibrate", labelPt: "Calibrar", icon: GraduationCap, path: "/modules" },
-  { id: "more", labelEn: "Arsenal", labelPt: "Arsenal", icon: MoreHorizontal, path: "/more" },
-];
-
 export function BottomTabNavigation() {
   const [location, setLocation] = useLocation();
-  const { language } = useLanguage();
+  const { t } = useLanguage();
+
+  const tabs = [
+    { id: "home", label: t({ en: "Bridge", pt: "Ponte", es: "Puente" }), icon: Home, path: "/" },
+    { id: "book", label: t({ en: "Chapters", pt: "Capítulos", es: "Capítulos" }), icon: BookOpen, path: "/book" },
+    { id: "audio", label: t({ en: "Listen", pt: "Ouvir", es: "Escuchar" }), icon: Headphones, path: "/audiobook" },
+    { id: "practice", label: t({ en: "Calibrate", pt: "Calibrar", es: "Calibrar" }), icon: GraduationCap, path: "/modules" },
+    { id: "more", label: t({ en: "Arsenal", pt: "Arsenal", es: "Arsenal" }), icon: MoreHorizontal, path: "/more" },
+  ];
 
   const getActiveTab = () => {
     if (location === "/") return "home";
@@ -60,7 +60,7 @@ export function BottomTabNavigation() {
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               }`}
-              aria-label={language === 'pt' ? tab.labelPt : tab.labelEn}
+              aria-label={tab.label}
             >
               {/* Active indicator dot */}
               {isActive && (
@@ -77,7 +77,7 @@ export function BottomTabNavigation() {
                   isActive ? "opacity-100" : "opacity-70"
                 }`}
               >
-                {language === 'pt' ? tab.labelPt : tab.labelEn}
+                {tab.label}
               </span>
             </button>
           );

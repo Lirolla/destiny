@@ -144,7 +144,7 @@ export const appRouter = router({
 
     // Forgot Password
     forgotPassword: publicProcedure
-      .input(z.object({ email: z.string().email() }))
+      .input(z.object({ email: z.string().email(), language: z.enum(["en", "pt", "es"]).optional() }))
       .mutation(async ({ input }) => {
         const user = await db.getUserByEmail(input.email.toLowerCase());
         if (!user) {
@@ -157,7 +157,7 @@ export const appRouter = router({
         await db.setResetToken(user.id, token, expiry);
 
         // Send password reset email via Resend
-        const emailSent = await sendPasswordResetEmail(input.email, token);
+        const emailSent = await sendPasswordResetEmail(input.email, token, input.language || "en");
         if (!emailSent) {
           console.warn(`[Auth] Failed to send reset email to ${input.email}, token: ${token}`);
         }

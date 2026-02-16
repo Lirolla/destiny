@@ -30,7 +30,7 @@ export function AudiobookMiniPlayer() {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [location, setLocation] = useLocation();
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Don't show mini-player on the audiobook page itself
   const isOnAudiobookPage = location.startsWith("/audiobook");
@@ -113,7 +113,7 @@ export function AudiobookMiniPlayer() {
 
     // Update storage
     if (nowPlaying) {
-      const updated = { ...nowPlaying, isPlaying: audioRef.current.paused };
+      const updated = { ...nowPlaying, isPlaying: !audioRef.current.paused };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     }
   }, [nowPlaying]);
@@ -198,7 +198,7 @@ export function AudiobookMiniPlayer() {
               <button
                 onClick={(e) => { e.stopPropagation(); togglePlay(); }}
                 className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground active:scale-95 transition-transform"
-                aria-label={isPlaying ? "Pause" : "Play"}
+                aria-label={isPlaying ? t({ en: "Pause", pt: "Pausar", es: "Pausar" }) : t({ en: "Play", pt: "Tocar", es: "Reproducir" })}
               >
                 {isPlaying ? (
                   <Pause className="w-4 h-4" />
@@ -210,7 +210,7 @@ export function AudiobookMiniPlayer() {
               <button
                 onClick={(e) => { e.stopPropagation(); skipForward(); }}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Skip 15s"
+                aria-label={t({ en: "Skip 15s", pt: "Pular 15s", es: "Saltar 15s" })}
               >
                 <SkipForward className="w-4 h-4" />
               </button>
@@ -218,7 +218,7 @@ export function AudiobookMiniPlayer() {
               <button
                 onClick={(e) => { e.stopPropagation(); handleClose(); }}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Close"
+                aria-label={t({ en: "Close", pt: "Fechar", es: "Cerrar" })}
               >
                 <X className="w-4 h-4" />
               </button>

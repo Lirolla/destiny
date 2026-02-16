@@ -227,7 +227,7 @@ export function DestinyScoreExport() {
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "normal");
       pdf.text(
-        language === "pt" ? "Relatório da Pontuação do Destino" : "Destiny Score Report",
+        t({ en: "Destiny Score Report", pt: "Relatório da Pontuação do Destino", es: "Reporte de Puntuación de Destino" }),
         pageWidth / 2, 33,
         { align: "center" }
       );
@@ -240,8 +240,8 @@ export function DestinyScoreExport() {
       // User info and date
       pdf.setTextColor(100, 100, 100);
       pdf.setFontSize(9);
-      const userName = user?.name || (language === "pt" ? "Capitão" : "Captain");
-      const dateStr = new Date().toLocaleDateString(language === "pt" ? "pt-PT" : "en-GB", {
+      const userName = user?.name || t({ en: "Captain", pt: "Capitão", es: "Capitán" });
+      const dateStr = new Date().toLocaleDateString(language === "pt" ? "pt-PT" : language === "es" ? "es-ES" : "en-GB", {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -257,7 +257,7 @@ export function DestinyScoreExport() {
       pdf.setTextColor(30, 30, 30);
       pdf.setFontSize(8);
       pdf.setFont("helvetica", "normal");
-      const streakLabel = language === "pt" ? `Sequência: ${streak} dias` : `Streak: ${streak} days`;
+      const streakLabel = t({ en: `Streak: ${streak} days`, pt: `Sequência: ${streak} dias`, es: `Racha: ${streak} días` });
       pdf.text(streakLabel, pageWidth / 2, 66, { align: "center" });
 
       // Radar chart image
@@ -277,7 +277,7 @@ export function DestinyScoreExport() {
       pdf.setFontSize(10);
       pdf.setFont("helvetica", "bold");
       pdf.setTextColor(1, 140, 90);
-      pdf.text(language === "pt" ? "OS 15 EIXOS DA VONTADE LIVRE" : "THE 15 AXES OF FREE WILL", pageWidth / 2, tableY, { align: "center" });
+      pdf.text(t({ en: "THE 15 AXES OF FREE WILL", pt: "OS 15 EIXOS DA VONTADE LIVRE", es: "LOS 15 EJES DEL LIBRE ALBEDRÍO" }), pageWidth / 2, tableY, { align: "center" });
 
       // Table headers
       const colX = [15, 55, 115, 155];
@@ -285,9 +285,9 @@ export function DestinyScoreExport() {
       pdf.setFontSize(7);
       pdf.setTextColor(100, 100, 100);
       pdf.text("#", colX[0], headerY);
-      pdf.text(language === "pt" ? "EIXO" : "AXIS", colX[1], headerY);
-      pdf.text(language === "pt" ? "ESPECTRO" : "SPECTRUM", colX[2], headerY);
-      pdf.text(language === "pt" ? "VALOR" : "VALUE", colX[3], headerY);
+      pdf.text(t({ en: "AXIS", pt: "EIXO", es: "EJE" }), colX[1], headerY);
+      pdf.text(t({ en: "SPECTRUM", pt: "ESPECTRO", es: "ESPECTRO" }), colX[2], headerY);
+      pdf.text(t({ en: "VALUE", pt: "VALOR", es: "VALOR" }), colX[3], headerY);
 
       // Divider under headers
       pdf.setDrawColor(200, 200, 200);
@@ -340,9 +340,7 @@ export function DestinyScoreExport() {
       pdf.setFontSize(7);
       pdf.setFont("helvetica", "italic");
       pdf.text(
-        language === "pt"
-          ? "\"Sou o mestre do meu destino, sou o capitão da minha alma.\" — Invictus"
-          : "\"I am the master of my fate, I am the captain of my soul.\" — Invictus",
+        t({ en: "\"I am the master of my fate, I am the captain of my soul.\" — Invictus", pt: "\"Sou o mestre do meu destino, sou o capitão da minha alma.\" — Invictus", es: "\"Soy el amo de mi destino, soy el capitán de mi alma.\" — Invictus" }),
         pageWidth / 2,
         pageHeight - 12,
         { align: "center" }
@@ -377,7 +375,7 @@ export function DestinyScoreExport() {
         ) : (
           <Download className="h-4 w-4" />
         )}
-        {t("Export PDF", "Exportar PDF")}
+        {t({ en: "Export PDF", pt: "Exportar PDF", es: "Exportar PDF" })}
       </Button>
     </>
   );

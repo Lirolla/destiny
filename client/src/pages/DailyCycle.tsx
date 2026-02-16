@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { useAutoAchievementCheck } from "@/hooks/useAchievements";
 import { InvictusFooter } from "@/components/InvictusFooter";
 import { SevenDayReveal, shouldShowSevenDayReveal } from "@/components/SevenDayReveal";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 function interpolateColor(colorLow: string, colorHigh: string, value: number): string {
   const hex = (c: string) => parseInt(c, 16);
@@ -22,14 +23,15 @@ function interpolateColor(colorLow: string, colorHigh: string, value: number): s
   return `rgb(${Math.round(r1 + (r2 - r1) * t)}, ${Math.round(g1 + (g2 - g1) * t)}, ${Math.round(b1 + (b2 - b1) * t)})`;
 }
 
-function getTimeGreeting(): { greeting: string; icon: typeof Sun; period: string } {
+function getTimeGreeting(t: (opts: { en: string; pt: string; es: string }) => string): { greeting: string; icon: typeof Sun; period: string } {
   const hour = new Date().getHours();
-  if (hour < 12) return { greeting: "Good Morning, Pilot", icon: Sun, period: "morning" };
-  if (hour < 17) return { greeting: "Midday Check-In", icon: Clock, period: "midday" };
-  return { greeting: "Evening Reflection", icon: Moon, period: "evening" };
+  if (hour < 12) return { greeting: t({ en: "Good Morning, Pilot", pt: "Bom Dia, Piloto", es: "Buenos Días, Piloto" }), icon: Sun, period: "morning" };
+  if (hour < 17) return { greeting: t({ en: "Midday Check-In", pt: "Check-In do Meio-Dia", es: "Registro de Mediodía" }), icon: Clock, period: "midday" };
+  return { greeting: t({ en: "Evening Reflection", pt: "Reflexão Noturna", es: "Reflexión Nocturna" }), icon: Moon, period: "evening" };
 }
 
 export default function DailyCycle() {
+  const { t } = useLanguage();
   const [phase, setPhase] = useState<"morning" | "midday" | "evening" | "complete">("morning");
   const achievementCheck = useAutoAchievementCheck();
 
@@ -121,20 +123,20 @@ export default function DailyCycle() {
       refetchCycle();
       utils.sliders.getLatestStates.invalidate();
       utils.sliders.getDestinyScore.invalidate();
-      toast.success("Morning calibration complete! ☀️");
+      toast.success(t({ en: "Morning calibration complete! ☀️", pt: "Calibração da manhã completa! ☀️", es: "¡Calibración matutina completa! ☀️" }));
       achievementCheck.onSuccess();
       setPhase("midday");
     },
-    onError: (error) => toast.error(`Failed: ${error.message}`),
+    onError: (error) => toast.error(`${t({ en: "Failed", pt: "Falhou", es: "Falló" })}: ${error.message}`),
   });
 
   const completeMiddayMutation = trpc.dailyCycle.completeMidday.useMutation({
     onSuccess: () => {
       refetchCycle();
-      toast.success("Midday action committed! 🎯");
+      toast.success(t({ en: "Midday action committed! 🎯", pt: "Ação do meio-dia comprometida! 🎯", es: "¡Acción de mediodía comprometida! 🎯" }));
       setPhase("evening");
     },
-    onError: (error) => toast.error(`Failed: ${error.message}`),
+    onError: (error) => toast.error(`${t({ en: "Failed", pt: "Falhou", es: "Falló" })}: ${error.message}`),
   });
 
   const [showSevenDayReveal, setShowSevenDayReveal] = useState(false);
@@ -144,7 +146,7 @@ export default function DailyCycle() {
       refetchCycle();
       utils.sliders.getLatestStates.invalidate();
       utils.sliders.getDestinyScore.invalidate();
-      toast.success("Daily cycle complete! 🌙");
+      toast.success(t({ en: "Daily cycle complete! 🌙", pt: "Ciclo diário completo! 🌙", es: "¡Ciclo diario completo! 🌙" }));
       achievementCheck.onSuccess();
       // Check if this is the 7th consecutive day for the SevenDayReveal
       const { data: history } = trpc.useUtils().dailyCycle.getHistory.getData({ days: 30 }) as any || {};
@@ -175,7 +177,7 @@ export default function DailyCycle() {
       }
       setPhase("complete");
     },
-    onError: (error) => toast.error(`Failed: ${error.message}`),
+    onError: (error) => toast.error(`${t({ en: "Failed", pt: "Falhou", es: "Falló" })}: ${error.message}`),
   });
 
   const recordStateMutation = trpc.sliders.recordState.useMutation({
@@ -196,7 +198,7 @@ export default function DailyCycle() {
 
   const handleMorningComplete = () => {
     if (!axes || axes.length === 0) {
-      toast.error("Create at least one emotional axis first");
+      toast.error(t({ en: "Create at least one emotional axis first", pt: "Crie pelo menos um eixo emocional primeiro", es: "Crea al menos un eje emocional primero" }));
       return;
     }
     const calibrations = axes.map(axis => ({
@@ -208,7 +210,7 @@ export default function DailyCycle() {
 
   const handleMiddayComplete = () => {
     if (!intendedAction.trim()) {
-      toast.error("Enter your intended action");
+      toast.error(t({ en: "Enter your intended action", pt: "Insira sua ação pretendida", es: "Ingresa tu acción prevista" }));
       return;
     }
     // Record midday recalibrations for the 3 lowest axes
@@ -230,7 +232,7 @@ export default function DailyCycle() {
 
   const handleEveningComplete = () => {
     if (!actionTaken.trim() || !observedEffect.trim()) {
-      toast.error("Complete all required fields");
+      toast.error(t({ en: "Complete all required fields", pt: "Preencha todos os campos obrigatórios", es: "Completa todos los campos requeridos" }));
       return;
     }
     // Record evening recalibrations for all axes
@@ -253,14 +255,14 @@ export default function DailyCycle() {
     });
   };
 
-  const { greeting, icon: GreetingIcon } = getTimeGreeting();
+  const { greeting, icon: GreetingIcon } = getTimeGreeting(t);
 
   return (
     <div className="min-h-screen bg-background">
       {showSevenDayReveal && (
         <SevenDayReveal onClose={() => { setShowSevenDayReveal(false); setPhase("complete"); }} />
       )}
-      <PageHeader title="Daily Will Cycle" subtitle={greeting} showBack />
+      <PageHeader title={t({ en: "Daily Will Cycle", pt: "Ciclo Diário de Vontade", es: "Ciclo Diario de Voluntad" })} subtitle={greeting} showBack />
 
       <main className="px-4 py-4 pb-24">
         <div className="max-w-3xl mx-auto space-y-6">
@@ -268,61 +270,40 @@ export default function DailyCycle() {
           {gracePeriod.available && gracePeriod.expiresAt && (
             <Alert className="border-orange-500 bg-orange-50 dark:bg-orange-950/20">
               <AlertCircle className="h-4 w-4 text-orange-600" />
-              <AlertTitle className="text-orange-900 dark:text-orange-100">
-                ⏰ Grace Period Active
-              </AlertTitle>
-              <AlertDescription className="text-orange-800 dark:text-orange-200">
-                Complete yesterday's cycle ({yesterdayDate}) within{" "}
-                <strong>{formatGracePeriodExpiry(gracePeriod.expiresAt)}</strong> to keep your streak.
+              <AlertTitle className="text-orange-700">{t({ en: "Grace Period Active", pt: "Período de Carência Ativo", es: "Período de Gracia Activo" })}</AlertTitle>
+              <AlertDescription className="text-orange-600">
+                {t({ en: "You have a grace period to complete yesterday's cycle and maintain your streak.", pt: "Você tem um período de carência para completar o ciclo de ontem e manter sua sequência.", es: "Tienes un período de gracia para completar el ciclo de ayer y mantener tu racha." })}
+                <div className="mt-2 flex items-center justify-between">
+                  <Button variant="link" className="p-0 h-auto text-orange-700 font-bold" asChild>
+                    <Link href={`/cycle/${yesterdayDate}`}>{t({ en: "Complete Yesterday's Cycle", pt: "Completar Ciclo de Ontem", es: "Completar el Ciclo de Ayer" })}</Link>
+                  </Button>
+                  <span className="text-xs font-medium">{t({ en: "Expires:", pt: "Expira em:", es: "Expira:" })} {formatGracePeriodExpiry(gracePeriod.expiresAt)}</span>
+                </div>
               </AlertDescription>
             </Alert>
           )}
 
-          {/* Phase Indicator */}
-          <div className="flex items-center justify-center gap-2 sm:gap-4">
-            {[
-              { id: "morning", icon: Sun, label: "Morning" },
-              { id: "midday", icon: Clock, label: "Midday" },
-              { id: "evening", icon: Moon, label: "Evening" },
-            ].map((p, i) => {
-              const isActive = phase === p.id;
-              const isDone =
-                (p.id === "morning" && todayCycle?.morningCompletedAt) ||
-                (p.id === "midday" && todayCycle?.middayCompletedAt) ||
-                (p.id === "evening" && todayCycle?.eveningCompletedAt);
-              const Icon = p.icon;
-              return (
-                <div key={p.id} className="flex items-center gap-2 sm:gap-4">
-                  {i > 0 && <div className="h-px w-6 sm:w-12 bg-border" />}
-                  <div
-                    className={`flex items-center gap-1.5 transition-colors ${
-                      isActive
-                        ? "text-primary"
-                        : isDone
-                        ? "text-green-500"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {isDone ? (
-                      <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                    ) : (
-                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                    )}
-                    <span className="text-xs sm:text-sm font-medium">{p.label}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Destiny Score Summary */}
+          {/* Destiny Score */}
           {destinyScore?.score !== null && destinyScore?.score !== undefined && (
-            <div className="text-center text-sm text-muted-foreground">
-              Current Destiny Score:{" "}
-              <span className="font-bold text-foreground">{destinyScore.score}%</span>
-              <span className="mx-1">·</span>
-              {destinyScore.calibratedCount}/{destinyScore.totalAxes} calibrated
-            </div>
+            <Card className="relative overflow-hidden border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-lg">{t({ en: "Your Destiny Score is", pt: "Sua Pontuação de Destino é", es: "Tu Puntuación de Destino es" })}</CardTitle>
+                <CardDescription>
+                  {t({ en: "This score reflects your overall alignment with your defined axes. Calibrate daily to increase it.", pt: "Esta pontuação reflete seu alinhamento geral com seus eixos definidos. Calibre diariamente para aumentá-la.", es: "Esta puntuación refleja tu alineación general con tus ejes definidos. Calibra a diario para aumentarla." })}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center gap-4">
+                  <div className="text-6xl font-bold text-primary tabular-nums">{destinyScore.score}%</div>
+                  <Button asChild>
+                    <Link href="/sliders">
+                      {t({ en: "View Your Axes", pt: "Ver Seus Eixos", es: "Ver Tus Ejes" })}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* ==================== MORNING PHASE ==================== */}
@@ -330,68 +311,59 @@ export default function DailyCycle() {
             <Card className="border-amber-500/20 bg-gradient-to-b from-amber-500/5 to-transparent">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Sun className="h-6 w-6 text-amber-500" />
-                  <CardTitle>Morning Calibration</CardTitle>
+                  <Sun className="h-6 w-6 text-amber-400" />
+                  <CardTitle>{t({ en: "Morning Calibration", pt: "Calibração da Manhã", es: "Calibración Matutina" })}</CardTitle>
                 </div>
                 <CardDescription>
-                  Where are you right now? Calibrate all 15 axes honestly. This is measurement, not journaling.
+                  {t({ en: "Calibrate your emotional axes to set your baseline for the day.", pt: "Calibre seus eixos emocionais para definir sua linha de base para o dia.", es: "Calibra tus ejes emocionales para establecer tu línea de base para el día." })}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-5">
-                {!axes || axes.length === 0 ? (
-                  <div className="text-center py-8 space-y-4">
-                    <p className="text-muted-foreground">No emotional axes found.</p>
+              <CardContent className="space-y-4">
+                {cycleLoading && <p>Loading...</p>}
+                {!cycleLoading && !axes?.length && (
+                  <div className="text-center text-muted-foreground py-8 space-y-4">
+                    <p>{t({ en: "No axes defined yet.", pt: "Nenhum eixo definido ainda.", es: "Aún no has definido ejes." })}</p>
                     <Button asChild>
-                      <Link href="/sliders">Go to Sliders</Link>
+                      <Link href="/sliders/new">{t({ en: "Create Your First Axis", pt: "Crie Seu Primeiro Eixo", es: "Crea Tu Primer Eje" })}</Link>
                     </Button>
                   </div>
-                ) : (
-                  <>
-                    {axes.map((axis) => {
-                      const axisData = axis as any;
-                      const value = morningCalibrations[axis.id] ?? 50;
-                      const colorLow = axisData.colorLow || "#696969";
-                      const colorHigh = axisData.colorHigh || "#22C55E";
-                      const sliderColor = interpolateColor(colorLow, colorHigh, value);
-                      return (
-                        <div key={axis.id} className="space-y-1.5">
-                          <div className="flex justify-between items-center">
-                            <div className="text-sm font-medium flex items-center gap-1.5">
-                              <span>{axisData.emoji || "⚡"}</span>
-                              <span>{axisData.axisName || `${axis.leftLabel} ↔ ${axis.rightLabel}`}</span>
-                            </div>
-                            <div
-                              className="text-sm font-bold tabular-nums px-2 py-0.5 rounded"
-                              style={{ color: sliderColor }}
-                            >
-                              {value}
-                            </div>
-                          </div>
-                          <Slider
-                            value={[value]}
-                            onValueChange={([val]) =>
-                              setMorningCalibrations((prev) => ({ ...prev, [axis.id]: val }))
-                            }
-                            min={0}
-                            max={100}
-                            step={1}
-                          />
-                          <div className="flex justify-between text-[10px] text-muted-foreground">
-                            <span style={{ color: colorLow }}>{axis.leftLabel}</span>
-                            <span style={{ color: colorHigh }}>{axis.rightLabel}</span>
-                          </div>
+                )}
+                {axes?.map((axis) => {
+                  const axisData = axis as any;
+                  const value = morningCalibrations[axis.id] ?? 50;
+                  const colorLow = axisData.colorLow || "#696969";
+                  const colorHigh = axisData.colorHigh || "#22C55E";
+                  const sliderColor = interpolateColor(colorLow, colorHigh, value);
+                  return (
+                    <div key={axis.id} className="space-y-1.5">
+                      <div className="flex justify-between items-center text-xs font-medium">
+                        <div className="flex items-center gap-1.5">
+                          <span>{axisData.emoji || "⚡"}</span>
+                          <span>{axisData.axisName || axis.rightLabel}</span>
                         </div>
-                      );
-                    })}
-                    <Button
-                      className="w-full"
-                      size="lg"
-                      onClick={handleMorningComplete}
-                      disabled={startMorningMutation.isPending}
-                    >
-                      {startMorningMutation.isPending ? "Calibrating..." : "Complete Morning Calibration ☀️"}
-                    </Button>
-                  </>
+                        <span className="font-bold tabular-nums" style={{ color: sliderColor }}>{value}</span>
+                      </div>
+                      <Slider
+                        value={[value]}
+                        onValueChange={([val]) =>
+                          setMorningCalibrations((prev) => ({ ...prev, [axis.id]: val }))
+                        }
+                        min={0}
+                        max={100}
+                        step={1}
+                      />
+                    </div>
+                  );
+                })}
+                {!!axes?.length && (
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={handleMorningComplete}
+                    disabled={startMorningMutation.isPending}
+                  >
+                    {startMorningMutation.isPending ? t({ en: "Calibrating...", pt: "Calibrando...", es: "Calibrando..." }) : t({ en: "Complete Morning Calibration", pt: "Completar Calibração da Manhã", es: "Completar Calibración Matutina" })}
+                  </Button>
                 )}
               </CardContent>
             </Card>
@@ -400,52 +372,46 @@ export default function DailyCycle() {
           {/* ==================== MIDDAY PHASE ==================== */}
           {phase === "midday" && (
             <div className="space-y-4">
-              {/* Lowest 3 Axes Focus */}
-              {lowest3.length > 0 && (
-                <Card className="border-blue-500/20 bg-gradient-to-b from-blue-500/5 to-transparent">
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Target className="h-6 w-6 text-blue-500" />
-                      <CardTitle className="text-lg">Focus Areas</CardTitle>
-                    </div>
-                    <CardDescription>
-                      Your 3 lowest-scoring axes need attention. Recalibrate them after taking action.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+              <Card className="border-sky-500/20 bg-gradient-to-b from-sky-500/5 to-transparent">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-6 w-6 text-sky-400" />
+                    <CardTitle>{t({ en: "Midday Action", pt: "Ação do Meio-Dia", es: "Acción de Mediodía" })}</CardTitle>
+                  </div>
+                  <CardDescription>
+                    {t({ en: "Focus on your 3 lowest-scoring axes. Define a single, decisive action to improve one of them.", pt: "Concentre-se nos seus 3 eixos de menor pontuação. Defina uma única ação decisiva para melhorar um deles.", es: "Concéntrate en tus 3 ejes con la puntuación más baja. Define una única acción decisiva para mejorar uno de ellos." })}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-sm">{t({ en: "Your 3 Lowest-Scoring Axes", pt: "Seus 3 Eixos de Menor Pontuação", es: "Tus 3 Ejes con Menor Puntuación" })}</h4>
+                    {lowest3.map((axis) => (
+                      <div key={axis.id} className="p-3 bg-background rounded-lg border text-sm flex items-center justify-between gap-4">
+                        <span className="font-medium flex items-center gap-2">{axis.emoji || "⚡"} {axis.axisName}</span>
+                        <span className="text-muted-foreground font-bold tabular-nums">{latestStates?.find(s => s.axisId === axis.id)?.value ?? "N/A"}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <h4 className="font-semibold text-sm">{t({ en: "Recalibrate your focus axes based on your intention.", pt: "Recalibre seus eixos de foco com base em sua intenção.", es: "Recalibra tus ejes de enfoque según tu intención." })}</h4>
                     {lowest3.map((axis) => {
                       const axisData = axis as any;
-                      const currentValue = latestStates?.find(s => s.axisId === axis.id)?.value ?? 50;
-                      const newValue = middayCalibrations[axis.id] ?? currentValue;
+                      const value = middayCalibrations[axis.id] ?? 50;
                       const colorLow = axisData.colorLow || "#696969";
                       const colorHigh = axisData.colorHigh || "#22C55E";
-                      const sliderColor = interpolateColor(colorLow, colorHigh, newValue);
-                      const delta = newValue - currentValue;
+                      const sliderColor = interpolateColor(colorLow, colorHigh, value);
                       return (
-                        <div key={axis.id} className="space-y-1.5 p-3 rounded-lg bg-muted/30">
-                          <div className="flex justify-between items-center">
-                            <div className="text-sm font-medium flex items-center gap-1.5">
+                        <div key={axis.id} className="space-y-1.5">
+                          <div className="flex justify-between items-center text-xs font-medium">
+                            <div className="flex items-center gap-1.5">
                               <span>{axisData.emoji || "⚡"}</span>
                               <span>{axisData.axisName || axis.rightLabel}</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-muted-foreground">was {currentValue}</span>
-                              <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                              <span
-                                className="text-sm font-bold tabular-nums"
-                                style={{ color: sliderColor }}
-                              >
-                                {newValue}
-                              </span>
-                              {delta !== 0 && (
-                                <span className={`text-xs font-medium ${delta > 0 ? "text-green-500" : "text-red-400"}`}>
-                                  {delta > 0 ? `+${delta}` : delta}
-                                </span>
-                              )}
-                            </div>
+                            <span className="font-bold tabular-nums" style={{ color: sliderColor }}>{value}</span>
                           </div>
                           <Slider
-                            value={[newValue]}
+                            value={[value]}
                             onValueChange={([val]) =>
                               setMiddayCalibrations((prev) => ({ ...prev, [axis.id]: val }))
                             }
@@ -453,47 +419,26 @@ export default function DailyCycle() {
                             max={100}
                             step={1}
                           />
-                          {axisData.reflectionPrompt && (
-                            <p className="text-xs italic text-muted-foreground mt-1">
-                              "{axisData.reflectionPrompt}"
-                            </p>
-                          )}
                         </div>
                       );
                     })}
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Decisive Action */}
-              <Card className="border-blue-500/20">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-6 w-6 text-blue-500" />
-                    <CardTitle>Decisive Action</CardTitle>
                   </div>
-                  <CardDescription>
-                    Commit to ONE specific action before evening. Not a wish — a command.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
+
+                  <div className="space-y-2 pt-2">
                     <label htmlFor="intended-action" className="text-sm font-medium">
-                      What will you do?
+                      {t({ en: "Intended Action", pt: "Ação Pretendida", es: "Acción Prevista" })}
                     </label>
                     <Textarea
                       id="intended-action"
-                      placeholder="e.g., Walk 15 minutes without my phone, have that difficult conversation, write 500 words..."
+                      placeholder={t({ en: "What single, decisive action will you take before evening to raise one of these axes?", pt: "Que ação única e decisiva você tomará antes da noite para elevar um desses eixos?", es: "¿Qué acción única y decisiva tomarás antes de la noche para elevar uno de estos ejes?" })}
                       value={intendedAction}
                       onChange={(e) => setIntendedAction(e.target.value)}
                       rows={3}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label htmlFor="ai-prompt" className="text-sm font-medium">
-                        AI Decisive Prompt
-                      </label>
+                  <div className="space-y-2 pt-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-sm font-medium">{t({ en: "Need a spark?", pt: "Precisa de uma faísca?", es: "¿Necesitas una chispa?" })}</label>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -501,7 +446,7 @@ export default function DailyCycle() {
                         disabled={promptLoading}
                       >
                         <Sparkles className="h-4 w-4 mr-1" />
-                        {promptLoading ? "Thinking..." : "Generate"}
+                        {promptLoading ? t({ en: "Thinking...", pt: "Pensando...", es: "Pensando..." }) : t({ en: "Generate", pt: "Gerar", es: "Generar" })}
                       </Button>
                     </div>
                     {aiPrompt && (
@@ -516,7 +461,7 @@ export default function DailyCycle() {
                     onClick={handleMiddayComplete}
                     disabled={completeMiddayMutation.isPending}
                   >
-                    {completeMiddayMutation.isPending ? "Committing..." : "Commit to Action 🎯"}
+                    {completeMiddayMutation.isPending ? t({ en: "Committing...", pt: "Confirmando...", es: "Confirmando..." }) : t({ en: "Commit to Action 🎯", pt: "Comprometer-se com a Ação 🎯", es: "Comprometerse a la Acción 🎯" })}
                   </Button>
                 </CardContent>
               </Card>
@@ -531,10 +476,10 @@ export default function DailyCycle() {
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <Moon className="h-6 w-6 text-indigo-400" />
-                    <CardTitle>Evening Recalibration</CardTitle>
+                    <CardTitle>{t({ en: "Evening Recalibration", pt: "Recalibração Noturna", es: "Recalibración Nocturna" })}</CardTitle>
                   </div>
                   <CardDescription>
-                    How have your axes shifted since this morning? Recalibrate to track cause-effect.
+                    {t({ en: "How have your axes shifted since this morning? Recalibrate to track cause-effect.", pt: "Como seus eixos mudaram desde esta manhã? Recalibre para rastrear causa e efeito.", es: "¿Cómo han cambiado tus ejes desde esta mañana? Recalibra para rastrear la causa y el efecto." })}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -585,24 +530,24 @@ export default function DailyCycle() {
               {/* Evening Reflection */}
               <Card className="border-indigo-500/20">
                 <CardHeader>
-                  <CardTitle className="text-lg">Cause-Effect Mapping</CardTitle>
+                  <CardTitle className="text-lg">{t({ en: "Cause-Effect Mapping", pt: "Mapeamento Causa-Efeito", es: "Mapeo Causa-Efecto" })}</CardTitle>
                   <CardDescription>
                     {todayCycle?.intendedAction && (
                       <span className="block mb-2">
-                        Your commitment: <strong className="text-foreground">"{todayCycle.intendedAction}"</strong>
+                        {t({ en: "Your commitment:", pt: "Seu compromisso:", es: "Tu compromiso:" })} <strong className="text-foreground">"{todayCycle.intendedAction}"</strong>
                       </span>
                     )}
-                    Map what happened and what changed.
+                    {t({ en: "Map what happened and what changed.", pt: "Mapeie o que aconteceu e o que mudou.", es: "Mapea lo que sucedió y lo que cambió." })}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="action-taken" className="text-sm font-medium">
-                      What did you actually do?
+                      {t({ en: "What did you actually do?", pt: "O que você realmente fez?", es: "¿Qué hiciste realmente?" })}
                     </label>
                     <Textarea
                       id="action-taken"
-                      placeholder="Describe the action you took (or didn't take)..."
+                      placeholder={t({ en: "Describe the action you took (or didn't take)...", pt: "Descreva a ação que você tomou (ou não tomou)...", es: "Describe la acción que tomaste (o no tomaste)..." })}
                       value={actionTaken}
                       onChange={(e) => setActionTaken(e.target.value)}
                       rows={3}
@@ -610,11 +555,11 @@ export default function DailyCycle() {
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="observed-effect" className="text-sm font-medium">
-                      What was the effect?
+                      {t({ en: "What was the effect?", pt: "Qual foi o efeito?", es: "¿Cuál fue el efecto?" })}
                     </label>
                     <Textarea
                       id="observed-effect"
-                      placeholder="What changed in your state, situation, or relationships?"
+                      placeholder={t({ en: "What changed in your state, situation, or relationships?", pt: "O que mudou em seu estado, situação ou relacionamentos?", es: "¿Qué cambió en tu estado, situación o relaciones?" })}
                       value={observedEffect}
                       onChange={(e) => setObservedEffect(e.target.value)}
                       rows={3}
@@ -622,11 +567,11 @@ export default function DailyCycle() {
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="reflection" className="text-sm font-medium">
-                      Deeper Reflection (Optional)
+                      {t({ en: "Deeper Reflection (Optional)", pt: "Reflexão Mais Profunda (Opcional)", es: "Reflexión Más Profunda (Opcional)" })}
                     </label>
                     <Textarea
                       id="reflection"
-                      placeholder="Any patterns you notice? Connections to your axes?"
+                      placeholder={t({ en: "Any patterns you notice? Connections to your axes?", pt: "Você nota algum padrão? Conexões com seus eixos?", es: "¿Notas algún patrón? ¿Conexiones con tus ejes?" })}
                       value={reflection}
                       onChange={(e) => setReflection(e.target.value)}
                       rows={4}
@@ -638,7 +583,7 @@ export default function DailyCycle() {
                     onClick={handleEveningComplete}
                     disabled={completeEveningMutation.isPending}
                   >
-                    {completeEveningMutation.isPending ? "Completing..." : "Complete Daily Cycle 🌙"}
+                    {completeEveningMutation.isPending ? t({ en: "Completing...", pt: "Completando...", es: "Completando..." }) : t({ en: "Complete Daily Cycle 🌙", pt: "Completar Ciclo Diário 🌙", es: "Completar Ciclo Diario 🌙" })}
                   </Button>
                 </CardContent>
               </Card>
@@ -650,22 +595,22 @@ export default function DailyCycle() {
             <Card className="text-center py-12 border-green-500/20 bg-gradient-to-b from-green-500/5 to-transparent">
               <CardContent className="space-y-4">
                 <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-                <h2 className="text-2xl font-bold">Daily Cycle Complete!</h2>
+                <h2 className="text-2xl font-bold">{t({ en: "Daily Cycle Complete!", pt: "Ciclo Diário Completo!", es: "¡Ciclo Diario Completo!" })}</h2>
                 <p className="text-muted-foreground max-w-sm mx-auto">
-                  You have exercised your free will today. The Pilot is in control.
-                  Return tomorrow to continue building your streak.
+                  {t({ en: "You have exercised your free will today. The Pilot is in control.", pt: "Você exerceu seu livre arbítrio hoje. O Piloto está no controle.", es: "Has ejercido tu libre albedrío hoy. El Piloto está en control." })} 
+                  {t({ en: "Return tomorrow to continue building your streak.", pt: "Volte amanhã para continuar construindo sua sequência.", es: "Vuelve mañana para seguir construyendo tu racha." })}
                 </p>
                 {destinyScore?.score !== null && destinyScore?.score !== undefined && (
                   <div className="text-lg font-bold text-primary">
-                    Destiny Score: {destinyScore.score}%
+                    {t({ en: "Destiny Score:", pt: "Pontuação de Destino:", es: "Puntuación de Destino:" })} {destinyScore.score}%
                   </div>
                 )}
                 <div className="flex gap-4 justify-center pt-4">
                   <Button asChild>
-                    <Link href="/sliders">View Axes</Link>
+                    <Link href="/sliders">{t({ en: "View Axes", pt: "Ver Eixos", es: "Ver Ejes" })}</Link>
                   </Button>
                   <Button variant="outline" asChild>
-                    <Link href="/history">View History</Link>
+                    <Link href="/history">{t({ en: "View History", pt: "Ver Histórico", es: "Ver Historial" })}</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -678,3 +623,4 @@ export default function DailyCycle() {
     </div>
   );
 }
+

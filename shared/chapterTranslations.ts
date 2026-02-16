@@ -18,9 +18,10 @@ export const chapterTitlesPt: Record<number, string> = {
   14: "O Seu Momento Invictus: O Capitão da Sua Alma",
 };
 
-export function getChapterTitle(chapterNumber: number, language: "en" | "pt", englishTitle: string): string {
+export function getChapterTitle(chapterNumber: number, language: "en" | "pt" | "es", englishTitle: string): string {
   if (language === "pt") {
     return chapterTitlesPt[chapterNumber] || englishTitle;
   }
+  // Spanish and English both fall back to English titles
   return englishTitle;
 }

@@ -13,12 +13,14 @@ import {
   shareToLinkedIn,
   copyShareText,
 } from "@/lib/socialShare";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ShareProgressProps {
   summary: ProgressSummary;
 }
 
 export function ShareProgress({ summary }: ShareProgressProps) {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -26,7 +28,7 @@ export function ShareProgress({ summary }: ShareProgressProps) {
     const success = await shareViaWebAPI(summary);
     if (success) {
       setOpen(false);
-      toast.success("Shared successfully!");
+      toast.success(t({ en: "Shared successfully!", pt: "Compartilhado com sucesso!", es: "¡Compartido con éxito!" }));
     }
   };
 
@@ -34,29 +36,29 @@ export function ShareProgress({ summary }: ShareProgressProps) {
     const success = await copyShareText(summary);
     if (success) {
       setCopied(true);
-      toast.success("Copied to clipboard!");
+      toast.success(t({ en: "Copied to clipboard!", pt: "Copiado para a área de transferência!", es: "¡Copiado al portapapeles!" }));
       setTimeout(() => setCopied(false), 2000);
     } else {
-      toast.error("Failed to copy");
+      toast.error(t({ en: "Failed to copy", pt: "Falha ao copiar", es: "Error al copiar" }));
     }
   };
 
   const handleTwitter = () => {
     shareToTwitter(summary);
     setOpen(false);
-    toast.success("Opening Twitter...");
+    toast.success(t({ en: "Opening Twitter...", pt: "Abrindo o Twitter...", es: "Abriendo Twitter..." }));
   };
 
   const handleFacebook = () => {
     shareToFacebook(summary);
     setOpen(false);
-    toast.success("Opening Facebook...");
+    toast.success(t({ en: "Opening Facebook...", pt: "Abrindo o Facebook...", es: "Abriendo Facebook..." }));
   };
 
   const handleLinkedIn = () => {
     shareToLinkedIn(summary);
     setOpen(false);
-    toast.success("Opening LinkedIn...");
+    toast.success(t({ en: "Opening LinkedIn...", pt: "Abrindo o LinkedIn...", es: "Abriendo LinkedIn..." }));
   };
 
   const shareText = generateShareText(summary);
@@ -66,14 +68,14 @@ export function ShareProgress({ summary }: ShareProgressProps) {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Share2 className="h-4 w-4 mr-2" />
-          Share Progress
+          {t({ en: "Share Progress", pt: "Compartilhar Progresso", es: "Compartir Progreso" })}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Share Your Progress</DialogTitle>
+          <DialogTitle>{t({ en: "Share Your Progress", pt: "Compartilhe Seu Progresso", es: "Comparte Tu Progreso" })}</DialogTitle>
           <DialogDescription>
-            Share your anonymized progress summary (no personal emotional data)
+            {t({ en: "Share your anonymized progress summary (no personal emotional data)", pt: "Compartilhe seu resumo de progresso anonimizado (sem dados emocionais pessoais)", es: "Comparte tu resumen de progreso anonimizado (sin datos emocionales personales)" })}
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +99,7 @@ export function ShareProgress({ summary }: ShareProgressProps) {
                 className="w-full"
               >
                 <Share2 className="h-4 w-4 mr-2" />
-                Share
+                {t({ en: "Share", pt: "Compartilhar", es: "Compartir" })}
               </Button>
             )}
 
@@ -109,7 +111,7 @@ export function ShareProgress({ summary }: ShareProgressProps) {
                 size="sm"
               >
                 <Twitter className="h-4 w-4 mr-1" />
-                Twitter
+                {t({ en: "Twitter", pt: "Twitter", es: "Twitter" })}
               </Button>
               <Button
                 onClick={handleFacebook}
@@ -117,7 +119,7 @@ export function ShareProgress({ summary }: ShareProgressProps) {
                 size="sm"
               >
                 <Facebook className="h-4 w-4 mr-1" />
-                Facebook
+                {t({ en: "Facebook", pt: "Facebook", es: "Facebook" })}
               </Button>
               <Button
                 onClick={handleLinkedIn}
@@ -125,7 +127,7 @@ export function ShareProgress({ summary }: ShareProgressProps) {
                 size="sm"
               >
                 <Linkedin className="h-4 w-4 mr-1" />
-                LinkedIn
+                {t({ en: "LinkedIn", pt: "LinkedIn", es: "LinkedIn" })}
               </Button>
             </div>
 
@@ -138,19 +140,19 @@ export function ShareProgress({ summary }: ShareProgressProps) {
               {copied ? (
                 <>
                   <Check className="h-4 w-4 mr-2" />
-                  Copied!
+                  {t({ en: "Copied!", pt: "Copiado!", es: "¡Copiado!" })}
                 </>
               ) : (
                 <>
                   <Copy className="h-4 w-4 mr-2" />
-                  Copy to Clipboard
+                  {t({ en: "Copy to Clipboard", pt: "Copiar para Área de Transferência", es: "Copiar al Portapapeles" })}
                 </>
               )}
             </Button>
           </div>
 
           <p className="text-xs text-muted-foreground text-center">
-            Only aggregate stats are shared. Your specific emotional data remains private.
+            {t({ en: "Only aggregate stats are shared. Your specific emotional data remains private.", pt: "Apenas estatísticas agregadas são compartilhadas. Seus dados emocionais específicos permanecem privados.", es: "Solo se comparten estadísticas agregadas. Tus datos emocionales específicos permanecen privados." })}
           </p>
         </div>
       </DialogContent>

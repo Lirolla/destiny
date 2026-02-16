@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HighlightsSidebarProps {
   pageNumber: number;
@@ -34,6 +35,7 @@ const HIGHLIGHT_COLORS = [
 ] as const;
 
 export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProps) {
+  const { t } = useLanguage();
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [selectedColor, setSelectedColor] = useState<"yellow" | "green" | "blue" | "pink">("yellow");
@@ -52,30 +54,30 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
   const createHighlightMutation = trpc.pdf.createHighlight.useMutation({
     onSuccess: () => {
       utils.pdf.listHighlights.invalidate();
-      toast.success("Highlight added!");
+      toast.success(t({ en: "Highlight added!", pt: "Destaque adicionado!", es: "¡Resaltado agregado!" }));
       setShowAddDialog(false);
       setSelectedText("");
       setNote("");
     },
     onError: (error) => {
-      toast.error(`Failed to add highlight: ${error.message}`);
+      toast.error(t({ en: `Failed to add highlight: ${error.message}`, pt: `Falha ao adicionar destaque: ${error.message}`, es: `Error al agregar el resaltado: ${error.message}` }));
     },
   });
 
   const createAnnotationMutation = trpc.pdf.createAnnotation.useMutation({
     onSuccess: () => {
       utils.pdf.listAnnotations.invalidate();
-      toast.success("Note added!");
+      toast.success(t({ en: "Note added!", pt: "Nota adicionada!", es: "¡Nota agregada!" }));
     },
     onError: (error) => {
-      toast.error(`Failed to add note: ${error.message}`);
+      toast.error(t({ en: `Failed to add note: ${error.message}`, pt: `Falha ao adicionar nota: ${error.message}`, es: `Error al agregar la nota: ${error.message}` }));
     },
   });
 
   const deleteHighlightMutation = trpc.pdf.deleteHighlight.useMutation({
     onSuccess: () => {
       utils.pdf.listHighlights.invalidate();
-      toast.success("Highlight deleted");
+      toast.success(t({ en: "Highlight deleted", pt: "Destaque excluído", es: "Resaltado eliminado" }));
     },
   });
 
@@ -84,7 +86,7 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
     const text = selection?.toString().trim();
     
     if (!text) {
-      toast.error("Please select some text first");
+      toast.error(t({ en: "Please select some text first", pt: "Por favor, selecione um texto primeiro", es: "Por favor, selecciona un texto primero" }));
       return;
     }
     
@@ -118,6 +120,13 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
     return colorConfig || HIGHLIGHT_COLORS[0];
   };
 
+  const translatedColors = {
+    "Yellow": t({ en: "Yellow", pt: "Amarelo", es: "Amarillo" }),
+    "Green": t({ en: "Green", pt: "Verde", es: "Verde" }),
+    "Blue": t({ en: "Blue", pt: "Azul", es: "Azul" }),
+    "Pink": t({ en: "Pink", pt: "Rosa", es: "Rosa" }),
+  };
+
   return (
     <>
       <Card className="w-80 h-full flex flex-col">
@@ -125,9 +134,9 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               <Highlighter className="h-5 w-5" />
-              Highlights
+              {t({ en: "Highlights", pt: "Destaques", es: "Resaltados" })}
             </CardTitle>
-            <CardDescription>Page {pageNumber}</CardDescription>
+            <CardDescription>{t({ en: `Page ${pageNumber}`, pt: `Página ${pageNumber}`, es: `Página ${pageNumber}` })}</CardDescription>
           </div>
           {onClose && (
             <Button variant="ghost" size="icon" onClick={onClose}>
@@ -144,13 +153,13 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
             variant="outline"
           >
             <Plus className="h-4 w-4" />
-            Add Highlight
+            {t({ en: "Add Highlight", pt: "Adicionar Destaque", es: "Agregar Resaltado" })}
           </Button>
 
           {/* Highlights List */}
           {isLoading ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              Loading highlights...
+              {t({ en: "Loading highlights...", pt: "Carregando destaques...", es: "Cargando resaltados..." })}
             </p>
           ) : highlights && highlights.length > 0 ? (
             <div className="space-y-3">
@@ -173,7 +182,7 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
                       {/* Actions */}
                       <div className="flex items-center justify-between">
                         <Badge variant="outline" className="text-xs">
-                          {colorClasses.label}
+                          {translatedColors[colorClasses.label as keyof typeof translatedColors]}
                         </Badge>
                         <div className="flex gap-1">
                           <Button
@@ -183,12 +192,12 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
                             onClick={() => {
                               // Create flashcard from highlight
                               const front = highlight.selectedText;
-                              const back = highlightAnnotations?.[0]?.note || "(Add your answer)";
+                              const back = highlightAnnotations?.[0]?.note || t({ en: "(Add your answer)", pt: "(Adicione sua resposta)", es: "(Agrega tu respuesta)" });
                               
                               // Navigate to flashcards with pre-filled data
                               window.location.href = `/flashcards?create=true&front=${encodeURIComponent(front)}&back=${encodeURIComponent(back)}&page=${pageNumber}`;
                             }}
-                            title="Create Flashcard"
+                            title={t({ en: "Create Flashcard", pt: "Criar Flashcard", es: "Crear Tarjeta" })}
                           >
                             <Brain className="h-3 w-3" />
                           </Button>
@@ -199,7 +208,7 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
                             onClick={() => deleteHighlightMutation.mutate({ 
                               highlightId: highlight.id 
                             })}
-                            title="Delete Highlight"
+                            title={t({ en: "Delete Highlight", pt: "Excluir Destaque", es: "Eliminar Resaltado" })}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -228,10 +237,10 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
             <div className="text-center py-8">
               <Highlighter className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
               <p className="text-sm text-muted-foreground">
-                No highlights on this page yet
+                {t({ en: "No highlights on this page yet", pt: "Nenhum destaque nesta página ainda", es: "Aún no hay resaltados en esta página" })}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Select text and click "Add Highlight"
+                {t({ en: 'Select text and click "Add Highlight"', pt: 'Selecione o texto e clique em "Adicionar Destaque"', es: 'Selecciona texto y haz clic en "Agregar Resaltado"' })}
               </p>
             </div>
           )}
@@ -242,16 +251,16 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Highlight</DialogTitle>
+            <DialogTitle>{t({ en: "Add Highlight", pt: "Adicionar Destaque", es: "Agregar Resaltado" })}</DialogTitle>
             <DialogDescription>
-              Choose a color and optionally add a note
+              {t({ en: "Choose a color and optionally add a note", pt: "Escolha uma cor e opcionalmente adicione uma nota", es: "Elige un color y opcionalmente agrega una nota" })}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             {/* Selected Text Preview */}
             <div className="p-3 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-1">Selected text:</p>
+              <p className="text-sm font-medium mb-1">{t({ en: "Selected text:", pt: "Texto selecionado:", es: "Texto seleccionado:" })}</p>
               <p className="text-sm text-muted-foreground line-clamp-4">
                 "{selectedText}"
               </p>
@@ -259,7 +268,7 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
 
             {/* Color Picker */}
             <div>
-              <p className="text-sm font-medium mb-2">Highlight Color:</p>
+              <p className="text-sm font-medium mb-2">{t({ en: "Highlight Color:", pt: "Cor do Destaque:", es: "Color del Resaltado:" })}</p>
               <div className="flex gap-2">
                 {HIGHLIGHT_COLORS.map((color) => (
                   <button
@@ -271,7 +280,7 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
                         : "border-transparent"
                     } ${color.bg} ${color.text}`}
                   >
-                    <div className="text-xs font-medium">{color.label}</div>
+                    <div className="text-xs font-medium">{translatedColors[color.label as keyof typeof translatedColors]}</div>
                   </button>
                 ))}
               </div>
@@ -279,11 +288,11 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
 
             {/* Note Input */}
             <div>
-              <p className="text-sm font-medium mb-2">Add Note (optional):</p>
+              <p className="text-sm font-medium mb-2">{t({ en: "Add Note (optional):", pt: "Adicionar Nota (opcional):", es: "Agregar Nota (opcional):" })}</p>
               <Textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Add your thoughts or comments..."
+                placeholder={t({ en: "Add your thoughts or comments...", pt: "Adicione seus pensamentos ou comentários...", es: "Añade tus pensamientos o comentarios..." })}
                 rows={3}
               />
             </div>
@@ -298,13 +307,13 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
                   setNote("");
                 }}
               >
-                Cancel
+                {t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}
               </Button>
               <Button
                 onClick={handleSaveHighlight}
                 disabled={createHighlightMutation.isPending}
               >
-                {createHighlightMutation.isPending ? "Saving..." : "Save Highlight"}
+                {createHighlightMutation.isPending ? t({ en: "Saving...", pt: "Salvando...", es: "Guardando..." }) : t({ en: "Save Highlight", pt: "Salvar Destaque", es: "Guardar Resaltado" })}
               </Button>
             </div>
           </div>

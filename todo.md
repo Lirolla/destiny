@@ -1405,3 +1405,18 @@
 - [x] Build persistent "Now Playing" mini-player bar (AudiobookMiniPlayer.tsx, integrated in AppShell)
 - [x] Write 27 vitest tests (phase75-followups.test.ts)
 - [x] Save checkpoint
+
+## Phase 76: Full Multi-Language Support (EN/PT/ES)
+- [x] TASK 1: Refactor LanguageContext.tsx — new t() signature, add "es", auto-detect device language
+- [x] TASK 1E: Migrate all ~409 existing t() calls to new object format + add Spanish (19 files via parallel subtasks)
+- [x] TASK 2: Translate 17 untranslated pages (32 files via parallel subtasks)
+- [x] TASK 3: Translate 15 untranslated components (included in parallel batch)
+- [x] TASK 4: Onboarding language selection — Duolingo-style Step 0 with flag cards
+- [x] TASK 5: Settings bottom sheet language picker with flag cards and checkmarks
+- [x] TASK 6: Audiobook Spanish handling — audioLang fallback to EN, info banner shown
+- [x] TASK 7: Password reset email — Spanish template added, language passed from forgotPassword
+- [x] TASK 8: Landing page + Auth page globe dropdown (GlobeLanguageDropdown.tsx)
+- [x] AXES array in LandingPage.tsx has Spanish translations
+- [x] PrayerJournal.tsx fully translated (was missed by parallel batch)
+- [x] Write 40 vitest tests (phase76-multilang.test.ts)
+- [x] Save checkpoint

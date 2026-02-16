@@ -66,7 +66,7 @@ export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.5 }}
           >
-            "{t("One week ago, you began.", "Há uma semana, começaste.")}"
+            "{t({ en: "One week ago, you began.", pt: "Há uma semana, começaste.", es: "Hace una semana, comenzaste." })}"
           </motion.p>
 
           {/* Stage 1: Seven mornings */}
@@ -77,10 +77,7 @@ export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5 }}
             >
-              "{t(
-                "Seven mornings. Seven calibrations. Seven conscious choices to show up and exercise your will.",
-                "Sete manhãs. Sete calibrações. Sete escolhas conscientes de aparecer e exercer a tua vontade."
-              )}"
+              "{t({ en: "Seven mornings. Seven calibrations. Seven conscious choices to show up and exercise your will.", pt: "Sete manhãs. Sete calibrações. Sete escolhas conscientes de aparecer e exercer a tua vontade.", es: "Siete mañanas. Siete calibraciones. Siete elecciones conscientes para presentarte y ejercer tu voluntad." })}"
             </motion.p>
           )}
 
@@ -149,7 +146,7 @@ export function SevenDayReveal({ onClose }: SevenDayRevealProps) {
                 size="lg"
                 className="bg-[#01D98D] hover:bg-[#01D98D]/90 text-black font-semibold text-lg px-8 py-6"
               >
-                {t("Continue the Journey", "Continuar a Jornada")}
+                {t({ en: "Continue the Journey", pt: "Continuar a Jornada", es: "Continuar la Jornada" })}
               </Button>
 
               {/* Invictus quote at the bottom */}

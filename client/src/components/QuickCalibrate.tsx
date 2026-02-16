@@ -83,10 +83,10 @@ export function QuickCalibrate({ open, onClose }: QuickCalibrateProps) {
         <div className="flex items-center justify-between px-5 pb-3">
           <div>
             <h3 className="text-base font-bold text-foreground">
-              {t("Quick Calibrate", "Calibração Rápida")}
+              {t({ en: "Quick Calibrate", pt: "Calibração Rápida", es: "Calibración Rápida" })}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {t("Adjust your 3 lowest axes", "Ajuste seus 3 eixos mais baixos")}
+              {t({ en: "Adjust your 3 lowest axes", pt: "Ajuste seus 3 eixos mais baixos", es: "Ajusta tus 3 ejes más bajos" })}
             </p>
           </div>
           <button
@@ -129,7 +129,7 @@ export function QuickCalibrate({ open, onClose }: QuickCalibrateProps) {
                 <span className="text-[9px] text-muted-foreground w-14 truncate">{axis.rightLabel}</span>
               </div>
               {saved[axis.axisId] && (
-                <p className="text-[10px] text-primary text-center">✓ {t("Saved", "Salvo")}</p>
+                <p className="text-[10px] text-primary text-center">✓ {t({ en: "Saved", pt: "Salvo", es: "Guardado" })}</p>
               )}
             </div>
           ))}
@@ -141,7 +141,7 @@ export function QuickCalibrate({ open, onClose }: QuickCalibrateProps) {
             onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
           >
-            {t("Cancel", "Cancelar")}
+            {t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}
           </button>
           <button
             onClick={handleSaveAll}
@@ -152,7 +152,7 @@ export function QuickCalibrate({ open, onClose }: QuickCalibrateProps) {
               <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
             ) : (
               <>
-                {t("Save All", "Salvar Tudo")}
+                {t({ en: "Save All", pt: "Salvar Tudo", es: "Guardar Todo" })}
                 <ChevronRight className="w-3.5 h-3.5" />
               </>
             )}

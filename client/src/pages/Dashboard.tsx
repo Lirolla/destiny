@@ -12,8 +12,10 @@ import { DestinyRadarChart } from "@/components/DestinyRadarChart";
 import { InvictusFooter } from "@/components/InvictusFooter";
 import { DoctrineCard } from "@/components/DoctrineCard";
 import { DestinyScoreExport } from "@/components/DestinyScoreExport";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   // Guest users are auto-created
 
   // Fetch data
@@ -61,10 +63,10 @@ export default function Dashboard() {
   // Time-of-day greeting
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  }, []);
+    if (hour < 12) return t({ en: "Good Morning", pt: "Bom Dia", es: "Buenos Días" });
+    if (hour < 17) return t({ en: "Good Afternoon", pt: "Boa Tarde", es: "Buenas Tardes" });
+    return t({ en: "Good Evening", pt: "Boa Noite", es: "Buenas Noches" });
+  }, [t]);
 
   // Calculate streak
   const calculateStreak = () => {
@@ -103,7 +105,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageHeader title="Command Bridge" subtitle="Master your free will" showBack />
+      <PageHeader title={t({ en: "Command Bridge", pt: "Ponte de Comando", es: "Puente de Mando" })} subtitle={t({ en: "Master your free will", pt: "Domine seu livre arbítrio", es: "Domina tu libre albedrío" })} showBack />
 
       {/* Main Content */}
       <main className="px-4 py-4 space-y-4 pb-24">
@@ -114,13 +116,13 @@ export default function Dashboard() {
           </h2>
           {destinyScore?.score !== null && destinyScore?.score !== undefined ? (
             <p className="text-sm text-muted-foreground mt-1">
-              Your Free Will is operating at <strong className="text-primary">{destinyScore.score}%</strong>.
-              {streak > 0 && <> Day <strong className="text-primary">{streak}</strong> of your streak.</>}
-              {lowestAxis && <> Your lowest axis today is {(lowestAxis as any).emoji} <strong>{(lowestAxis as any).rightLabel}</strong> — what will you do about it?</>}
+              {t({ en: "Your Free Will is operating at", pt: "Seu Livre Arbítrio está operando em", es: "Tu Libre Albedrío está operando al" })} <strong className="text-primary">{destinyScore.score}%</strong>.
+              {streak > 0 && <> {t({ en: "Day", pt: "Dia", es: "Día" })} <strong className="text-primary">{streak}</strong> {t({ en: "of your streak.", pt: "da sua sequência.", es: "de tu racha." })}</>}
+              {lowestAxis && <> {t({ en: "Your lowest axis today is", pt: "Seu eixo mais baixo hoje é", es: "Tu eje más bajo hoy es" })} {(lowestAxis as any).emoji} <strong>{(lowestAxis as any).rightLabel}</strong> — {t({ en: "what will you do about it?", pt: "o que você fará a respeito?", es: "¿qué harás al respecto?" })}</>}
             </p>
           ) : (
             <p className="text-sm text-muted-foreground mt-1">
-              Begin your journey to becoming the captain of your soul.
+              {t({ en: "Begin your journey to becoming the captain of your soul.", pt: "Comece sua jornada para se tornar o capitão de sua alma.", es: "Comienza tu viaje para convertirte en el capitán de tu alma." })}
             </p>
           )}
         </div>
@@ -139,7 +141,7 @@ export default function Dashboard() {
                     "{(lowestAxis as any).reflectionPrompt}"
                   </p>
                   <p className="text-xs text-muted-foreground mt-2">
-                    — {(lowestAxis as any).name || `${(lowestAxis as any).leftLabel} ↔ ${(lowestAxis as any).rightLabel}`} · Score: {(lowestAxis as any).value}/100
+                    — {(lowestAxis as any).name || `${(lowestAxis as any).leftLabel} ↔ ${(lowestAxis as any).rightLabel}`} · {t({ en: "Score", pt: "Pontuação", es: "Puntuación" })}: {(lowestAxis as any).value}/100
                   </p>
                 </div>
               </div>
@@ -155,34 +157,34 @@ export default function Dashboard() {
                   {checkInStatus.period === 'morning' && !checkInStatus.morningDone && (
                     <><Sun className="h-6 w-6 text-amber-500" />
                     <div>
-                      <p className="font-medium text-sm">Morning Calibration Awaits</p>
-                      <p className="text-xs text-muted-foreground">Start your day by calibrating all 15 axes</p>
+                      <p className="font-medium text-sm">{t({ en: "Morning Calibration Awaits", pt: "Calibração Matinal Aguarda", es: "Calibración Matutina Pendiente" })}</p>
+                      <p className="text-xs text-muted-foreground">{t({ en: "Start your day by calibrating all 15 axes", pt: "Comece seu dia calibrando todos os 15 eixos", es: "Empieza tu día calibrando los 15 ejes" })}</p>
                     </div></>
                   )}
                   {checkInStatus.period === 'midday' && checkInStatus.morningDone && !checkInStatus.middayDone && (
                     <><Target className="h-6 w-6 text-blue-500" />
                     <div>
-                      <p className="font-medium text-sm">Midday Focus Time</p>
-                      <p className="text-xs text-muted-foreground">Recalibrate your 3 lowest axes & commit to action</p>
+                      <p className="font-medium text-sm">{t({ en: "Midday Focus Time", pt: "Momento de Foco do Meio-dia", es: "Tiempo de Enfoque de Mediodía" })}</p>
+                      <p className="text-xs text-muted-foreground">{t({ en: "Recalibrate your 3 lowest axes & commit to action", pt: "Recalibre seus 3 eixos mais baixos e comprometa-se com a ação", es: "Recalibra tus 3 ejes más bajos y comprométete a la acción" })}</p>
                     </div></>
                   )}
                   {checkInStatus.period === 'evening' && checkInStatus.middayDone && !checkInStatus.eveningDone && (
                     <><Moon className="h-6 w-6 text-indigo-400" />
                     <div>
-                      <p className="font-medium text-sm">Evening Reflection</p>
-                      <p className="text-xs text-muted-foreground">Map cause-effect and complete your cycle</p>
+                      <p className="font-medium text-sm">{t({ en: "Evening Reflection", pt: "Reflexão Noturna", es: "Reflexión Nocturna" })}</p>
+                      <p className="text-xs text-muted-foreground">{t({ en: "Map cause-effect and complete your cycle", pt: "Mapeie causa-efeito e complete seu ciclo", es: "Mapa causa-efecto y completa tu ciclo" })}</p>
                     </div></>
                   )}
                   {!checkInStatus.cycleExists && (
                     <><Sun className="h-6 w-6 text-amber-500" />
                     <div>
-                      <p className="font-medium text-sm">Start Today's Cycle</p>
-                      <p className="text-xs text-muted-foreground">Begin with your morning calibration</p>
+                      <p className="font-medium text-sm">{t({ en: "Start Today's Cycle", pt: "Comece o Ciclo de Hoje", es: "Comenzar el Ciclo de Hoy" })}</p>
+                      <p className="text-xs text-muted-foreground">{t({ en: "Begin with your morning calibration", pt: "Comece com sua calibração matinal", es: "Empieza con tu calibración matutina" })}</p>
                     </div></>
                   )}
                 </div>
                 <Button size="sm" asChild>
-                  <Link href="/daily-cycle">Go</Link>
+                  <Link href="/daily-cycle">{t({ en: "Go", pt: "Ir", es: "Ir" })}</Link>
                 </Button>
               </div>
             </CardContent>
@@ -195,8 +197,8 @@ export default function Dashboard() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-lg">Destiny Score</CardTitle>
-                  <CardDescription>Your overall free will mastery</CardDescription>
+                  <CardTitle className="text-lg">{t({ en: "Destiny Score", pt: "Pontuação de Destino", es: "Puntuación de Destino" })}</CardTitle>
+                  <CardDescription>{t({ en: "Your overall free will mastery", pt: "Seu domínio geral do livre arbítrio", es: "Tu dominio general del libre albedrío" })}</CardDescription>
                 </div>
                 <div className="text-3xl font-bold text-primary">{destinyScore.score}%</div>
               </div>
@@ -212,7 +214,7 @@ export default function Dashboard() {
 
         {/* Stats Overview */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Your Progress</h2>
+          <h2 className="text-xl font-semibold">{t({ en: "Your Progress", pt: "Seu Progresso", es: "Tu Progreso" })}</h2>
           <ShareProgress
             summary={{
               weekStreak: streak,
@@ -228,238 +230,77 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Daily Streak</CardTitle>
+              <CardTitle className="text-sm font-medium">{t({ en: "Daily Streak", pt: "Sequência Diária", es: "Racha Diaria" })}</CardTitle>
               <Flame className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{streak} days</div>
+              <div className="text-2xl font-bold">{t({ en: `${streak} days`, pt: `${streak} dias`, es: `${streak} días` })}</div>
               <p className="text-xs text-muted-foreground">
-                {streak > 0 ? "Keep going!" : "Start today"}
+                {streak > 0 ? t({ en: "Keep going!", pt: "Continue assim!", es: "¡Sigue así!" }) : t({ en: "Start today", pt: "Comece hoje", es: "Empieza hoy" })}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Emotional Axes</CardTitle>
+              <CardTitle className="text-sm font-medium">{t({ en: "Emotional Axes", pt: "Eixos Emocionais", es: "Ejes Emocionales" })}</CardTitle>
               <Gauge className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{axes?.length || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Active dimensions
-              </p>
+              <p className="text-xs text-muted-foreground">{t({ en: "Total Axes", pt: "Eixos Totais", es: "Ejes Totales" })}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Completed Cycles</CardTitle>
+              <CardTitle className="text-sm font-medium">{t({ en: "Modules Completed", pt: "Módulos Concluídos", es: "Módulos Completados" })}</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {recentCycles?.filter(c => c.isComplete).length || 0}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Last 30 days
-              </p>
+              <div className="text-2xl font-bold">{modulesCompleted}</div>
+              <p className="text-xs text-muted-foreground">{t({ en: "Keep learning", pt: "Continue aprendendo", es: "Sigue aprendiendo" })}</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">New Insights</CardTitle>
-              <Brain className="h-4 w-4 text-purple-500" />
+              <CardTitle className="text-sm font-medium">{t({ en: "Cycles Completed", pt: "Ciclos Concluídos", es: "Ciclos Completados" })}</CardTitle>
+              <Calendar className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{unreadInsights}</div>
-              <p className="text-xs text-muted-foreground">
-                Unread observations
-              </p>
+              <div className="text-2xl font-bold">{recentCycles?.filter(c => c.isComplete).length || 0}</div>
+              <p className="text-xs text-muted-foreground">{t({ en: "In the last 30 days", pt: "Nos últimos 30 dias", es: "En los últimos 30 días" })}</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Today's Cycle Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Today's Practice</CardTitle>
-            <CardDescription>Your daily will cycle progress</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!todayCycle ? (
-              <div className="text-center py-8 space-y-4">
-                <p className="text-muted-foreground">You haven't started today's cycle yet.</p>
-                <Button asChild>
-                  <Link href="/daily-cycle">Start Morning Calibration</Link>
-                </Button>
-              </div>
-            ) : todayCycle.isComplete ? (
-              <div className="text-center py-8 space-y-4">
-                <CheckCircle2 className="h-12 w-12 text-primary mx-auto" />
-                <div>
-                  <p className="font-medium">Today's cycle complete!</p>
-                  <p className="text-sm text-muted-foreground">
-                    You've operationalized your free will today.
-                  </p>
-                </div>
-                <Button variant="outline" asChild>
-                  <Link href="/insights">View Insights</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className={`flex-1 h-2 rounded-full ${todayCycle.morningCompletedAt ? 'bg-primary' : 'bg-muted'}`} />
-                  <div className={`flex-1 h-2 rounded-full ${todayCycle.middayCompletedAt ? 'bg-primary' : 'bg-muted'}`} />
-                  <div className={`flex-1 h-2 rounded-full ${todayCycle.eveningCompletedAt ? 'bg-primary' : 'bg-muted'}`} />
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className={todayCycle.morningCompletedAt ? 'text-primary' : 'text-muted-foreground'}>
-                    Morning ✓
-                  </span>
-                  <span className={todayCycle.middayCompletedAt ? 'text-primary' : 'text-muted-foreground'}>
-                    Midday {todayCycle.middayCompletedAt ? '✓' : ''}
-                  </span>
-                  <span className={todayCycle.eveningCompletedAt ? 'text-primary' : 'text-muted-foreground'}>
-                    Evening {todayCycle.eveningCompletedAt ? '✓' : ''}
-                  </span>
-                </div>
-                <Button className="w-full" asChild>
-                  <Link href="/daily-cycle">Continue Cycle</Link>
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Emotional State Overview */}
-        {latestStates && latestStates.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Current Emotional State</CardTitle>
-              <CardDescription>Latest calibrations across all axes</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {latestStates.map((state) => {
-                  const axis = axes?.find(a => a.id === state.axisId);
-                  if (!axis) return null;
-
-                  return (
-                    <div key={state.id} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">
-                          {axis.leftLabel} ← → {axis.rightLabel}
-                        </span>
-                        <span className="text-primary font-bold">{state.value}</span>
-                      </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary transition-all"
-                          style={{ width: `${state.value}%` }}
-                        />
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Last updated: {new Date(state.clientTimestamp).toLocaleDateString()}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Emotional Trends Chart */}
-        <SliderHistoryChart />
-
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <Link href="/sliders">
-            <Card className="hover:border-primary transition-colors cursor-pointer">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <Gauge className="h-5 w-5 text-primary" />
-                </div>
-                <CardTitle className="text-base">Emotional Sliders</CardTitle>
-                <CardDescription className="text-xs">
-                  Calibrate your current state
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/daily-cycle">
-            <Card className="hover:border-primary transition-colors cursor-pointer">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <Calendar className="h-5 w-5 text-primary" />
-                </div>
-                <CardTitle className="text-base">Daily Cycle</CardTitle>
-                <CardDescription className="text-xs">
-                  Morning → Midday → Evening
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/insights">
-            <Card className="hover:border-primary transition-colors cursor-pointer">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <Brain className="h-5 w-5 text-primary" />
-                </div>
-                <CardTitle className="text-base">AI Insights</CardTitle>
-                <CardDescription className="text-xs">
-                  Pattern analysis & strategy
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/inner-circle">
-            <Card className="hover:border-primary transition-colors cursor-pointer">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <Users className="h-5 w-5 text-primary" />
-                </div>
-                <CardTitle className="text-base">Inner Circle</CardTitle>
-                <CardDescription className="text-xs">
-                  Connections & accountability
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/monthly-report">
-            <Card className="hover:border-primary transition-colors cursor-pointer">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                </div>
-                <CardTitle className="text-base">Monthly Report</CardTitle>
-                <CardDescription className="text-xs">
-                  Before & after comparison
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/settings">
-            <Card className="hover:border-primary transition-colors cursor-pointer">
-              <CardHeader>
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
-                  <Settings className="h-5 w-5 text-primary" />
-                </div>
-                <CardTitle className="text-base">Settings</CardTitle>
-                <CardDescription className="text-xs">
-                  Notifications & preferences
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
+        <div className="grid grid-cols-2 gap-4 pt-4">
+            <Link href="/daily-cycle">
+                <Button variant="outline" className="w-full h-full flex flex-col items-center justify-center py-4">
+                    <Sun className="h-6 w-6 mb-2 text-amber-500" />
+                    <span className="text-center text-sm font-medium">{t({ en: "Daily Cycle", pt: "Ciclo Diário", es: "Ciclo Diario" })}</span>
+                </Button>
+            </Link>
+            <Link href="/axes">
+                <Button variant="outline" className="w-full h-full flex flex-col items-center justify-center py-4">
+                    <Gauge className="h-6 w-6 mb-2 text-primary" />
+                    <span className="text-center text-sm font-medium">{t({ en: "View All Axes", pt: "Ver Todos os Eixos", es: "Ver Todos los Ejes" })}</span>
+                </Button>
+            </Link>
+            <Link href="/modules">
+                <Button variant="outline" className="w-full h-full flex flex-col items-center justify-center py-4">
+                    <Brain className="h-6 w-6 mb-2 text-teal-500" />
+                    <span className="text-center text-sm font-medium">{t({ en: "Explore Modules", pt: "Explorar Módulos", es: "Explorar Módulos" })}</span>
+                </Button>
+            </Link>
+            <Link href="/community">
+                <Button variant="outline" className="w-full h-full flex flex-col items-center justify-center py-4">
+                    <Users className="h-6 w-6 mb-2 text-rose-500" />
+                    <span className="text-center text-sm font-medium">{t({ en: "Community", pt: "Comunidade", es: "Comunidad" })}</span>
+                </Button>
+            </Link>
         </div>
 
         {/* Recent Insights */}
@@ -468,37 +309,73 @@ export default function Dashboard() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Recent Insights</CardTitle>
-                  <CardDescription>AI-generated observations</CardDescription>
+                  <CardTitle>{t({ en: "Recent Insights", pt: "Insights Recentes", es: "Perspectivas Recientes" })}</CardTitle>
+                  <CardDescription>{t({ en: "Your latest learnings from calibration", pt: "Seus últimos aprendizados da calibração", es: "Tus últimos aprendizajes de la calibración" })}</CardDescription>
                 </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/insights">View All</Link>
-                </Button>
+                {unreadInsights > 0 && (
+                  <div className="text-sm font-medium text-primary bg-primary/10 px-2 py-1 rounded-md">
+                    {t({ en: `${unreadInsights} New`, pt: `${unreadInsights} Novos`, es: `${unreadInsights} Nuevos` })}
+                  </div>
+                )}
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {insights.slice(0, 3).map((insight) => (
-                  <div key={insight.id} className="p-3 bg-muted rounded-lg">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <div className="font-medium text-sm mb-1">{insight.title}</div>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {insight.content}
-                        </p>
+              <ul className="space-y-3">
+                {insights.map(insight => (
+                  <li key={insight.id}>
+                    <Link href={`/insights/${insight.id}`}>
+                      <div className={`p-3 rounded-lg transition-colors ${insight.isRead ? 'bg-secondary/50' : 'bg-primary/10 hover:bg-primary/20'}`}>
+                        <div className="flex items-center justify-between">
+                          <p className={`font-medium text-sm ${!insight.isRead && 'text-primary'}`}>{insight.title}</p>
+                          {!insight.isRead && <div className="h-2 w-2 rounded-full bg-primary"></div>}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">{new Date(insight.createdAt).toLocaleDateString()}</p>
                       </div>
-                      {!insight.isRead && (
-                        <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1" />
-                      )}
-                    </div>
-                  </div>
+                    </Link>
+                  </li>
                 ))}
+              </ul>
+              <div className="mt-4 flex justify-end">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/insights">{t({ en: "View All Insights", pt: "Ver Todos os Insights", es: "Ver Todas las Perspectivas" })}</Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
+
+        {/* 30-Day History */}
+        {recentCycles && recentCycles.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t({ en: "30-Day Calibration History", pt: "Histórico de Calibração de 30 Dias", es: "Historial de Calibración de 30 Días" })}</CardTitle>
+              <CardDescription>{t({ en: "Your progress over the last month", pt: "Seu progresso no último mês", es: "Tu progreso durante el último mes" })}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SliderHistoryChart />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Settings Link */}
+        <Card className="mt-6">
+          <CardContent className="py-4">
+            <Link href="/settings">
+              <div className="flex items-center justify-between cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <Settings className="h-6 w-6 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">{t({ en: "Settings", pt: "Configurações", es: "Ajustes" })}</p>
+                    <p className="text-sm text-muted-foreground">{t({ en: "Fine-tune your Destiny Hacking experience.", pt: "Ajuste sua experiência no Destiny Hacking.", es: "Ajusta tu experiencia en Destiny Hacking." })}</p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <InvictusFooter />
       </main>
-      <InvictusFooter />
     </div>
   );
 }

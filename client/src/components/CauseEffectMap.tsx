@@ -46,10 +46,7 @@ export function CauseEffectMap({ cycles, patterns }: CauseEffectMapProps) {
     return (
       <Card className="p-6 text-center">
         <p className="text-muted-foreground text-sm">
-          {t(
-            "Complete daily cycles with actions and observed effects to see your cause-effect map.",
-            "Complete ciclos diários com ações e efeitos observados para ver seu mapa de causa-efeito."
-          )}
+          {t({ en: "Complete daily cycles with actions and observed effects to see your cause-effect map.", pt: "Complete ciclos diários com ações e efeitos observados para ver seu mapa de causa-efeito.", es: "Completa ciclos diarios con acciones y efectos observados para ver tu mapa de causa-efecto." })}
         </p>
       </Card>
     );
@@ -62,7 +59,7 @@ export function CauseEffectMap({ cycles, patterns }: CauseEffectMapProps) {
           <span className="text-xs">🔗</span>
         </div>
         <h4 className="font-bold text-base">
-          {t("Cause → Effect Map", "Mapa Causa → Efeito")}
+          {t({ en: "Cause → Effect Map", pt: "Mapa Causa → Efeito", es: "Mapa Causa → Efecto" })}
         </h4>
       </div>
 
@@ -81,7 +78,7 @@ export function CauseEffectMap({ cycles, patterns }: CauseEffectMapProps) {
               {/* Action (cause) */}
               <div className="bg-muted/40 rounded-lg p-3 border-l-2 border-blue-500/50">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-400/80 mb-1">
-                  {t("Action", "Ação")}
+                  {t({ en: "Action", pt: "Ação", es: "Acción" })}
                 </p>
                 <p className="text-sm text-foreground leading-relaxed">{entry.action}</p>
               </div>
@@ -94,7 +91,7 @@ export function CauseEffectMap({ cycles, patterns }: CauseEffectMapProps) {
               {/* Effect */}
               <div className="bg-[#01D98D]/5 rounded-lg p-3 border-l-2 border-[#01D98D]/50">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-[#01D98D]/80 mb-1">
-                  {t("Observed Effect", "Efeito Observado")}
+                  {t({ en: "Observed Effect", pt: "Efeito Observado", es: "Efecto Observado" })}
                 </p>
                 <p className="text-sm text-foreground leading-relaxed">{entry.effect}</p>
               </div>
@@ -110,7 +107,7 @@ export function CauseEffectMap({ cycles, patterns }: CauseEffectMapProps) {
             <span className="text-lg mt-0.5">🧠</span>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-400/80 mb-1">
-                {t("AI Pattern Analysis", "Análise de Padrões IA")}
+                {t({ en: "AI Pattern Analysis", pt: "Análise de Padrões IA", es: "Análisis de Patrones IA" })}
               </p>
               <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
                 {patterns}
@@ -124,11 +121,11 @@ export function CauseEffectMap({ cycles, patterns }: CauseEffectMapProps) {
       <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2">
         <div className="flex items-center gap-1">
           <div className="w-3 h-0.5 bg-blue-500/50" />
-          <span>{t("Action (Cause)", "Ação (Causa)")}</span>
+          <span>{t({ en: "Action (Cause)", pt: "Ação (Causa)", es: "Acción (Causa)" })}</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-3 h-0.5 bg-[#01D98D]/50" />
-          <span>{t("Effect (Ripple)", "Efeito (Onda)")}</span>
+          <span>{t({ en: "Effect (Ripple)", pt: "Efeito (Onda)", es: "Efecto (Onda)" })}</span>
         </div>
       </div>
     </div>

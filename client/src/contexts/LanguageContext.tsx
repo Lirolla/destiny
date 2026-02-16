@@ -1,21 +1,32 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
-export type AppLanguage = "en" | "pt";
+export type AppLanguage = "en" | "pt" | "es";
 
 interface LanguageContextType {
   language: AppLanguage;
   setLanguage: (lang: AppLanguage) => void;
-  t: (en: string, pt: string) => string;
+  t: (translations: { en: string; pt?: string; es?: string }) => string;
 }
 
 const LANGUAGE_STORAGE_KEY = "app-language";
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+function detectDeviceLanguage(): AppLanguage {
+  const browserLang = navigator.language || navigator.languages?.[0] || "en";
+  const langCode = browserLang.toLowerCase().substring(0, 2);
+  if (langCode === "pt") return "pt";
+  if (langCode === "es") return "es";
+  return "en";
+}
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<AppLanguage>(() => {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return saved === "pt" ? "pt" : "en";
+    if (saved === "pt" || saved === "es") return saved;
+    if (saved === "en") return "en";
+    // No saved preference — auto-detect from device
+    return detectDeviceLanguage();
   });
 
   const setLanguage = useCallback((lang: AppLanguage) => {
@@ -27,7 +38,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const t = useCallback(
-    (en: string, pt: string) => (language === "pt" ? pt : en),
+    (translations: { en: string; pt?: string; es?: string }) => {
+      const text = translations[language];
+      return text ?? translations.en; // Fallback to English if translation missing
+    },
     [language]
   );
 

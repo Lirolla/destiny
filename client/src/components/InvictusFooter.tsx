@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const INVICTUS_LINES = [
   "I am the master of my fate, I am the captain of my soul.",
@@ -12,6 +13,7 @@ const INVICTUS_LINES = [
 ];
 
 export function InvictusFooter({ className = "" }: { className?: string }) {
+  const { t } = useLanguage();
   const quote = useMemo(
     () => INVICTUS_LINES[Math.floor(Math.random() * INVICTUS_LINES.length)],
     []

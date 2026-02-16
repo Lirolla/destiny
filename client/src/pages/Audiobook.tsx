@@ -72,9 +72,12 @@ export function Audiobook() {
     return `${mins}m`;
   };
 
+  // Audio language: Spanish falls back to English (no ES audio yet)
+  const audioLang = language === "es" ? "en" : language;
+
   // Broadcast now-playing state for the mini-player
   const broadcastNowPlaying = (chapter: any, playing: boolean) => {
-    const audioUrl = language === "pt"
+    const audioUrl = audioLang === "pt"
       ? (chapter.audioUrlPt || chapter.audioUrl)
       : chapter.audioUrl;
     const state = {
@@ -123,9 +126,9 @@ export function Audiobook() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <PageHeader title={t("Audiobook", "Audiolivro")} subtitle={t("Listen to the complete book", "Ouça o livro completo")} showBack />
+        <PageHeader title={t({ en: "Audiobook", pt: "Audiolivro", es: "Audiolibro" })} subtitle={t({ en: "Listen to the complete book", pt: "Ouça o livro completo", es: "Escucha el libro completo" })} showBack />
         <div className="flex items-center justify-center min-h-[300px]">
-          <p className="text-muted-foreground">{t("Loading audiobook chapters...", "Carregando capítulos...")}</p>
+          <p className="text-muted-foreground">{t({ en: "Loading audiobook chapters...", pt: "Carregando capítulos...", es: "Cargando capítulos del audiolibro..." })}</p>
         </div>
       </div>
     );
@@ -134,8 +137,8 @@ export function Audiobook() {
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        title={t("Audiobook", "Audiolivro")}
-        subtitle={t("Listen to the complete book", "Ouça o livro completo")}
+        title={t({ en: "Audiobook", pt: "Audiolivro", es: "Audiolibro" })}
+        subtitle={t({ en: "Listen to the complete book", pt: "Ouça o livro completo", es: "Escucha el libro completo" })}
         showBack
         rightAction={
           <div className="flex gap-1.5">
@@ -180,6 +183,17 @@ export function Audiobook() {
             <span className="text-base leading-none">🇧🇷</span>
             <span>Português</span>
           </button>
+          <button
+            onClick={() => setLanguage("es")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              language === "es"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span className="text-base leading-none">🇪🇸</span>
+            <span>Español</span>
+          </button>
         </div>
       </div>
 
@@ -189,7 +203,7 @@ export function Audiobook() {
           <div className="flex items-center gap-2">
             <Headphones className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">
-              {t("Progress", "Progresso")}
+              {t({ en: "Progress", pt: "Progresso", es: "Progreso" })}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -206,11 +220,21 @@ export function Audiobook() {
         </div>
       )}
 
+      {/* Spanish fallback banner */}
+      {language === "es" && (
+        <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+          <span className="text-amber-500 text-lg">🇪🇸</span>
+          <p className="text-xs text-amber-200/80">
+            {t({ en: "Spanish audio coming soon. Playing in English for now.", pt: "Áudio em espanhol em breve. Reproduzindo em inglês por enquanto.", es: "Audio en español próximamente. Reproduciendo en inglés por ahora." })}
+          </p>
+        </div>
+      )}
+
       {/* Current Player */}
       {selectedChapterId && (
         <AudiobookPlayer
           chapterId={selectedChapterId}
-          language={language}
+          language={audioLang}
           onChapterChange={handleChapterChange}
           onChapterEnded={handleChapterEnded}
         />
@@ -219,9 +243,9 @@ export function Audiobook() {
       {/* Chapter List */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold">{t("Chapters", "Capítulos")}</h2>
+          <h2 className="text-lg font-bold">{t({ en: "Chapters", pt: "Capítulos", es: "Capítulos" })}</h2>
           <Badge variant="secondary">
-            {chapters?.length || 0} {t("chapters", "capítulos")}
+            {chapters?.length || 0} {t({ en: "chapters", pt: "capítulos", es: "capítulos" })}
           </Badge>
         </div>
 
@@ -234,13 +258,13 @@ export function Audiobook() {
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-2">{t("No Audiobook Chapters Yet", "Nenhum Capítulo Ainda")}</h3>
+                <h3 className="text-lg font-semibold mb-2">{t({ en: "No Audiobook Chapters Yet", pt: "Nenhum Capítulo Ainda", es: "Aún no hay capítulos del audiolibro" })}</h3>
                 <p className="text-muted-foreground mb-4">
-                  {t("Clone your voice and generate audiobook narration to get started.", "Clone sua voz e gere a narração do audiolivro para começar.")}
+                  {t({ en: "Clone your voice and generate audiobook narration to get started.", pt: "Clone sua voz e gere a narração do audiolivro para começar.", es: "Clona tu voz y genera la narración del audiolibro para empezar." })}
                 </p>
                 <Button asChild>
                   <Link href="/voice-cloning">
-                    {t("Set Up Voice Cloning", "Configurar Clonagem de Voz")}
+                    {t({ en: "Set Up Voice Cloning", pt: "Configurar Clonagem de Voz", es: "Configurar Clonación de Voz" })}
                   </Link>
                 </Button>
               </div>
@@ -250,7 +274,7 @@ export function Audiobook() {
           <div className="space-y-2">
             {chapters.map((chapter) => {
               const isSelected = selectedChapterId === chapter.id;
-              const hasAudio = language === "pt"
+              const hasAudio = audioLang === "pt"
                 ? !!(chapter as any).audioUrlPt || !!chapter.audioUrl
                 : !!chapter.audioUrl;
 
@@ -324,20 +348,20 @@ export function Audiobook() {
                         {isCompleted ? (
                           <span className="text-[10px] text-green-500 flex items-center gap-1 font-medium">
                             <CheckCircle2 className="h-3 w-3" />
-                            {t("Completed", "Concluído")}
+                            {t({ en: "Completed", pt: "Concluído", es: "Completado" })}
                           </span>
                         ) : hasStarted ? (
                           <span className="text-[10px] text-primary flex items-center gap-1">
                             <PlayCircle className="h-3 w-3" />
-                            {t("In Progress", "Em Progresso")} — {Math.round(progressPercent)}%
+                            {t({ en: "In Progress", pt: "Em Progresso", es: "En Progreso" })} — {Math.round(progressPercent)}%
                           </span>
                         ) : hasAudio ? (
                           <span className="text-[10px] text-primary flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3" />
-                            {t("Ready", "Pronto")}
+                            {t({ en: "Ready", pt: "Pronto", es: "Listo" })}
                           </span>
                         ) : (
-                          <span className="text-[10px] text-muted-foreground">{t("Not generated", "Não gerado")}</span>
+                          <span className="text-[10px] text-muted-foreground">{t({ en: "Not generated", pt: "Não gerado", es: "No generado" })}</span>
                         )}
                         {hasAudio && chapter.audioDuration && (
                           <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">

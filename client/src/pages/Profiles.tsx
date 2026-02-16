@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Save, FolderOpen, Trash2, Star } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * Slider Profiles Page
@@ -19,6 +20,7 @@ import { PageHeader } from "@/components/PageHeader";
  */
 
 export default function Profiles() {
+  const { t } = useLanguage();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [profileName, setProfileName] = useState("");
   const [profileDescription, setProfileDescription] = useState("");
@@ -73,54 +75,54 @@ export default function Profiles() {
       // For now, just show a success message
     }
 
-    alert(`Profile "${profile.name}" loaded! Navigate to Sliders page to see the values.`);
+    alert(t({ en: `Profile "${profile.name}" loaded! Navigate to Sliders page to see the values.`, pt: `Perfil "${profile.name}" carregado! Navegue para a página de Sliders para ver os valores.`, es: `¡Perfil "${profile.name}" cargado! Navega a la página de Sliders para ver los valores.` }));
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <PageHeader title="Slider Profiles" subtitle="Save & load configurations" showBack />
+      <PageHeader title={t({ en: "Slider Profiles", pt: "Perfis de Slider", es: "Perfiles de Slider" })} subtitle={t({ en: "Save & load configurations", pt: "Salvar e carregar configurações", es: "Guardar y cargar configuraciones" })} showBack />
 
       <div className="px-4 py-4 space-y-4 pb-24">
         {/* Create New Profile */}
         {!showCreateForm ? (
           <Card className="p-8 mb-8 text-center">
             <Save className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Save Current State as Profile</h2>
+            <h2 className="text-2xl font-bold mb-2">{t({ en: "Save Current State as Profile", pt: "Salvar Estado Atual como Perfil", es: "Guardar Estado Actual como Perfil" })}</h2>
             <p className="text-muted-foreground mb-6">
-              Create profiles for Work, Relationships, Fitness, or any context
+              {t({ en: "Create profiles for Work, Relationships, Fitness, or any context", pt: "Crie perfis para Trabalho, Relacionamentos, Fitness ou qualquer contexto", es: "Crea perfiles para Trabajo, Relaciones, Fitness o cualquier contexto" })}
             </p>
             <Button onClick={() => setShowCreateForm(true)} size="lg">
-              Create New Profile
+              {t({ en: "Create New Profile", pt: "Criar Novo Perfil", es: "Crear Nuevo Perfil" })}
             </Button>
           </Card>
         ) : (
           <Card className="p-8 mb-8">
-            <h2 className="text-2xl font-bold mb-6">New Profile</h2>
+            <h2 className="text-2xl font-bold mb-6">{t({ en: "New Profile", pt: "Novo Perfil", es: "Nuevo Perfil" })}</h2>
             <form onSubmit={handleCreateProfile} className="space-y-6">
               <div>
-                <Label htmlFor="profileName">Profile Name</Label>
+                <Label htmlFor="profileName">{t({ en: "Profile Name", pt: "Nome do Perfil", es: "Nombre del Perfil" })}</Label>
                 <Input
                   id="profileName"
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
-                  placeholder="e.g., Work Mode, Family Time, Gym Focus"
+                  placeholder={t({ en: "e.g., Work Mode, Family Time, Gym Focus", pt: "ex: Modo Trabalho, Tempo em Família, Foco na Academia", es: "ej: Modo Trabajo, Tiempo en Familia, Enfoque en el Gimnasio" })}
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="profileDescription">Description (Optional)</Label>
+                <Label htmlFor="profileDescription">{t({ en: "Description (Optional)", pt: "Descrição (Opcional)", es: "Descripción (Opcional)" })}</Label>
                 <Textarea
                   id="profileDescription"
                   value={profileDescription}
                   onChange={(e) => setProfileDescription(e.target.value)}
-                  placeholder="When do you use this profile?"
+                  placeholder={t({ en: "When do you use this profile?", pt: "Quando você usa este perfil?", es: "¿Cuándo usas este perfil?" })}
                   className="min-h-20"
                 />
               </div>
 
               <div>
-                <Label>Set Default Values for Each Axis</Label>
+                <Label>{t({ en: "Set Default Values for Each Axis", pt: "Definir Valores Padrão para Cada Eixo", es: "Establecer Valores Predeterminados para Cada Eje" })}</Label>
                 <div className="space-y-4 mt-4">
                   {axes?.map((axis) => (
                     <div key={axis.id} className="space-y-2">
@@ -145,10 +147,10 @@ export default function Profiles() {
 
               <div className="flex gap-4">
                 <Button type="submit" disabled={createProfile.isPending}>
-                  {createProfile.isPending ? "Saving..." : "Save Profile"}
+                  {createProfile.isPending ? t({ en: "Saving...", pt: "Salvando...", es: "Guardando..." }) : t({ en: "Save Profile", pt: "Salvar Perfil", es: "Guardar Perfil" })}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowCreateForm(false)}>
-                  Cancel
+                  {t({ en: "Cancel", pt: "Cancelar", es: "Cancelar" })}
                 </Button>
               </div>
             </form>
@@ -157,7 +159,7 @@ export default function Profiles() {
 
         {/* Profiles List */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold">Saved Profiles</h2>
+          <h2 className="text-2xl font-bold">{t({ en: "Saved Profiles", pt: "Perfis Salvos", es: "Perfiles Guardados" })}</h2>
           
           {profiles?.map((profile) => (
             <Card key={profile.id} className="p-6">
@@ -168,7 +170,7 @@ export default function Profiles() {
                     {profile.isDefault && (
                       <Badge variant="default">
                         <Star className="w-3 h-3 mr-1" />
-                        Default
+                        {t({ en: "Default", pt: "Padrão", es: "Predeterminado" })}
                       </Badge>
                     )}
                   </div>
@@ -183,13 +185,13 @@ export default function Profiles() {
                     onClick={() => handleLoadProfile(profile.id)}
                   >
                     <FolderOpen className="w-4 h-4 mr-2" />
-                    Load
+                    {t({ en: "Load", pt: "Carregar", es: "Cargar" })}
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => {
-                      if (confirm(`Delete profile "${profile.name}"?`)) {
+                      if (confirm(t({ en: `Delete profile "${profile.name}"?`, pt: `Excluir perfil "${profile.name}"?`, es: `¿Eliminar perfil "${profile.name}"?` }))) {
                         deleteProfile.mutate({ profileId: profile.id });
                       }
                     }}
@@ -221,7 +223,7 @@ export default function Profiles() {
           {profiles?.length === 0 && !showCreateForm && (
             <Card className="p-12 text-center">
               <p className="text-muted-foreground">
-                No profiles saved yet. Create your first profile to quickly switch between different emotional states.
+                {t({ en: "No profiles saved yet. Create your first profile to quickly switch between different emotional states.", pt: "Nenhum perfil salvo ainda. Crie seu primeiro perfil para alternar rapidamente entre diferentes estados emocionais.", es: "Aún no hay perfiles guardados. Crea tu primer perfil para cambiar rápidamente entre diferentes estados emocionales." })}
               </p>
             </Card>
           )}

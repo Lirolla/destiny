@@ -17,7 +17,7 @@ export default function AppStoreBadges({ appleUrl, googleUrl, className = "" }: 
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");
     } else {
-      toast.info(t(`Coming soon on ${store}!`, `Em breve na ${store}!`));
+      toast.info(t({ en: `Coming soon on ${store}!`, pt: `Em breve na ${store}!`, es: `¡Próximamente en ${store}!` }));
     }
   };
 
@@ -34,7 +34,7 @@ export default function AppStoreBadges({ appleUrl, googleUrl, className = "" }: 
         </svg>
         <div className="text-left">
           <div className="text-[10px] text-white/70 leading-tight">
-            {t("Download on the", "Baixar na")}
+            {t({ en: "Download on the", pt: "Baixar na", es: "Descargar en la" })}
           </div>
           <div className="text-base font-semibold text-white leading-tight">App Store</div>
         </div>
@@ -54,7 +54,7 @@ export default function AppStoreBadges({ appleUrl, googleUrl, className = "" }: 
         </svg>
         <div className="text-left">
           <div className="text-[10px] text-white/70 leading-tight">
-            {t("GET IT ON", "DISPONÍVEL NO")}
+            {t({ en: "GET IT ON", pt: "DISPONÍVEL NO", es: "DISPONIBLE EN" })}
           </div>
           <div className="text-base font-semibold text-white leading-tight">Google Play</div>
         </div>

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Headphones, BookOpen } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * ChapterBridge — A moment of intention before diving into chapter content
@@ -34,6 +35,8 @@ export function ChapterBridge({
   onRead,
   onDismiss,
 }: ChapterBridgeProps) {
+  const { t } = useLanguage();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -74,7 +77,7 @@ export function ChapterBridge({
           transition={{ delay: 1, duration: 0.8 }}
           className="text-[#01D98D] text-sm font-medium"
         >
-          {chapterRef} was written for exactly this moment.
+          {t({ en: `${chapterRef} was written for exactly this moment.`, pt: `${chapterRef} foi escrito exatamente para este momento.`, es: `${chapterRef} fue escrito exactamente para este momento.` })}
         </motion.p>
 
         {/* Action buttons */}
@@ -89,7 +92,7 @@ export function ChapterBridge({
             className="bg-[#01D98D] hover:bg-[#01D98D]/90 text-[#0A0A0A] font-semibold gap-2"
           >
             <Headphones className="h-4 w-4" />
-            Listen Now
+            {t({ en: "Listen Now", pt: "Ouvir Agora", es: "Escuchar Ahora" })}
           </Button>
           <Button
             onClick={onRead}
@@ -97,15 +100,16 @@ export function ChapterBridge({
             className="border-white/30 text-white hover:bg-white/10 gap-2"
           >
             <BookOpen className="h-4 w-4" />
-            Read Instead
+            {t({ en: "Read Instead", pt: "Ler em Vez Disso", es: "Leer en su Lugar" })}
           </Button>
         </motion.div>
 
         {/* Invictus footer */}
         <p className="text-white/20 text-xs italic pt-6">
-          "I am the master of my fate, I am the captain of my soul."
+          {t({ en: '"I am the master of my fate, I am the captain of my soul."', pt: '"I am the master of my fate, I am the captain of my soul."', es: '"I am the master of my fate, I am the captain of my soul."' })}
         </p>
       </motion.div>
     </motion.div>
   );
 }
+

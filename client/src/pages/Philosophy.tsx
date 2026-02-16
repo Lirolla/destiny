@@ -191,7 +191,7 @@ export default function Philosophy() {
           <Link href="/">
             <button className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white mb-8 transition-colors">
               <ArrowLeft className="h-4 w-4" />
-              {t("Back", "Voltar")}
+              {t({ en: "Back", pt: "Voltar", es: "Volver" })}
             </button>
           </Link>
           <motion.h1
@@ -200,7 +200,7 @@ export default function Philosophy() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
           >
-            {t("The Philosophy", "A Filosofia")}
+            {t({ en: "The Philosophy", pt: "A Filosofia", es: "La Filosofía" })}
           </motion.h1>
           <motion.p
             className="text-lg md:text-xl text-white/60"
@@ -208,7 +208,7 @@ export default function Philosophy() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            {t("Why This App Exists", "Porque Esta App Existe")}
+            {t({ en: "Why This App Exists", pt: "Porque Esta App Existe", es: "Por Qué Existe Esta Aplicación" })}
           </motion.p>
 
           {/* Scroll indicator */}
@@ -220,7 +220,7 @@ export default function Philosophy() {
             transition={{ delay: 1, duration: 0.6 }}
           >
             <span className="text-xs uppercase tracking-widest">
-              {t("Read", "Ler")}
+              {t({ en: "Read", pt: "Ler", es: "Leer" })}
             </span>
             <motion.div
               animate={{ y: [0, 6, 0] }}
@@ -258,7 +258,7 @@ export default function Philosophy() {
               >
                 <div className="h-px flex-1 max-w-[40px] bg-[#01D98D]/40" />
                 <span className="text-xs uppercase tracking-[0.2em] text-[#01D98D]/60 font-medium">
-                  {t("Prologue", "Prólogo")}
+                  {t({ en: "Prologue", pt: "Prólogo", es: "Prólogo" })}
                 </span>
                 <div className="h-px flex-1 max-w-[40px] bg-[#01D98D]/40" />
               </motion.div>
@@ -307,14 +307,14 @@ export default function Philosophy() {
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            {t("Your journey begins now", "A tua jornada começa agora")}
+            {t({ en: "Your journey begins now", pt: "A tua jornada começa agora", es: "Tu viaje comienza ahora" })}
           </motion.p>
           <Link href="/sliders">
             <Button
               size="lg"
               className="bg-[#01D98D] hover:bg-[#01D98D]/90 text-black font-semibold text-lg px-8 py-6"
             >
-              {t("Begin Calibrating", "Começar a Calibrar")}
+              {t({ en: "Begin Calibrating", pt: "Começar a Calibrar", es: "Empezar a Calibrar" })}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>

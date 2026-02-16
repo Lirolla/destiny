@@ -30,7 +30,7 @@ export function DoctrineCard() {
           <span className="text-xl mt-0.5 shrink-0">{currentDoctrine.emoji}</span>
           <div className="space-y-1 min-w-0">
             <p className="text-[9px] font-semibold uppercase tracking-widest text-[#01D98D]/80">
-              {t("Doctrine of the Week", "Doutrina da Semana")}
+              {t({ en: "Doctrine of the Week", pt: "Doutrina da Semana", es: "Doctrina de la Semana" })}
             </p>
             <p className="text-sm italic text-foreground/90 leading-snug line-clamp-2">
               "{language === 'pt' ? currentDoctrine.doctrinePt : currentDoctrine.doctrine}"
@@ -43,7 +43,7 @@ export function DoctrineCard() {
                 href="/philosophy"
                 className="text-[10px] text-[#01D98D] hover:text-[#01D98D]/80 transition-colors whitespace-nowrap ml-2"
               >
-                {t("Read Philosophy →", "Ler Filosofia →")}
+                {t({ en: "Read Philosophy →", pt: "Ler Filosofia →", es: "Leer Filosofía →" })}
               </Link>
             </div>
           </div>

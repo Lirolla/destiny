@@ -22,15 +22,17 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { getChapterTitle } from "@shared/chapterTranslations";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AudiobookPlayerProps {
   chapterId: number;
-  language: "en" | "pt";
+  language: "en" | "pt" | "es";
   onChapterChange?: (newChapterId: number) => void;
   onChapterEnded?: () => void;
 }
 
 export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapterEnded }: AudiobookPlayerProps) {
+  const { t } = useLanguage();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -68,7 +70,7 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
   // Create bookmark mutation
   const createBookmark = trpc.audiobook.createBookmark.useMutation({
     onSuccess: () => {
-      toast.success("Bookmark added");
+      toast.success(t({ en: "Bookmark added", pt: "Marcador adicionado", es: "Marcador añadido" }));
     },
   });
 
@@ -161,7 +163,7 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
             setIsPlaying(false);
           }
           setSleepTimer(null);
-          toast.info("Sleep timer expired - playback paused");
+          toast.info(t({ en: "Sleep timer expired - playback paused", pt: "Temporizador zerado - reprodução pausada", es: "Temporizador de apagado expirado - reproducción pausada" }));
           return 0;
         }
         return prev - 1;
@@ -178,13 +180,13 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
       audioRef.current.play().then(() => {
         setIsPlaying(true);
       }).catch(() => {
-        toast.error("Unable to play audio");
+        toast.error(t({ en: "Unable to play audio", pt: "Não foi possível reproduzir o áudio", es: "No se puede reproducir el audio" }));
       });
     } else {
       audioRef.current.pause();
       setIsPlaying(false);
     }
-  }, []);
+  }, [t]);
 
   const handleTimeUpdate = useCallback(() => {
     if (audioRef.current) {
@@ -248,9 +250,9 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
     createBookmark.mutate({
       chapterId,
       position: Math.floor(currentTime),
-      title: `Bookmark at ${formatTime(currentTime)}`,
+      title: t({ en: `Bookmark at ${formatTime(currentTime)}`, pt: `Marcador em ${formatTime(currentTime)}`, es: `Marcador en ${formatTime(currentTime)}` }),
     });
-  }, [chapterId, currentTime]);
+  }, [chapterId, currentTime, t]);
 
   const cycleSpeed = useCallback(() => {
     const speeds = [0.75, 1.0, 1.25, 1.5, 2.0];
@@ -262,14 +264,14 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
   const setSleepTimerMinutes = useCallback((minutes: number) => {
     setSleepTimer(minutes);
     setSleepTimerRemaining(minutes * 60);
-    toast.success(`Sleep timer set for ${minutes} minutes`);
-  }, []);
+    toast.success(t({ en: `Sleep timer set for ${minutes} minutes`, pt: `Temporizador definido para ${minutes} minutos`, es: `Temporizador programado para ${minutes} minutos` }));
+  }, [t]);
 
   const cancelSleepTimer = useCallback(() => {
     setSleepTimer(null);
     setSleepTimerRemaining(0);
-    toast.info("Sleep timer cancelled");
-  }, []);
+    toast.info(t({ en: "Sleep timer cancelled", pt: "Temporizador cancelado", es: "Temporizador de apagado cancelado" }));
+  }, [t]);
 
   const formatTimerRemaining = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -312,202 +314,156 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
           currentPosition: Math.floor(audioRef.current.currentTime),
           playbackSpeed: playbackSpeedRef.current,
         });
-        navigator.sendBeacon?.('/api/trpc/audiobook.updateProgress', data);
+        navigator.sendBeacon(`/api/trpc/audiobook.updateProgress?batch=1`, data);
       }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [chapterId]);
 
-  const handleEnded = useCallback(() => {
-    setIsPlaying(false);
-    updateProgress.mutate({
-      chapterId,
-      currentPosition: 0,
-      playbackSpeed: playbackSpeedRef.current,
-      completed: true,
-    }, {
-      onSuccess: () => {
-        // Invalidate allProgress so the chapter list updates completion indicators
-        utils.audiobook.getAllProgress.invalidate();
-      },
-    });
-    // Auto-play next chapter after a short delay if enabled
-    if (autoPlay && onChapterEnded) {
-      toast.info(language === 'pt' ? 'Próximo capítulo...' : 'Next chapter...');
-      setTimeout(() => onChapterEnded(), 1500);
+  const handleChapterEnded = useCallback(() => {
+    if (onChapterEnded) {
+      onChapterEnded();
+    } else if (autoPlay && onChapterChange && chapter && (chapter as any).nextChapterId) {
+      onChapterChange((chapter as any).nextChapterId);
     }
-  }, [chapterId, onChapterEnded, autoPlay, language]);
+  }, [onChapterEnded, autoPlay, onChapterChange, chapter]);
 
   if (!chapter) {
     return (
-      <Card>
-        <CardContent className="p-12 text-center">
-          <p className="text-muted-foreground">Loading chapter...</p>
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle>{t({ en: "Loading...", pt: "Carregando...", es: "Cargando..." })}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-48 flex items-center justify-center text-muted-foreground">
+            {t({ en: "Please wait while the audio loads.", pt: "Por favor, aguarde enquanto o áudio carrega.", es: "Por favor, espere mientras se carga el audio." })}
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="min-w-0 flex-1">
-            <CardTitle className="text-sm leading-tight">
-              {language === "pt" ? "Capítulo" : "Chapter"} {(chapter as any).chapterNumber}: {getChapterTitle((chapter as any).chapterNumber, language, (chapter as any).title)}
-            </CardTitle>
-            <CardDescription className="text-xs mt-0.5">
-              {language === "pt" ? `Capítulo ${(chapter as any).chapterNumber} de Destiny Hacking` : `Chapter ${(chapter as any).chapterNumber} of Destiny Hacking`}
-            </CardDescription>
-          </div>
-          <Badge variant="secondary" className="ml-2 flex-shrink-0">
-            {formatTime(duration)}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Audio Element */}
-        <audio
-          ref={audioRef}
-          src={audioUrl || undefined}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          onEnded={handleEnded}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => {
-            setIsPlaying(false);
-            saveCurrentPosition();
-          }}
-        />
+    <Card className="w-full max-w-md mx-auto">
+      <audio
+        ref={audioRef}
+        src={audioUrl || ""}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleChapterEnded}
+        onPause={saveCurrentPosition}
+        className="hidden"
+      />
 
-        {/* Progress Bar */}
-        <div className="space-y-1">
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl font-semibold tracking-tight leading-snug">
+          {getChapterTitle((chapter as any).chapterNumber, language, (chapter as any).title)}
+        </CardTitle>
+        <CardDescription className="text-sm text-muted-foreground mt-1">
+          {t({ en: "Destiny Hacking Audiobook", pt: "Audiobook Destiny Hacking", es: "Audiolibro Destiny Hacking" })}
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        {/* Main Controls */}
+        <div className="flex items-center justify-around">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onChapterChange && onChapterChange((chapter as any).prevChapterId)}
+            disabled={!(chapter as any).prevChapterId}
+            aria-label={t({ en: "Go to previous chapter", pt: "Ir para o capítulo anterior", es: "Ir al capítulo anterior" })}
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+
+          <Button
+            variant="default"
+            size="icon"
+            className="h-16 w-16 rounded-full shadow-lg"
+            onClick={togglePlay}
+            aria-label={t({ en: "Play/Pause", pt: "Reproduzir/Pausar", es: "Reproducir/Pausar" })}
+          >
+            {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onChapterChange && onChapterChange((chapter as any).nextChapterId)}
+            disabled={!(chapter as any).nextChapterId}
+            aria-label={t({ en: "Go to next chapter", pt: "Ir para o próximo capítulo", es: "Ir al siguiente capítulo" })}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </Button>
+        </div>
+
+        {/* Seek Bar */}
+        <div className="space-y-1.5">
           <Slider
             value={[currentTime]}
             max={duration || 100}
-            step={1}
             onValueChange={handleSeek}
-            className="cursor-pointer"
+            aria-label={t({ en: "Seek audio", pt: "Buscar no áudio", es: "Buscar en el audio" })}
           />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between text-xs text-muted-foreground font-mono">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
         </div>
 
-        {/* Playback Controls */}
-        <div className="flex items-center justify-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onChapterChange && onChapterChange(chapterId - 1)}
-            disabled={!onChapterChange}
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
+        {/* Volume and Secondary Controls */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 flex-1">
+            <Button variant="ghost" size="icon" onClick={toggleMute} aria-label={isMuted ? t({ en: "Unmute", pt: "Ativar som", es: "Reactivar sonido" }) : t({ en: "Mute", pt: "Silenciar", es: "Silenciar" })}>
+              {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+            </Button>
+            <Slider
+              value={[isMuted ? 0 : volume]}
+              max={1}
+              step={0.05}
+              onValueChange={handleVolumeChange}
+              className="w-24"
+              aria-label={t({ en: "Change volume", pt: "Mudar volume", es: "Cambiar volumen" })}
+            />
+          </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => skip(-15)}
-          >
-            <SkipBack className="h-5 w-5" />
-          </Button>
-
-          <Button
-            size="lg"
-            onClick={togglePlay}
-            className="h-14 w-14 rounded-full"
-          >
-            {isPlaying ? (
-              <Pause className="h-6 w-6" />
-            ) : (
-              <Play className="h-6 w-6 ml-1" />
-            )}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => skip(15)}
-          >
-            <SkipForward className="h-5 w-5" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onChapterChange && onChapterChange(chapterId + 1)}
-            disabled={!onChapterChange}
-          >
-            <ChevronRight className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={() => skip(-10)} aria-label={t({ en: "Rewind 10 seconds", pt: "Retroceder 10 segundos", es: "Retroceder 10 segundos" })}>
+              <SkipBack className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => skip(30)} aria-label={t({ en: "Fast-forward 30 seconds", pt: "Avançar 30 segundos", es: "Adelantar 30 segundos" })}>
+              <SkipForward className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleAddBookmark} aria-label={t({ en: "Add bookmark", pt: "Adicionar marcador", es: "Añadir marcador" })}>
+              <Bookmark className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={cycleSpeed} aria-label={t({ en: "Change playback speed", pt: "Mudar velocidade de reprodução", es: "Cambiar velocidad de reproducción" })}>
+              <div className="text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border border-current">
+                {playbackSpeed.toFixed(2).replace(/\.00|0$/,'x')}
+              </div>
+            </Button>
+          </div>
         </div>
 
-        {/* Volume Control - Collapsible row */}
-        <div className="flex items-center gap-2 p-2.5 bg-muted/30 rounded-lg">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 flex-shrink-0"
-            onClick={toggleMute}
-          >
-            {isMuted || volume === 0 ? (
-              <VolumeX className="h-4 w-4" />
-            ) : (
-              <Volume2 className="h-4 w-4" />
-            )}
-          </Button>
-          <Slider
-            value={[isMuted ? 0 : volume]}
-            max={1}
-            step={0.01}
-            onValueChange={handleVolumeChange}
-            className="flex-1"
-          />
-          <span className="text-xs text-muted-foreground w-9 text-right flex-shrink-0 font-mono">
-            {Math.round((isMuted ? 0 : volume) * 100)}%
-          </span>
-        </div>
-
-        {/* Action Buttons - 2x2 grid for clear separation */}
-        <div className="grid grid-cols-2 gap-2">
+        {/* Extra Features */}
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50">
           <Button
             variant="outline"
-            size="sm"
-            onClick={cycleSpeed}
-            className="h-10 text-xs font-medium justify-start px-3"
-          >
-            <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
-            {language === 'pt' ? 'Velocidade' : 'Speed'}: {playbackSpeed}x
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleAddBookmark}
-            className="h-10 text-xs font-medium justify-start px-3"
-          >
-            <Bookmark className="h-4 w-4 mr-2 flex-shrink-0" />
-            {language === 'pt' ? 'Marcador' : 'Bookmark'}
-          </Button>
-          
-          <Button
-            variant={autoPlay ? "default" : "outline"}
             size="sm"
             onClick={() => {
               const newVal = !autoPlay;
               setAutoPlay(newVal);
               localStorage.setItem('audiobook-autoplay', String(newVal));
               toast.success(newVal 
-                ? (language === 'pt' ? 'Reprodução automática ativada' : 'Auto-play enabled')
-                : (language === 'pt' ? 'Reprodução automática desativada' : 'Auto-play disabled'));
+                ? t({ en: "Auto-play enabled", pt: "Reprodução automática ativada", es: "Reproducción automática activada" })
+                : t({ en: "Auto-play disabled", pt: "Reprodução automática desativada", es: "Reproducción automática desactivada" }));
             }}
             className="h-10 text-xs font-medium justify-start px-3"
           >
             <ListEnd className="h-4 w-4 mr-2 flex-shrink-0" />
-            {language === 'pt' ? 'Auto-reprodução' : 'Auto-play'}: {autoPlay ? 'ON' : 'OFF'}
+            {t({ en: "Auto-play", pt: "Auto-reprodução", es: "Reproducción automática" })}: {autoPlay ? t({ en: "ON", pt: "LIGADO", es: "SÍ" }) : t({ en: "OFF", pt: "DESLIGADO", es: "NO" })}
           </Button>
 
           <Button
@@ -518,16 +474,16 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
                 const pdfUrl = `/book?chapter=${(chapter as any).chapterNumber}&sync=true`;
                 window.open(pdfUrl, 'pdf-sync', 'width=1200,height=800');
                 setSyncMode(true);
-                toast.success(language === 'pt' ? 'Modo sincronizado ativado' : 'Sync mode enabled - PDF will follow audio');
+                toast.success(t({ en: "Sync mode enabled - PDF will follow audio", pt: "Modo sincronizado ativado - O PDF acompanhará o áudio", es: "Modo de sincronización activado: el PDF seguirá al audio" }));
               } else {
                 setSyncMode(false);
-                toast.info(language === 'pt' ? 'Modo sincronizado desativado' : 'Sync mode disabled');
+                toast.info(t({ en: "Sync mode disabled", pt: "Modo sincronizado desativado", es: "Modo de sincronización desactivado" }));
               }
             }}
             className="h-10 text-xs font-medium justify-start px-3"
           >
             <BookOpen className="h-4 w-4 mr-2 flex-shrink-0" />
-            {syncMode ? (language === 'pt' ? 'Sincronizando' : 'Syncing') : (language === 'pt' ? 'Acompanhar' : 'Follow Along')}
+            {syncMode ? t({ en: "Syncing", pt: "Sincronizando", es: "Sincronizando" }) : t({ en: "Follow Along", pt: "Acompanhar", es: "Seguir" })}
           </Button>
         </div>
 
@@ -535,7 +491,7 @@ export function AudiobookPlayer({ chapterId, language, onChapterChange, onChapte
         <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
           <div className="flex items-center gap-2">
             <Timer className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs font-medium">{language === 'pt' ? 'Temporizador' : 'Sleep Timer'}</span>
+            <span className="text-xs font-medium">{t({ en: "Sleep Timer", pt: "Temporizador", es: "Temporizador de apagado" })}</span>
           </div>
           
           {sleepTimer === null ? (

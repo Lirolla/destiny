@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * Slider History Chart Component
@@ -17,6 +18,7 @@ interface SliderHistoryChartProps {
 }
 
 export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
+  const { t } = useLanguage();
   const [dateRange, setDateRange] = useState<7 | 30 | 90>(30);
   const [selectedAxisId, setSelectedAxisId] = useState<number | undefined>(axisId);
 
@@ -52,14 +54,14 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
-            Emotional Trends
+            {t({ en: "Emotional Trends", pt: "Tendências Emocionais", es: "Tendencias Emocionales" })}
           </CardTitle>
-          <CardDescription>Track your emotional state changes over time</CardDescription>
+          <CardDescription>{t({ en: "Track your emotional state changes over time", pt: "Acompanhe as mudanças do seu estado emocional ao longo do tempo", es: "Sigue los cambios de tu estado emocional a lo largo del tiempo" })}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12">
             <p className="text-muted-foreground">
-              Create your first emotional axis to start tracking trends.
+              {t({ en: "Create your first emotional axis to start tracking trends.", pt: "Crie seu primeiro eixo emocional para começar a acompanhar as tendências.", es: "Crea tu primer eje emocional para empezar a seguir las tendencias." })}
             </p>
           </div>
         </CardContent>
@@ -74,10 +76,10 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
           <div>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5" />
-              Emotional Trends
+              {t({ en: "Emotional Trends", pt: "Tendências Emocionais", es: "Tendencias Emocionales" })}
             </CardTitle>
             <CardDescription>
-              {selectedAxis ? `${selectedAxis.leftLabel} ↔ ${selectedAxis.rightLabel}` : 'Select an axis'}
+              {selectedAxis ? `${selectedAxis.leftLabel} ↔ ${selectedAxis.rightLabel}` : t({ en: "Select an axis", pt: "Selecione um eixo", es: "Selecciona un eje" })}
             </CardDescription>
           </div>
           <div className="flex gap-2">
@@ -86,21 +88,21 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
               size="sm"
               onClick={() => setDateRange(7)}
             >
-              7D
+              {t({ en: "7D", pt: "7D", es: "7D" })}
             </Button>
             <Button
               variant={dateRange === 30 ? "default" : "outline"}
               size="sm"
               onClick={() => setDateRange(30)}
             >
-              30D
+              {t({ en: "30D", pt: "30D", es: "30D" })}
             </Button>
             <Button
               variant={dateRange === 90 ? "default" : "outline"}
               size="sm"
               onClick={() => setDateRange(90)}
             >
-              90D
+              {t({ en: "90D", pt: "90D", es: "90D" })}
             </Button>
           </div>
         </div>
@@ -109,7 +111,7 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
         {chartData.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
-              No calibration data yet. Complete your first slider calibration to see trends.
+              {t({ en: "No calibration data yet. Complete your first slider calibration to see trends.", pt: "Ainda não há dados de calibração. Conclua sua primeira calibração de controle deslizante para ver as tendências.", es: "Aún no hay datos de calibración. Completa tu primera calibración de control deslizante para ver las tendencias." })}
             </p>
           </div>
         ) : (
@@ -118,15 +120,15 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
             <div className="mb-6 p-4 bg-muted/50 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Trend over {dateRange} days</p>
+                  <p className="text-sm text-muted-foreground">{t({ en: `Trend over ${dateRange} days`, pt: `Tendência em ${dateRange} dias`, es: `Tendencia en ${dateRange} días` })}</p>
                   <p className="text-2xl font-bold">
-                    {trend > 0 ? '+' : ''}{trend.toFixed(1)} points
+                    {trend > 0 ? '+' : ''}{trend.toFixed(1)} {t({ en: "points", pt: "pontos", es: "puntos" })}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Direction</p>
+                  <p className="text-sm text-muted-foreground">{t({ en: "Direction", pt: "Direção", es: "Dirección" })}</p>
                   <p className={`text-lg font-semibold ${trend > 0 ? 'text-green-600' : trend < 0 ? 'text-orange-600' : 'text-muted-foreground'}`}>
-                    {trend > 0 ? `Toward ${selectedAxis?.rightLabel}` : trend < 0 ? `Toward ${selectedAxis?.leftLabel}` : 'Stable'}
+                    {trend > 0 ? `${t({ en: "Toward", pt: "Em direção a", es: "Hacia" })} ${selectedAxis?.rightLabel || ''}` : trend < 0 ? `${t({ en: "Toward", pt: "Em direção a", es: "Hacia" })} ${selectedAxis?.leftLabel || ''}` : t({ en: "Stable", pt: "Estável", es: "Estable" })}
                   </p>
                 </div>
               </div>
@@ -146,7 +148,7 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
                   className="text-xs"
                   tick={{ fill: 'hsl(var(--muted-foreground))' }}
                   label={{ 
-                    value: `${selectedAxis?.leftLabel} ← → ${selectedAxis?.rightLabel}`, 
+                    value: `${selectedAxis?.leftLabel || ''} ← → ${selectedAxis?.rightLabel || ''}`, 
                     angle: -90, 
                     position: 'insideLeft',
                     style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' }
@@ -159,7 +161,7 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
                     borderRadius: '8px'
                   }}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
-                  formatter={(value: any) => [`${value}`, 'Value']}
+                  formatter={(value: any) => [`${value}`, t({ en: 'Value', pt: 'Valor', es: 'Valor' })]}
                 />
                 <Legend />
                 <Line 
@@ -169,7 +171,7 @@ export function SliderHistoryChart({ axisId }: SliderHistoryChartProps) {
                   strokeWidth={2}
                   dot={{ fill: 'hsl(var(--primary))', r: 4 }}
                   activeDot={{ r: 6 }}
-                  name={`${selectedAxis?.leftLabel} ↔ ${selectedAxis?.rightLabel}`}
+                  name={`${selectedAxis?.leftLabel || ''} ↔ ${selectedAxis?.rightLabel || ''}`}
                 />
               </LineChart>
             </ResponsiveContainer>

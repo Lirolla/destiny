@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { InvictusFooter } from "@/components/InvictusFooter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
  * Book Modules Page
@@ -26,6 +27,7 @@ import { InvictusFooter } from "@/components/InvictusFooter";
  */
 
 export default function Modules() {
+  const { t } = useLanguage();
   const { data: modulesWithProgress, isLoading } = trpc.modules.list.useQuery();
   const [selectedModuleId, setSelectedModuleId] = useState<number | null>(null);
 
@@ -34,7 +36,7 @@ export default function Modules() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <PageHeader title="Practice" subtitle="14 modules to master" showBack />
+        <PageHeader title={t({ en: "Practice", pt: "Prática", es: "Práctica" })} subtitle={t({ en: "14 modules to master", pt: "14 módulos para dominar", es: "14 módulos para dominar" })} showBack />
         <div className="flex items-center justify-center min-h-[300px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -44,7 +46,7 @@ export default function Modules() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageHeader title="Practice" subtitle="14 modules to master your free will" showBack />
+      <PageHeader title={t({ en: "Practice", pt: "Prática", es: "Práctica" })} subtitle={t({ en: "14 modules to master your free will", pt: "14 módulos para dominar seu livre arbítrio", es: "14 módulos para dominar tu libre albedrío" })} showBack />
 
       <div className="px-4 py-4">
         {/* Module List */}
@@ -88,12 +90,12 @@ export default function Modules() {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">{module.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] text-muted-foreground">{module.estimatedMinutes} min</span>
+                      <span className="text-[10px] text-muted-foreground">{t({ en: `${module.estimatedMinutes} min`, pt: `${module.estimatedMinutes} min`, es: `${module.estimatedMinutes} min` })}</span>
                       {progress && progress.progressPercentage > 0 && (
                         <span className="text-[10px] text-primary">{progress.progressPercentage}%</span>
                       )}
                       {progress && progress.practiceDaysCompleted > 0 && (
-                        <span className="text-[10px] text-muted-foreground">{progress.practiceDaysCompleted}d practiced</span>
+                        <span className="text-[10px] text-muted-foreground">{t({ en: `${progress.practiceDaysCompleted}d practiced`, pt: `${progress.practiceDaysCompleted}d praticados`, es: `${progress.practiceDaysCompleted}d practicados` })}</span>
                       )}
                     </div>
                     {progress && progress.progressPercentage > 0 && (
@@ -144,6 +146,7 @@ function DecisionChallengeView({
   onComplete: () => void;
   isPending: boolean;
 }) {
+  const { t } = useLanguage();
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showOutcome, setShowOutcome] = useState(false);
 
@@ -153,7 +156,7 @@ function DecisionChallengeView({
     : challenge;
 
   if (!data || !data.scenario) {
-    return <p className="text-sm text-muted-foreground">No challenge available.</p>;
+    return <p className="text-sm text-muted-foreground">{t({ en: "No challenge available.", pt: "Nenhum desafio disponível.", es: "No hay desafíos disponibles." })}</p>;
   }
 
   const handleSelect = (index: number) => {
@@ -209,11 +212,11 @@ function DecisionChallengeView({
       {/* Complete button */}
       {showOutcome && !isCompleted && (
         <Button size="sm" onClick={onComplete} disabled={isPending}>
-          {isPending ? "Completing..." : "Mark Challenge Complete"}
+          {isPending ? t({ en: "Completing...", pt: "Concluindo...", es: "Completando..." }) : t({ en: "Mark Challenge Complete", pt: "Marcar Desafio como Concluído", es: "Marcar Desafío como Completado" })}
         </Button>
       )}
       {isCompleted && (
-        <Badge className="bg-green-500 text-xs">Challenge Completed</Badge>
+        <Badge className="bg-green-500 text-xs">{t({ en: "Challenge Completed", pt: "Desafio Concluído", es: "Desafío Completado" })}</Badge>
       )}
     </div>
   );
@@ -226,6 +229,7 @@ interface ModuleDetailProps {
 }
 
 function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
+  const { t } = useLanguage();
   const utils = trpc.useUtils();
   const [reflection, setReflection] = useState(progress?.reflectionEntry || "");
 
@@ -289,13 +293,13 @@ function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
   return (
     <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
       <PageHeader
-        title={`Module ${module.moduleNumber}`}
+        title={t({ en: `Module ${module.moduleNumber}`, pt: `Módulo ${module.moduleNumber}`, es: `Módulo ${module.moduleNumber}` })}
         subtitle={module.title}
         showBack
         backPath="#"
         rightAction={
           <div className="flex items-center gap-2">
-            {isCompleted && <Badge className="bg-green-500 text-xs">Done</Badge>}
+            {isCompleted && <Badge className="bg-green-500 text-xs">{t({ en: "Done", pt: "Feito", es: "Hecho" })}</Badge>}
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
               <span className="text-lg">✕</span>
             </Button>
@@ -307,119 +311,110 @@ function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
       {isLocked ? (
         <div className="text-center py-8">
           <Lock className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-          <p className="text-base font-semibold mb-1">Module Locked</p>
+          <p className="text-base font-semibold mb-1">{t({ en: "Module Locked", pt: "Módulo Bloqueado", es: "Módulo Bloqueado" })}</p>
           <p className="text-sm text-muted-foreground">
-            Complete the previous module and practice for {module.requiredPracticeDays} days to unlock.
+            {t({ en: `Complete the previous module and practice for ${module.requiredPracticeDays} days to unlock.`, pt: `Conclua o módulo anterior e pratique por ${module.requiredPracticeDays} dias para desbloquear.`, es: `Completa el módulo anterior y practica durante ${module.requiredPracticeDays} días para desbloquear.` })}
           </p>
+          <Button onClick={onClose} className="mt-4">{t({ en: "Back to Modules", pt: "Voltar aos Módulos", es: "Volver a los Módulos" })}</Button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {/* Core Principle */}
-          <section className="bg-card rounded-xl p-4 border border-border/50">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="w-4 h-4 text-primary" />
-              <h3 className="font-bold text-sm">Core Principle</h3>
-            </div>
-            <p className="text-sm text-foreground leading-relaxed">{module.corePrinciple}</p>
-          </section>
-
-          {/* Mental Model */}
-          <section className="bg-card rounded-xl p-4 border border-border/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="w-4 h-4 text-primary" />
-              <h3 className="font-bold text-sm">Mental Model</h3>
-            </div>
-            <p className="text-sm text-foreground leading-relaxed">{module.mentalModel}</p>
-          </section>
-
-          {/* Daily Practice */}
-          <section className="bg-card rounded-xl p-4 border border-border/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Calendar className="w-4 h-4 text-primary" />
-              <h3 className="font-bold text-sm">Daily Practice</h3>
-            </div>
-            <p className="text-sm text-foreground leading-relaxed mb-3">{module.dailyPractice}</p>
-            
-            {progress && !isCompleted && (
-              <div className="flex items-center gap-3">
-                <Button size="sm" onClick={handleRecordPractice} disabled={recordPractice.isPending}>
-                  {recordPractice.isPending ? "Recording..." : "Mark Complete"}
-                </Button>
-                <span className="text-xs text-muted-foreground">
-                  {progress.practiceDaysCompleted}/{module.requiredPracticeDays} days
-                </span>
+        <div className="space-y-6 pb-24">
+          {/* 1. Read Content */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                <BookOpen className="w-4 h-4 text-primary" />
               </div>
+              <h2 className="text-lg font-semibold">{t({ en: "Read", pt: "Ler", es: "Leer" })}</h2>
+            </div>
+            <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed text-foreground/90">
+              <p>{module.content}</p>
+            </div>
+            {progress?.status === "unlocked" && (
+              <Button onClick={handleStart} disabled={startModule.isPending}>
+                {startModule.isPending ? t({ en: "Starting...", pt: "Iniciando...", es: "Iniciando..." }) : t({ en: "Start Module", pt: "Iniciar Módulo", es: "Iniciar Módulo" })}
+              </Button>
             )}
-          </section>
+          </div>
 
-          {/* Decision Challenge */}
-          <section className="bg-card rounded-xl p-4 border border-border/50">
-            <h3 className="font-bold text-sm mb-2">Decision Challenge</h3>
-            <DecisionChallengeView
-              challenge={module.decisionChallenge}
-              isCompleted={!!progress?.challengeCompleted || isCompleted}
-              onComplete={handleCompleteChallenge}
-              isPending={completeChallenge.isPending}
-            />
-          </section>
+          {progress?.status !== "unlocked" && (
+            <>
+              {/* 2. Decision Challenge */}
+              {module.challenge && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                      <Target className="w-4 h-4 text-primary" />
+                    </div>
+                    <h2 className="text-lg font-semibold">{t({ en: "Decision Challenge", pt: "Desafio de Decisão", es: "Desafío de Decisión" })}</h2>
+                  </div>
+                  <DecisionChallengeView 
+                    challenge={module.challenge} 
+                    isCompleted={progress?.challengeCompleted} 
+                    onComplete={handleCompleteChallenge}
+                    isPending={completeChallenge.isPending}
+                  />
+                </div>
+              )}
 
-          {/* Reflection */}
-          <section className="bg-card rounded-xl p-4 border border-border/50">
-            <h3 className="font-bold text-sm mb-2">Reflection</h3>
-            <p className="text-xs text-muted-foreground mb-3">{module.reflectionPrompt}</p>
-            
-            {!isCompleted && (
-              <>
+              {/* 3. Daily Practice */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-primary" />
+                  </div>
+                  <h2 className="text-lg font-semibold">{t({ en: "Daily Practice", pt: "Prática Diária", es: "Práctica Diaria" })}</h2>
+                </div>
+                <Card className="bg-muted/30">
+                  <div className="p-4">
+                    <p className="text-sm font-medium mb-2">{t({ en: `Practice for ${module.requiredPracticeDays} days`, pt: `Pratique por ${module.requiredPracticeDays} dias`, es: `Practica durante ${module.requiredPracticeDays} días` })}</p>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <Progress value={(progress?.practiceDaysCompleted / module.requiredPracticeDays) * 100} className="h-2" />
+                        <p className="text-xs text-muted-foreground mt-1.5">{t({ en: `${progress?.practiceDaysCompleted || 0} of ${module.requiredPracticeDays} days completed`, pt: `${progress?.practiceDaysCompleted || 0} de ${module.requiredPracticeDays} dias concluídos`, es: `${progress?.practiceDaysCompleted || 0} de ${module.requiredPracticeDays} días completados` })}</p>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        onClick={handleRecordPractice} 
+                        disabled={recordPractice.isPending || progress?.practiceToday}
+                      >
+                        {progress?.practiceToday ? t({ en: "Practiced Today", pt: "Praticado Hoje", es: "Practicado Hoy" }) : t({ en: "Record Practice", pt: "Registrar Prática", es: "Registrar Práctica" })}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* 4. Reflection */}
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold">{t({ en: "Reflection", pt: "Reflexão", es: "Reflexión" })}</h2>
                 <Textarea
                   value={reflection}
                   onChange={(e) => setReflection(e.target.value)}
-                  placeholder="Write your reflection here..."
-                  className="min-h-24 mb-3 text-sm"
+                  placeholder={t({ en: "What did you learn? How did you apply it?", pt: "O que você aprendeu? Como você aplicou?", es: "¿Qué aprendiste? ¿Cómo lo aplicaste?" })}
+                  className="min-h-[100px]"
                 />
-                <Button 
-                  size="sm"
-                  onClick={handleSaveReflection} 
-                  disabled={!reflection.trim() || saveReflection.isPending}
-                >
-                  {saveReflection.isPending ? "Saving..." : "Save Reflection"}
+                <Button size="sm" onClick={handleSaveReflection} disabled={saveReflection.isPending || !reflection.trim()}>
+                  {saveReflection.isPending ? t({ en: "Saving...", pt: "Salvando...", es: "Guardando..." }) : t({ en: "Save Reflection", pt: "Salvar Reflexão", es: "Guardar Reflexión" })}
                 </Button>
-              </>
-            )}
-            {progress?.reflectionEntry && (
-              <div className="bg-muted p-3 rounded-lg mt-3">
-                <p className="text-xs">{progress.reflectionEntry}</p>
               </div>
-            )}
-          </section>
 
-          {/* Complete Module */}
-          {progress && !isCompleted && progress.challengeCompleted && progress.reflectionEntry && (
-            <div className="pt-6 border-t">
-              <Button 
-                onClick={handleComplete} 
-                size="lg" 
-                className="w-full"
-                disabled={completeModule.isPending}
-              >
-                {completeModule.isPending ? "Completing..." : "Complete Module"}
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
-          )}
-
-          {/* Start Module */}
-          {!progress && (
-            <div className="pt-6 border-t">
-              <Button 
-                onClick={handleStart} 
-                size="lg" 
-                className="w-full"
-                disabled={startModule.isPending}
-              >
-                {startModule.isPending ? "Starting..." : "Start This Module"}
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
+              {/* 5. Complete Module */}
+              <div className="pt-4 border-t border-border/50">
+                <Button 
+                  onClick={handleComplete} 
+                  disabled={completeModule.isPending || !progress?.canComplete}
+                  className="w-full"
+                >
+                  {completeModule.isPending ? t({ en: "Completing Module...", pt: "Concluindo Módulo...", es: "Completando Módulo..." }) : t({ en: "Complete Module", pt: "Concluir Módulo", es: "Completar Módulo" })}
+                </Button>
+                {!progress?.canComplete && (
+                  <p className="text-xs text-center text-muted-foreground mt-2">
+                    {t({ en: "You must complete the challenge and all practice days to finish the module.", pt: "Você deve completar o desafio e todos os dias de prática para finalizar o módulo.", es: "Debes completar el desafío y todos los días de práctica para finalizar el módulo." })}
+                  </p>
+                )}
+              </div>
+            </>
           )}
         </div>
       )}
@@ -427,3 +422,4 @@ function ModuleDetail({ module, progress, onClose }: ModuleDetailProps) {
     </div>
   );
 }
+

@@ -16,11 +16,13 @@ import { useLanguage, type AppLanguage } from "@/contexts/LanguageContext";
 const PDF_URLS: Record<AppLanguage, string> = {
   en: "https://d2xsxph8kpxj0f.cloudfront.net/111904132/fsRnWghWhaoD2r3KXXoRti/pdfs/destiny-hacking-book.pdf",
   pt: "https://d2xsxph8kpxj0f.cloudfront.net/111904132/fsRnWghWhaoD2r3KXXoRti/pdfs/destiny-hacking-book-pt.pdf",
+  es: "https://d2xsxph8kpxj0f.cloudfront.net/111904132/fsRnWghWhaoD2r3KXXoRti/pdfs/destiny-hacking-book-es.pdf",
 };
 
 const TOTAL_PAGES: Record<AppLanguage, number> = {
   en: 87,
   pt: 65,
+  es: 87,
 };
 
 export function Book() {
@@ -122,10 +124,10 @@ export function Book() {
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        title={language === "pt" ? "Ler Livro" : "Read Book"}
+        title={t({ en: "Read Book", pt: "Ler Livro", es: "Leer Libro" })}
         subtitle={currentChapter 
           ? `Ch. ${currentChapter.chapterNumber} - ${getChapterTitle(currentChapter.chapterNumber, language, currentChapter.title)}` 
-          : `${language === "pt" ? "Página" : "Page"} ${currentPage} ${language === "pt" ? "de" : "of"} ${totalPages}`
+          : t({ en: `Page ${currentPage} of ${totalPages}`, pt: `Página ${currentPage} de ${totalPages}`, es: `Página ${currentPage} de ${totalPages}` })
         }
         showBack
         rightAction={
@@ -140,6 +142,7 @@ export function Book() {
               size="icon"
               onClick={() => setShowHighlights(!showHighlights)}
               className="h-8 w-8"
+              aria-label={t({ en: "Show highlights", pt: "Mostrar destaques", es: "Mostrar destacados" })}
             >
               <Highlighter className="h-4 w-4" />
             </Button>
@@ -161,7 +164,7 @@ export function Book() {
             }`}
           >
             <span className="text-base leading-none">🇬🇧</span>
-            <span>English</span>
+            <span>{t({ en: "English", pt: "Inglês", es: "Inglés" })}</span>
           </button>
           <button
             onClick={() => handleLanguageChange("pt")}
@@ -172,7 +175,18 @@ export function Book() {
             }`}
           >
             <span className="text-base leading-none">🇧🇷</span>
-            <span>Português</span>
+            <span>{t({ en: "Portuguese", pt: "Português", es: "Portugués" })}</span>
+          </button>
+          <button
+            onClick={() => handleLanguageChange("es")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              language === "es"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span className="text-base leading-none">🇪🇸</span>
+            <span>{t({ en: "Spanish", pt: "Espanhol", es: "Español" })}</span>
           </button>
         </div>
       </div>
@@ -213,13 +227,13 @@ export function Book() {
         {showHighlights && (
           <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm">
             <PageHeader
-              title={language === "pt" ? "Destaques" : "Highlights"}
-              subtitle={`${language === "pt" ? "Página" : "Page"} ${currentPage}`}
+              title={t({ en: "Highlights", pt: "Destaques", es: "Destacados" })}
+              subtitle={t({ en: `Page ${currentPage}`, pt: `Página ${currentPage}`, es: `Página ${currentPage}` })}
               showBack
               backPath="#"
               rightAction={
                 <Button variant="ghost" size="sm" onClick={() => setShowHighlights(false)}>
-                  {language === "pt" ? "Feito" : "Done"}
+                  {t({ en: "Done", pt: "Feito", es: "Hecho" })}
                 </Button>
               }
             />
@@ -237,7 +251,7 @@ export function Book() {
       {chapters && chapters.length > 0 && (
         <div className="space-y-2">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            {language === "pt" ? "Capítulos" : "Chapters"}
+            {t({ en: "Chapters", pt: "Capítulos", es: "Capítulos" })}
           </h2>
           <div className="space-y-1">
             {chapters.map((chapter: any) => (
