@@ -1,0 +1,8 @@
+{
+  "query": "DELETE FROM chapter_feedback WHERE chapterId IN (1, 60001, 60002, 60003, 60004, 60005, 60006); DELETE FROM chapter_highlights WHERE chapterId IN (1, 60001, 60002, 60003, 60004, 60005, 60006); DELETE FROM chapter_bookmarks WHERE chapterId IN (1, 60001, 60002, 60003, 60004, 60005, 60006);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute DELETE FROM chapter_feedback WHERE chapterId IN (1, 60001, 60002, 60003, 60004, 60005, 60006); DELETE FROM chapter_highlights WHERE chapterId IN (1, 60001, 60002, 60003, 60004, 60005, 60006); DELETE FROM chapter_bookmarks WHERE chapterId IN (1, 60001, 60002, 60003, 60004, 60005, 60006);",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'chapterid' in 'where clause'"
+  ]
+}

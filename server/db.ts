@@ -1370,7 +1370,10 @@ export async function listAudiobookChapters() {
   return db
     .select()
     .from(bookChapters)
-    .where(sql`${bookChapters.audioUrl} IS NOT NULL`)
+    .where(sql`${bookChapters.audioUrl} IS NOT NULL 
+      AND ${bookChapters.title} != 'Test Chapter'
+      AND ${bookChapters.audioUrl} NOT LIKE '%example.com%'
+      AND ${bookChapters.chapterNumber} BETWEEN 1 AND 14`)
     .orderBy(bookChapters.chapterNumber);
 }
 
@@ -1559,7 +1562,9 @@ export async function listPdfChapters() {
   return db
     .select()
     .from(bookChapters)
-    .where(sql`${bookChapters.pdfStartPage} IS NOT NULL`)
+    .where(sql`${bookChapters.pdfStartPage} IS NOT NULL
+      AND ${bookChapters.title} != 'Test Chapter'
+      AND ${bookChapters.chapterNumber} BETWEEN 1 AND 14`)
     .orderBy(bookChapters.chapterNumber);
 }
 
@@ -2290,4 +2295,20 @@ export async function deleteAllUserData(userId: number): Promise<void> {
 
   // Finally, delete the user record itself
   await db.delete(users).where(eq(users.id, userId));
+}
+
+// ==================== ADMIN CLEANUP ====================
+
+export async function cleanupTestChapters() {
+  const result = await db
+    .delete(bookChapters)
+    .where(
+      or(
+        eq(bookChapters.title, "Test Chapter"),
+        sql`${bookChapters.audioUrl} LIKE '%example.com%'`,
+        sql`${bookChapters.chapterNumber} > 14`,
+        sql`${bookChapters.chapterNumber} < 1`
+      )
+    );
+  return result;
 }

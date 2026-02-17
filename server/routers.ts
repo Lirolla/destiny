@@ -1666,6 +1666,21 @@ Provide a brief Stoic strategist reflection (2-3 sentences) on the cause-effect 
         }
         return db.listChapterFeedback(input.chapterNumber, input.status);
       }),
+
+    // Admin: Delete test/junk chapters
+    cleanupTestChapters: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Admin access required" });
+        }
+        
+        const result = await db.cleanupTestChapters();
+        
+        return { 
+          message: "Cleanup complete",
+          deleted: result 
+        };
+      }),
   }),
 
   // PDF Book

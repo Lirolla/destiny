@@ -1442,3 +1442,13 @@
 - [x] TASK 2D: Update Arsenal page header subtitle to "Tools not on your Bridge"
 - [x] Write 40 vitest tests (phase78-cookie-arsenal.test.ts)
 - [x] Save checkpoint
+
+## Phase 79: Permanent Test Chapter Cleanup
+- [x] STEP 1: Delete FK references (audiobook_progress, bookmarks, pdf_highlights) for junk IDs
+- [x] STEP 1: Delete all junk rows from book_chapters (IDs: 1, 60001-60006, 120001-120004)
+- [x] STEP 1: Verified exactly 14 rows remain (IDs 30001-30014)
+- [x] STEP 2: Add defensive filter to listAudiobookChapters (exclude Test Chapter, example.com, chapterNumber 1-14)
+- [x] STEP 2: Add defensive filter to listPdfChapters (same pattern)
+- [x] STEP 3: Add admin-only cleanupTestChapters endpoint in routers.ts + db.cleanupTestChapters() helper
+- [x] Write 13 vitest tests (phase79-chapter-cleanup.test.ts)
+- [x] Save checkpoint

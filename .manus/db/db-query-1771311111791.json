@@ -1,0 +1,37 @@
+{
+  "query": "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND (TABLE_NAME LIKE '%chapter%' OR TABLE_NAME LIKE '%book%' OR TABLE_NAME LIKE '%audio%' OR TABLE_NAME LIKE '%highlight%' OR TABLE_NAME LIKE '%bookmark%' OR TABLE_NAME LIKE '%feedback%');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND (TABLE_NAME LIKE '%chapter%' OR TABLE_NAME LIKE '%book%' OR TABLE_NAME LIKE '%audio%' OR TABLE_NAME LIKE '%highlight%' OR TABLE_NAME LIKE '%bookmark%' OR TABLE_NAME LIKE '%feedback%');",
+  "rows": [
+    {
+      "TABLE_NAME": "book_modules"
+    },
+    {
+      "TABLE_NAME": "audiobook_progress"
+    },
+    {
+      "TABLE_NAME": "book_chapters"
+    },
+    {
+      "TABLE_NAME": "bookmarks"
+    },
+    {
+      "TABLE_NAME": "pdf_highlights"
+    },
+    {
+      "TABLE_NAME": "highlight_comments"
+    },
+    {
+      "TABLE_NAME": "highlight_reactions"
+    },
+    {
+      "TABLE_NAME": "shared_highlights"
+    },
+    {
+      "TABLE_NAME": "chapter_feedback"
+    }
+  ],
+  "messages": [],
+  "stdout": "TABLE_NAME\nbook_modules\naudiobook_progress\nbook_chapters\nbookmarks\npdf_highlights\nhighlight_comments\nhighlight_reactions\nshared_highlights\nchapter_feedback\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}
