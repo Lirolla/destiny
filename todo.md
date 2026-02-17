@@ -1452,3 +1452,16 @@
 - [x] STEP 3: Add admin-only cleanupTestChapters endpoint in routers.ts + db.cleanupTestChapters() helper
 - [x] Write 13 vitest tests (phase79-chapter-cleanup.test.ts)
 - [x] Save checkpoint
+
+## Phase 80: Cloudflare R2 Migration
+- [x] Investigate current S3/storage setup and audio file inventory
+- [x] Create R2 bucket on Cloudflare (destinyhacking, WEUR, custom domain destinyhacking.com)
+- [x] Download all 28 audio files (EN+PT) from CloudFront/manuscdn
+- [x] Download 2 PDFs (EN/PT) and 1 splash image
+- [x] Upload all 31 files to R2 bucket (ES PDF was 403 - not available)
+- [x] Update all 28 audio URLs in database (audioUrl + audioUrlPt) to destinyhacking.com
+- [x] Update PDF URLs in Book.tsx to destinyhacking.com (ES falls back to EN)
+- [x] Update splash image URL in SplashScreen.tsx to destinyhacking.com
+- [x] Verify no remaining cloudfront/manuscdn references in client/server code
+- [x] Run tests to verify no regressions (all recent phase tests pass, 29 pre-existing failures unchanged)
+- [x] Save checkpoint
