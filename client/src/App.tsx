@@ -44,6 +44,7 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { CookieConsent } from "./components/CookieConsent";
+import { ScrollToTop } from "./components/ScrollToTop";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -61,6 +62,8 @@ function PublicRouter() {
   const [location] = useLocation();
 
   return (
+    <>
+    <ScrollToTop />
     <AnimatedRoutes>
       <Switch key={location}>
         <Route path="/" component={LandingPage} />
@@ -71,6 +74,7 @@ function PublicRouter() {
         <Route path="/404" component={NotFound} />
       </Switch>
     </AnimatedRoutes>
+    </>
   );
 }
 
@@ -97,6 +101,7 @@ function AppRouter() {
 
   return (
     <AppShell>
+      <ScrollToTop />
       <AnimatedRoutes>
         <Switch key={location}>
           <Route path="/" component={NewHome} />

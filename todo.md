@@ -1521,3 +1521,18 @@
 - [x] Add logout button to AdminLayout sidebar
 - [x] Run tests and update (43 tests passing)
 - [x] Save checkpoint
+
+## Phase 84: Landing Page i18n (EN/PT/ES) with Flag Selector
+
+- [ ] Audit current landing page text and language system
+- [ ] Ensure flag selector (EN/PT/ES) works on landing page
+- [ ] Translate all landing page sections to PT and ES
+- [ ] Test all 3 languages display correctly
+- [ ] Run tests and update
+- [ ] Save checkpoint
+
+## Phase 84: Landing Page Fixes
+
+- [x] Fix scroll-to-top when navigating to Terms, Privacy, and other pages from footer links
+- [x] Translate footer quote to PT/ES
+- [x] Save checkpoint

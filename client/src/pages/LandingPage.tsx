@@ -423,7 +423,11 @@ export default function LandingPage() {
               © 2026 Merx Digital Solutions Ltd. {t({ en: "All rights reserved.", pt: "Todos os direitos reservados.", es: "Todos los derechos reservados." })}
             </p>
             <p className="text-xs italic text-white/20">
-              "I am the master of my fate, I am the captain of my soul."
+              {t({
+                en: '"I am the master of my fate, I am the captain of my soul."',
+                pt: '"Eu sou o mestre do meu destino, eu sou o capitão da minha alma."',
+                es: '"Soy el dueño de mi destino, soy el capitán de mi alma."',
+              })}
             </p>
           </div>
         </div>
