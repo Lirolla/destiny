@@ -44,12 +44,14 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { CookieConsent } from "./components/CookieConsent";
+import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
 import AdminFeedback from "./pages/admin/AdminFeedback";
 import AdminAudiobookTools from "./pages/admin/AdminAudiobookTools";
 import AdminActivityLog from "./pages/admin/AdminActivityLog";
+import { trpc } from "./lib/trpc";
 
 /**
  * Public routes — accessible without authentication.
@@ -83,11 +85,9 @@ function AppRouter() {
 
   // Show auth page if not authenticated
   if (!isLoading && !isAuthenticated) {
-    // If on /app/auth, show auth page; otherwise redirect to auth
     if (location === "/auth" || location.startsWith("/auth?")) {
       return <AuthPage />;
     }
-    // Redirect to auth page within app
     return <AuthPage />;
   }
 
@@ -131,12 +131,6 @@ function AppRouter() {
           <Route path="/philosophy" component={Philosophy} />
           <Route path="/about" component={Philosophy} />
           <Route path="/monthly-report" component={MonthlyReportPage} />
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/admin/users" component={AdminUsers} />
-          <Route path="/admin/subscriptions" component={AdminSubscriptions} />
-          <Route path="/admin/feedback" component={AdminFeedback} />
-          <Route path="/admin/audiobook-tools" component={AdminAudiobookTools} />
-          <Route path="/admin/activity-log" component={AdminActivityLog} />
           <Route path="/auth" component={NewHome} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />
@@ -147,12 +141,65 @@ function AppRouter() {
 }
 
 /**
- * Root router — decides between public pages and the app.
+ * Admin panel routes — completely independent from the app.
+ * Uses wouter's nested Router with base="/admin".
+ * Has its own login system that checks admin role.
+ */
+function AdminRouter() {
+  const [location] = useLocation();
+  const { data: adminUser, isLoading, error } = trpc.admin.me.useQuery(undefined, {
+    retry: false,
+  });
+
+  // Show login page if not authenticated as admin
+  if (!isLoading && (!adminUser || error)) {
+    if (location === "/login") {
+      return <AdminLogin />;
+    }
+    return <AdminLogin />;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <Switch key={location}>
+      <Route path="/" component={AdminDashboard} />
+      <Route path="/login" component={AdminDashboard} />
+      <Route path="/users" component={AdminUsers} />
+      <Route path="/subscriptions" component={AdminSubscriptions} />
+      <Route path="/feedback" component={AdminFeedback} />
+      <Route path="/audiobook-tools" component={AdminAudiobookTools} />
+      <Route path="/activity-log" component={AdminActivityLog} />
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+/**
+ * Root router — decides between public pages, the app, and admin.
  * - `/` and other public paths → PublicRouter
  * - `/app/*` → AppRouter (nested with base="/app")
+ * - `/admin/*` → AdminRouter (nested with base="/admin")
  */
 function RootRouter() {
   const [location] = useLocation();
+
+  // Check if we're on an /admin path
+  const isAdminPath = location === "/admin" || location.startsWith("/admin/") || location.startsWith("/admin?");
+
+  if (isAdminPath) {
+    return (
+      <Router base="/admin">
+        <AdminRouter />
+      </Router>
+    );
+  }
 
   // Check if we're on an /app path
   const isAppPath = location === "/app" || location.startsWith("/app/") || location.startsWith("/app?");

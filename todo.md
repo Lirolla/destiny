@@ -1506,3 +1506,18 @@
 ### Testing & Delivery
 - [x] Write vitest tests for admin procedures (40 tests, all passing)
 - [x] Save checkpoint
+
+## Phase 83: Move Admin to /admin with Independent Login
+
+- [x] Create admin login page at /admin/login with email/password
+- [x] Add admin login tRPC procedure (validates admin role + password)
+- [x] Add admin.me procedure to check admin session
+- [x] Create AdminRouter in App.tsx at /admin/* (separate from /app)
+- [x] Move all admin routes from /app/admin/* to /admin/*
+- [x] Admin auth guard: redirect to /admin/login if not authenticated as admin
+- [x] Remove admin routes from AppRouter (/app)
+- [x] Admin link in More.tsx uses absolute href="/admin" (exits app router)
+- [x] Update AdminLayout navigation links to relative paths (Router base handles /admin)
+- [x] Add logout button to AdminLayout sidebar
+- [x] Run tests and update (43 tests passing)
+- [x] Save checkpoint

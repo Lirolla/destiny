@@ -257,7 +257,7 @@ export default function More() {
 
             {/* Admin Panel Link (admin only) */}
             {user?.role === "admin" && (
-              <Link
+              <a
                 href="/admin"
                 className="flex items-center gap-3 px-4 py-3.5 hover:bg-accent/50 active:bg-accent transition-colors"
               >
@@ -271,7 +271,7 @@ export default function More() {
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              </Link>
+              </a>
             )}
 
             {/* Settings Link */}

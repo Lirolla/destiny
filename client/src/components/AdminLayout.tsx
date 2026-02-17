@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
+import { trpc } from "@/lib/trpc";
 import {
   LayoutDashboard,
   Users,
@@ -16,37 +16,25 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
+// Paths are relative to Router base="/admin"
 const navItems = [
-  { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/admin/users", label: "Users", icon: Users },
-  { path: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
-  { path: "/admin/feedback", label: "Feedback", icon: MessageSquare },
-  { path: "/admin/audiobook-tools", label: "Audiobook Tools", icon: Mic },
-  { path: "/admin/activity-log", label: "Activity Log", icon: Activity },
+  { path: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { path: "/users", label: "Users", icon: Users },
+  { path: "/subscriptions", label: "Subscriptions", icon: CreditCard },
+  { path: "/feedback", label: "Feedback", icon: MessageSquare },
+  { path: "/audiobook-tools", label: "Audiobook Tools", icon: Mic },
+  { path: "/activity-log", label: "Activity Log", icon: Activity },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-        <div className="text-center space-y-4">
-          <Shield className="w-16 h-16 mx-auto text-destructive opacity-50" />
-          <h1 className="text-2xl font-bold">Access Denied</h1>
-          <p className="text-muted-foreground">You don't have permission to access the admin panel.</p>
-          <Link href="/">
-            <Button variant="outline">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to App
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const { data: adminUser } = trpc.admin.me.useQuery(undefined, { retry: false });
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/login");
+    },
+  });
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
@@ -82,7 +70,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           {/* Navigation */}
           <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
             {navItems.map((item) => {
-              const isActive = location === item.path || (item.path !== "/admin" && location.startsWith(item.path));
+              const isActive = item.exact
+                ? location === item.path
+                : location === item.path || location.startsWith(item.path + "/");
               const Icon = item.icon;
               return (
                 <Link key={item.path} href={item.path}>
@@ -104,14 +94,21 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
           {/* Footer */}
           <div className="p-3 border-t border-border space-y-1">
-            <Link href="/">
+            <a href="/">
               <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer">
                 <ArrowLeft className="w-4 h-4 shrink-0" />
-                Back to App
+                Back to Site
               </div>
-            </Link>
+            </a>
+            <button
+              onClick={() => logoutMutation.mutate()}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-red-500/10 hover:text-red-500 cursor-pointer transition-colors"
+            >
+              <LogOut className="w-4 h-4 shrink-0" />
+              Logout
+            </button>
             <div className="px-3 py-2 text-xs text-muted-foreground">
-              Signed in as <span className="font-medium text-foreground">{user.name || "Admin"}</span>
+              Signed in as <span className="font-medium text-foreground">{adminUser?.name || "Admin"}</span>
             </div>
           </div>
         </div>

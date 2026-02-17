@@ -197,6 +197,18 @@ describe("Admin Panel - Router", () => {
     const procedures = Object.keys(appRouter._def.procedures);
     expect(procedures).toContain("admin.getSignupChart");
   });
+
+  it("should have admin.adminLogin procedure", async () => {
+    const { appRouter } = await import("./routers");
+    const procedures = Object.keys(appRouter._def.procedures);
+    expect(procedures).toContain("admin.adminLogin");
+  });
+
+  it("should have admin.me procedure", async () => {
+    const { appRouter } = await import("./routers");
+    const procedures = Object.keys(appRouter._def.procedures);
+    expect(procedures).toContain("admin.me");
+  });
 });
 
 // ============================================================
@@ -237,6 +249,11 @@ describe("Admin Panel - Frontend Components", () => {
     const mod = await import("../client/src/pages/admin/AdminActivityLog");
     expect(mod.default).toBeDefined();
   });
+
+  it("should have AdminLogin page", async () => {
+    const mod = await import("../client/src/pages/admin/AdminLogin");
+    expect(mod.default).toBeDefined();
+  });
 });
 
 // ============================================================
@@ -246,12 +263,14 @@ describe("Admin Panel - Route Registration", () => {
   it("should have admin routes registered in App.tsx", async () => {
     const fs = await import("fs");
     const appContent = fs.readFileSync("client/src/App.tsx", "utf-8");
-    expect(appContent).toContain('/admin"');
-    expect(appContent).toContain('/admin/users"');
-    expect(appContent).toContain('/admin/subscriptions"');
-    expect(appContent).toContain('/admin/feedback"');
-    expect(appContent).toContain('/admin/audiobook-tools"');
-    expect(appContent).toContain('/admin/activity-log"');
+    // Admin routes are relative inside Router base="/admin"
+    expect(appContent).toContain('AdminRouter');
+    expect(appContent).toContain('base="/admin"');
+    expect(appContent).toContain('/users"');
+    expect(appContent).toContain('/subscriptions"');
+    expect(appContent).toContain('/feedback"');
+    expect(appContent).toContain('/audiobook-tools"');
+    expect(appContent).toContain('/activity-log"');
   });
 
   it("should have admin link in More.tsx only for admin users", async () => {
