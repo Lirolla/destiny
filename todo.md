@@ -1465,3 +1465,17 @@
 - [x] Verify no remaining cloudfront/manuscdn references in client/server code
 - [x] Run tests to verify no regressions (all recent phase tests pass, 29 pre-existing failures unchanged)
 - [x] Save checkpoint
+
+## Phase 81: Route Restructure — Landing at /, App at /app/*
+- [x] Restructure App.tsx: / = LandingPage (always), /app/* = authenticated app with Router base="/app"
+- [x] Move AuthPage to /app/auth, OAuth callback redirects to /app
+- [x] BottomTabNavigation paths work via Router base (relative)
+- [x] All internal navigation links work correctly (wouter base handles /app prefix)
+- [x] AnimatedRoutes path matching works with base router
+- [x] AudiobookMiniPlayer navigation updated
+- [x] LandingPage CTA buttons point to /app/auth
+- [x] Public routes (/philosophy, /terms, /privacy) remain at root
+- [x] SplashScreen only shows on /app routes
+- [x] All routes tested and verified in browser
+- [x] Run vitest tests (all 72 tests pass in mobile-app + phase71, updated tests for new routing)
+- [x] Save checkpoint

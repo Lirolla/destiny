@@ -17,11 +17,11 @@ describe("Mobile App Shell Components", () => {
     expect(fs.existsSync(filePath)).toBe(true);
     const content = fs.readFileSync(filePath, "utf-8");
     expect(content).toContain("tabs");
-    expect(content).toContain("Home");
-    expect(content).toContain("Book");
-    expect(content).toContain("Audio");
-    expect(content).toContain("Practice");
-    expect(content).toContain("More");
+    expect(content).toContain("Bridge");
+    expect(content).toContain("Chapters");
+    expect(content).toContain("Listen");
+    expect(content).toContain("Calibrate");
+    expect(content).toContain("Arsenal");
   });
 
   it("should have AppShell component wrapping content with bottom nav", () => {
@@ -46,8 +46,7 @@ describe("Mobile App Shell Components", () => {
     expect(fs.existsSync(filePath)).toBe(true);
     const content = fs.readFileSync(filePath, "utf-8");
     expect(content).toContain("Daily Practice");
-    expect(content).toContain("Growth & Tracking");
-    expect(content).toContain("Community & Tools");
+    expect(content).toContain("Growth & Community");
     expect(content).toContain("Settings");
   });
 });

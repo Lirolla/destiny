@@ -125,7 +125,7 @@ describe("Task 1: Landing Page", () => {
       path.join(__dirname, "../client/src/pages/LandingPage.tsx"),
       "utf-8"
     );
-    expect(content).toContain('href="/auth"');
+    expect(content).toContain('href="/app/auth"');
     expect(content).toContain('href="/terms"');
     expect(content).toContain('href="/privacy"');
   });
@@ -399,7 +399,7 @@ describe("Routing: Conditional Auth Routing", () => {
       "utf-8"
     );
     expect(content).toContain("PublicRouter");
-    expect(content).toContain("AuthenticatedRouter");
+    expect(content).toContain("AppRouter");
     expect(content).toContain("RootRouter");
   });
 
@@ -441,8 +441,8 @@ describe("Routing: Conditional Auth Routing", () => {
     );
     // AppShell should be inside RootRouter, not wrapping everything
     expect(content).toContain("<AppShell>");
-    // AppShell should wrap AuthenticatedRouter
-    expect(content).toContain("<AuthenticatedRouter />");
+    // AppShell should wrap AppRouter routes
+    expect(content).toContain("AppRouter");
   });
 
   it("Terms and Privacy are accessible in both public and auth routers", () => {

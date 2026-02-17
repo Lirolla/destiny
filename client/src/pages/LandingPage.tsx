@@ -96,7 +96,7 @@ export default function LandingPage() {
 
           {/* CTA */}
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/auth">
+            <Link href="/app/auth">
               <Button size="lg" className="bg-[#01D98D] hover:bg-[#01D98D]/90 text-black font-semibold px-8 py-6 text-base rounded-xl">
                 {t({ en: "Get Started", pt: "Começar", es: "Empezar" })}
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -384,7 +384,7 @@ export default function LandingPage() {
             </motion.div>
 
             <motion.div variants={fadeUp} className="mt-8">
-              <Link href="/auth">
+              <Link href="/app/auth">
                 <Button size="lg" className="bg-[#01D98D] hover:bg-[#01D98D]/90 text-black font-semibold px-10 py-6 text-base rounded-xl">
                   {t({ en: "Create Account", pt: "Criar Conta", es: "Crear Cuenta" })}
                   <ArrowRight className="w-5 h-5 ml-2" />

@@ -12,6 +12,9 @@ import { motion, AnimatePresence } from "framer-motion";
  */
 export function SplashScreen() {
   const [visible, setVisible] = useState(() => {
+    // Only show splash on /app routes, not on landing page
+    const isAppRoute = window.location.pathname.startsWith("/app");
+    if (!isAppRoute) return false;
     // Only show splash once per browser session
     return !sessionStorage.getItem("splash_shown");
   });

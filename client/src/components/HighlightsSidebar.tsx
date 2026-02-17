@@ -195,7 +195,7 @@ export function HighlightsSidebar({ pageNumber, onClose }: HighlightsSidebarProp
                               const back = highlightAnnotations?.[0]?.note || t({ en: "(Add your answer)", pt: "(Adicione sua resposta)", es: "(Agrega tu respuesta)" });
                               
                               // Navigate to flashcards with pre-filled data
-                              window.location.href = `/flashcards?create=true&front=${encodeURIComponent(front)}&back=${encodeURIComponent(back)}&page=${pageNumber}`;
+                              window.location.href = `/app/flashcards?create=true&front=${encodeURIComponent(front)}&back=${encodeURIComponent(back)}&page=${pageNumber}`;
                             }}
                             title={t({ en: "Create Flashcard", pt: "Criar Flashcard", es: "Crear Tarjeta" })}
                           >
