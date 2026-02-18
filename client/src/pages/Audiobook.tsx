@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Headphones, BookOpen, FileText, CheckCircle2, Clock, PlayCircle } from "lucide-react";
+import { ChapterIcon } from "@/components/ChapterIcon";
 import { Link } from "wouter";
 import { PageHeader } from "@/components/PageHeader";
 import { getChapterTitle } from "@shared/chapterTranslations";
@@ -312,7 +313,7 @@ export function Audiobook() {
                         <CheckCircle2 className="h-5 w-5 text-green-500" />
                       ) : hasStarted ? (
                         <>
-                          <span className="text-sm font-bold">{chapter.chapterNumber}</span>
+                          <ChapterIcon chapter={chapter.chapterNumber} size={24} />
                           {/* Circular progress ring */}
                           <svg className="absolute inset-0 w-10 h-10 -rotate-90" viewBox="0 0 40 40">
                             <circle
@@ -335,7 +336,7 @@ export function Audiobook() {
                           </svg>
                         </>
                       ) : (
-                        <span className="text-sm font-bold">{chapter.chapterNumber}</span>
+                        <ChapterIcon chapter={chapter.chapterNumber} size={26} />
                       )}
                     </div>
 

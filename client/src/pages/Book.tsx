@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Headphones, Highlighter } from "lucide-react";
+import { ChapterIcon } from "@/components/ChapterIcon";
 import { Link } from "wouter";
 import { PDFViewer } from "@/components/PDFViewer";
 import { HighlightsSidebar } from "@/components/HighlightsSidebar";
@@ -263,10 +264,10 @@ export function Book() {
                 onClick={() => handleChapterClick(chapter)}
               >
                 <div className="flex items-center gap-3 p-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    currentChapter?.id === chapter.id ? 'bg-primary/20' : 'bg-muted'
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    currentChapter?.id === chapter.id ? 'bg-primary/10' : 'bg-muted/50'
                   }`}>
-                    <span className="text-xs font-bold">{chapter.chapterNumber}</span>
+                    <ChapterIcon chapter={chapter.chapterNumber} size={28} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">

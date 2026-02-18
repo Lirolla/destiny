@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Headphones, BookOpen } from "lucide-react";
+import { ChapterIcon } from "@/components/ChapterIcon";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
@@ -54,7 +55,16 @@ export function ChapterBridge({
       >
         {/* Emoji + Axis Name */}
         <div className="space-y-2">
-          <span className="text-5xl">{emoji}</span>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex justify-center"
+          >
+            <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+              <ChapterIcon chapter={chapterNumber} size={56} colored />
+            </div>
+          </motion.div>
           <h2 className="text-white text-xl font-bold">
             {axisName}: {leftLabel} → {rightLabel}
           </h2>
