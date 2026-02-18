@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Bell, Clock, Save, Download, FileJson, FileSpreadsheet, Shield, Sun, Moon, Palette, Globe, FileText, AlertTriangle, Trash2 } from "lucide-react";
+import { ArrowLeft, Bell, Clock, Save, Download, FileJson, FileSpreadsheet, Shield, Sun, Moon, Palette, Globe, FileText, AlertTriangle, Trash2, LogOut } from "lucide-react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,11 @@ export default function Settings() {
   const { theme, toggleTheme, switchable } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const [, navigate] = useLocation();
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      window.location.href = '/app';
+    },
+  });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
@@ -325,6 +331,30 @@ export default function Settings() {
                 <Shield className="h-4 w-4 mr-2" />
                 {t({ en: "Privacy Policy", pt: "Política de Privacidade", es: "Política de Privacidad" })}
               </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Logout */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <LogOut className="h-5 w-5 text-muted-foreground" />
+              <CardTitle>{t({ en: "Sign Out", pt: "Sair", es: "Cerrar Sesión" })}</CardTitle>
+            </div>
+            <CardDescription>
+              {t({ en: "Sign out of your account on this device.", pt: "Sair da sua conta neste dispositivo.", es: "Cerrar sesión de tu cuenta en este dispositivo." })}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+              className="w-full"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              {t({ en: "Sign Out", pt: "Sair", es: "Cerrar Sesión" })}
             </Button>
           </CardContent>
         </Card>

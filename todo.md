@@ -1536,3 +1536,18 @@
 - [x] Fix scroll-to-top when navigating to Terms, Privacy, and other pages from footer links
 - [x] Translate footer quote to PT/ES
 - [x] Save checkpoint
+
+## Phase 85: Fix More.tsx JSX Error
+
+- [x] Fix unclosed <a> tag in More.tsx — was actually correct, stale error from previous HMR cleared after server restart
+- [x] Save checkpoint
+
+## Phase 86: Fix PDF URLs in Book.tsx
+
+- [x] Check and fix PDF URLs — URLs were correct, issue was missing CORS on R2 bucket (now configured)
+- [x] Save checkpoint
+
+## Phase 87: Add Logout Button to Settings
+
+- [x] Add visible logout button in Settings page (above Delete Account) with EN/PT/ES translations
+- [x] Save checkpoint
