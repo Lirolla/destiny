@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "node fix-esbuild.cjs",
     "dev": "NODE_ENV=development tsx watch server/_core/index.ts",
-    "build": "node fix-esbuild.cjs && vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=cjs --outdir=dist",
+    "build": "node fix-esbuild.cjs && vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --external:./vite.config --external:../../vite.config",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
