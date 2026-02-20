@@ -223,17 +223,15 @@ const resolveApiUrl = () => {
     return "https://api.anthropic.com/v1/messages";
   }
 
-  // Default: Manus forge
-  return ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+  // Default: OpenAI
+  return "https://api.openai.com/v1/chat/completions";
 };
 
 const resolveApiKey = () => {
   const provider = ENV.llmProvider;
   if (provider === "openai") return ENV.openaiApiKey;
   if (provider === "anthropic") return ENV.anthropicApiKey;
-  return ENV.forgeApiKey;
+  return ENV.openaiApiKey;
 };
 
 const resolveModel = () => {

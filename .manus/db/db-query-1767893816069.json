@@ -1,9 +1,0 @@
-{
-  "query": "DELETE FROM book_chapters WHERE chapterNumber > 14; UPDATE book_chapters SET pdfEndPage = 11 WHERE chapterNumber = 3 AND pdfEndPage < pdfStartPage;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4S4NaSTm8gULMAn.ab4bddc10a61 --database fsRnWghWhaoD2r3KXXoRti --execute DELETE FROM book_chapters WHERE chapterNumber > 14; UPDATE book_chapters SET pdfEndPage = 11 WHERE chapterNumber = 3 AND pdfEndPage < pdfStartPage;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 67
-}
