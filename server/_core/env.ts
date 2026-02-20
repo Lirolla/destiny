@@ -1,7 +1,7 @@
 export const ENV = {
   appId: process.env.VITE_APP_ID ?? "destiny-hacking",
   cookieSecret: process.env.JWT_SECRET ?? "destiny-hacking-secret-key-2026-hostinger",
-  databaseUrl: process.env.DATABASE_URL ?? "mysql://u219024948_destiny:Pagotto24@localhost:3306/u219024948_destiny",
+  databaseUrl: process.env.DATABASE_URL ?? "mysql://u219024948_destiny:Pagotto24@127.0.0.1:3306/u219024948_destiny",
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
