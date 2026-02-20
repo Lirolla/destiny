@@ -348,7 +348,7 @@ export function DestinyScoreExport() {
 
       pdf.setTextColor(150, 150, 150);
       pdf.setFont("helvetica", "normal");
-      pdf.text("Destiny Hacking • destinyhack.manus.space", pageWidth / 2, pageHeight - 7, { align: "center" });
+      pdf.text("Destiny Hacking • destinyhacking.com", pageWidth / 2, pageHeight - 7, { align: "center" });
 
       // Save
       const filename = `destiny-score-${new Date().toISOString().split("T")[0]}.pdf`;

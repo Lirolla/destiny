@@ -121,8 +121,8 @@ function scheduleDailyReminder(id, hour, minute, title, body) {
     // Show the notification
     self.registration.showNotification(title, {
       body: body,
-      icon: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
-      badge: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
+      icon: 'https://dados.destinyhacking.com/images/icon-192x192.png',
+      badge: 'https://dados.destinyhacking.com/images/icon-192x192.png',
       tag: id,
       renotify: true,
       data: { url: '/' },
@@ -184,8 +184,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'Destiny Hacking';
   const options = {
     body: data.body || 'Time for your daily practice',
-    icon: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
-    badge: 'https://files.manuscdn.com/user_upload_by_module/session_file/111904132/OOgkBarJxYAVqnUb.png',
+    icon: 'https://dados.destinyhacking.com/images/icon-192x192.png',
+    badge: 'https://dados.destinyhacking.com/images/icon-192x192.png',
     data: { url: data.url || '/' },
   };
 

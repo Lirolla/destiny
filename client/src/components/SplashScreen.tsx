@@ -64,7 +64,7 @@ export function SplashScreen() {
             }}
           >
             <motion.img
-              src="https://destinyhacking.com/images/splash.jpeg"
+              src="https://dados.destinyhacking.com/images/splash.jpeg"
               alt="Merx Logo"
               className="w-full h-full object-cover"
               initial={{ scale: 1.2 }}

@@ -15,9 +15,9 @@ import { getChapterTitle } from "@shared/chapterTranslations";
 import { useLanguage, type AppLanguage } from "@/contexts/LanguageContext";
 
 const PDF_URLS: Record<AppLanguage, string> = {
-  en: "https://destinyhacking.com/pdfs/destiny-hacking-book.pdf",
-  pt: "https://destinyhacking.com/pdfs/destiny-hacking-book-pt.pdf",
-  es: "https://destinyhacking.com/pdfs/destiny-hacking-book.pdf", // ES PDF not yet available, fallback to EN
+  en: "https://dados.destinyhacking.com/pdfs/destiny-hacking-book.pdf",
+  pt: "https://dados.destinyhacking.com/pdfs/destiny-hacking-book-pt.pdf",
+  es: "https://dados.destinyhacking.com/pdfs/destiny-hacking-book.pdf", // ES PDF not yet available, fallback to EN
 };
 
 const TOTAL_PAGES: Record<AppLanguage, number> = {
